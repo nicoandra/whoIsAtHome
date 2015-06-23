@@ -36,7 +36,7 @@ class MiLightHome {
 	static public function getInstance(){
 		return new Milight('192.168.1.148');
 
-		
+
 		if(!self::$milight){
 			self::$milight = new Milight('192.168.1.148');
 		}
@@ -47,6 +47,19 @@ class MiLightHome {
 
 
 function isNicoAtHome(){
+	// Return true or false from cache:
+	$redis = RedisConn::getConnection();
+	$ip = '192.168.1.141';
+	$status = $redis->hGet('deviceStatus', $ip.'.status');
+	$expire = $redis->hGet('deviceStatus', $ip.'.expire');
+
+	if($expire + 60 > time()){
+		return $status == 'online';
+	}
+
 	$ping = new \JJG\Ping('192.168.1.141', 1);
-	return $ping->ping() ? true : false;
+	$return = $ping->ping() ? true : false;
+	$status = $return ? 'online' : 'offline';
+	$redis->hMSet('deviceStatus', array($ip.'.status' => $status, $ip.'.expire' => time()));
+	return $return;
 }
