@@ -9,7 +9,7 @@ class HousePrograms {
 
 	public function kitchenOnAtNight(){
 		// Ping my phone.
-		if(!isNicoAtHome()){
+		if(isNicoAtHome()){
 			// Turn on Office light
 			$milight = MiLightHome::getInstance();
 			$milight->setRgbwActiveGroup(self::GROUP_KITCHEN);
@@ -17,7 +17,7 @@ class HousePrograms {
 		}
 	}
 
-	public function kitchenOffAtNight(){
+	public function kitchenOffAtMorning(){
 		$milight = MiLightHome::getInstance();
 		$milight->setRgbwActiveGroup(self::GROUP_KITCHEN);
 		$milight->rgbwSetColorToViolet();
@@ -49,7 +49,6 @@ if(!isset($argv[1])){
 $method = $argv[1];
 
 $instance = new HousePrograms();
-
 
 if(!method_exists($instance, $method)){
 	echo "Program does not exist.".PHP_EOL;
