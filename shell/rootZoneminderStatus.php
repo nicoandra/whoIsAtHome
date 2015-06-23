@@ -6,25 +6,23 @@ include('pid.php');
 $redis = new Redis();
 $redis->connect('127.0.0.1');
 
+$message = $redis->hGet('zoneminder','newStatus');
 
-function handleMessages($redis, $channel, $message){
-	list($command, $hash) = explode('-',$message.'-');
+list($command, $hash) = explode('-',$message.'-');
 
-	if(!strlen($hash)){
-		echo "Invalid hash for command {$command}\n";
-		return;
-	}
-
-	switch($command){
-		case "NadieEnCasa":
-			setNadieEnCasa();
-			break ;
-		case "Periferia":
-			setPeriferia();
-			break;
-	}
+if(!strlen($hash)){
+	echo "Invalid hash for command {$command}\n";
+	return;
 }
 
+switch($command){
+	case "NadieEnCasa":
+		setNadieEnCasa();
+		break ;
+	case "Periferia":
+		setPeriferia();
+		break;
+}
 
 function setNadieEnCasa(){
 	$redis = new Redis();
@@ -34,7 +32,6 @@ function setNadieEnCasa(){
 		echo "Status is NadieEnCasa, not changing}\n";
 		return;
 	}
-
 
 	system("/usr/bin/zmpkg.pl NadieEnCasa");
 	$redis->hset('zoneminder', 'status', 'NadieEnCasa');
@@ -53,5 +50,3 @@ function setPeriferia(){
 	system("/usr/bin/zmpkg.pl Periferia");
 	$redis->hset('zoneminder', 'status', 'Periferia');
 }
-
-$redis->subscribe(array('zoneminder.status'), 'handleMessages');
