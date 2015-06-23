@@ -56,4 +56,3 @@ if(!method_exists($instance, $method)){
 }
 
 $instance->$method();
-
