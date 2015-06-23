@@ -23,7 +23,8 @@ class RedisConn {
 	static public function getConnection(){
 		if(!self::$connection){
 			$config = Config::$config['redis'];
-			self::$connection = new Redis($config['host'], $config['port']);
+			self::$connection = new Redis()
+			self::$connection->connect($config['host'], $config['port']);
 		}
 		return self::$connection;
 	}
