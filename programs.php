@@ -9,7 +9,7 @@ class HousePrograms {
 
 	public function kitchenOnAtNight(){
 		// Ping my phone.
-		if(isNicoAtHome()){
+		if(!isNicoAtHome()){
 			// Turn on Office light
 			$milight = MiLightHome::getInstance();
 			$milight->setRgbwActiveGroup(self::GROUP_KITCHEN);

@@ -1,6 +1,6 @@
 <?php
-require_once('inc/milight.php');
-require_once('inc/ping.php');
+require_once('milight.php');
+require_once('ping.php');
 
 class Config {
 	static public $config;
