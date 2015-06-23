@@ -7,6 +7,7 @@ $redis = new Redis();
 $redis->connect('127.0.0.1');
 
 $message = $redis->hGet('zoneminder','newStatus');
+$redis->hdel('zoneminder', 'newStatus');
 
 list($command, $hash) = explode('-',$message.'-');
 
@@ -29,7 +30,7 @@ function setNadieEnCasa(){
 	$redis->connect('127.0.0.1');
 
 	if($redis->hGet('zoneminder', 'status') == 'NadieEnCasa'){
-		echo "Status is NadieEnCasa, not changing}\n";
+		echo "Status is NadieEnCasa, not changing\n";
 		return;
 	}
 
@@ -42,7 +43,7 @@ function setPeriferia(){
 	$redis->connect('127.0.0.1');
 
 	if($redis->hGet('zoneminder', 'status') == 'Periferia'){
-		echo "Status is Periferia, not changing}\n";
+		echo "Status is Periferia, not changing\n";
 		return;
 	}
 
