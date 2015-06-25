@@ -64,3 +64,21 @@ function isNicoAtHome(){
 	$redis->hMSet('deviceStatus', array($ip.'.status' => $status, $ip.'.expire' => time()));
 	return $return;
 }
+
+
+
+function makeNicoOutForHours($hours){
+	$hours = (int) $hours;
+        $redis = RedisConn::getConnection();
+        $ip = '192.168.1.141';
+        $redis->hMSet('deviceStatus', array($ip.'.status' => 'offline', $ip.'.expire' => time() + 3600 * $hours));
+}
+
+function makeNicoInForHours($hours){
+        $hours = (int) $hours;
+        $redis = RedisConn::getConnection();
+        $ip = '192.168.1.141';
+        $redis->hMSet('deviceStatus', array($ip.'.status' => 'online', $ip.'.expire' => time() + 3600 * $hours));
+}
+
+

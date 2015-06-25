@@ -37,6 +37,22 @@ class HousePrograms {
 
 	}
 
+
+	public function kitchenBrightness($percent){
+		$percent = min($percent, 100);
+		$percent = max(0, $percent);
+		$milight = MiLightHome::getInstance();
+		$milight->rgbwBrightnessPercent($percent, self::GROUP_KITCHEN);
+	}
+
+        public function officeBrightness($percent){
+                $percent = min($percent, 100);
+                $percent = max(0, $percent);
+                $milight = MiLightHome::getInstance();
+                $milight->rgbwBrightnessPercent($percent, self::GROUP_OFFICE);
+        }
+
+
 	public function kitchenOnAtNight(){
 		// Ping my phone.
 		if(!isNicoAtHome()){
@@ -80,9 +96,26 @@ class HousePrograms {
 	}
 
 
-        public function kitchenOff(){
+	public function kitchenDisco(){
+		$milight = MiLightHome::getInstance();
+		$milight->setRgbwActiveGroup(self::GROUP_KITCHEN);
+		$milight->rgbwDiscoMode();
+	}
+
+        public function officeDisco(){
                 $milight = MiLightHome::getInstance();
-                $milight->rgbwGroup2Off();
+                $milight->setRgbwActiveGroup(self::GROUP_OFFICE);
+                $milight->rgbwDiscoMode();
+        }
+
+	public function allDisco(){
+		$this->kitchenDisco();
+		$this->officeDisco();
+	}
+
+        public function kitchenOff(){
+		$milight = MiLightHome::getInstance();
+		$milight->rgbwGroup2Off();
         }
 
 
@@ -126,6 +159,17 @@ class HousePrograms {
         }
 
 
+	public function kitchenPink(){
+		$milight = MiLightHome::getInstance();
+		$milight->setRgbwActiveGroup(self::GROUP_KITCHEN);
+		$milight->rgbwSetColorToPink();
+	}
+
+        public function officePink(){
+                $milight = MiLightHome::getInstance();
+                $milight->setRgbwActiveGroup(self::GROUP_OFFICE);
+                $milight->rgbwSetColorToPink();
+        }
 
 	public function setColorInPlace($group, $color){
 		$milight = MiLightHome::getInstance();
@@ -136,9 +180,120 @@ class HousePrograms {
 				str_pad(dechex($color[2]), 2, '0');
 
 		$milight->rgbwSetColorHexString($string);
-		
 
 	}
+
+	public function camerasOff($hours){
+		makeNicoInForHours($hours);
+	}
+
+	public function camerasOn($hours){
+		makeNicoOutForHours($hours);
+	}
+
+	public function camerasAuto(){
+		makeNicoOutForHours(-2);
+	}
+
+
+	public function goodnight(){
+		$this->officeOff();
+		$this->kitchenOff();
+	}
+
+	public function lightsOn(){
+		$this->officeOn();
+		$this->kitchenOn();
+	}
+
+	public function allGreen(){
+		$this->officeGreen();
+		$this->kitchenGreen();
+	}
+
+	public function allRed(){
+		$this->officeRed();
+		$this->kitchenRed();
+	}
+
+	public function allBlue(){
+		$this->officeBlue();
+		$this->kitchenBlue();
+	}
+
+	public function allPink(){
+		$this->officePink();
+		$this->kitchenPink();
+	}
+
+	public function officeViolet(){
+		$milight = MiLightHome::getInstance();
+		$milight->setRgbwActiveGroup(self::GROUP_OFFICE);
+		$milight->rgbwSetColorToViolet();
+	}
+
+	public function kitchenViolet(){
+		$milight = MiLightHome::getInstance();
+		$milight->setRgbwActiveGroup(self::GROUP_KITCHEN);
+		$milight->rgbwSetColorToViolet();
+	}
+
+	public function allViolet(){
+		$this->kitchenViolet();
+		$this->officeViolet();
+	}
+
+	 public function officeYellow(){
+                $milight = MiLightHome::getInstance();
+                $milight->setRgbwActiveGroup(self::GROUP_OFFICE);
+                $milight->rgbwSetColorToYellow();
+        }
+
+        public function kitchenYellow(){
+                $milight = MiLightHome::getInstance();
+                $milight->setRgbwActiveGroup(self::GROUP_KITCHEN);
+                $milight->rgbwSetColorToYellow();
+        }
+
+	public function allYellow(){
+		$this->officeYellow();
+		$this->kitchenYellow();
+	}
+
+         public function officeOrange(){
+                $milight = MiLightHome::getInstance();
+                $milight->setRgbwActiveGroup(self::GROUP_OFFICE);
+                $milight->rgbwSetColorToOrange();
+        }
+
+        public function kitchenOrange(){
+                $milight = MiLightHome::getInstance();
+                $milight->setRgbwActiveGroup(self::GROUP_KITCHEN);
+                $milight->rgbwSetColorToOrange();
+        }
+
+        public function allOrange(){
+                $this->officeOrange();
+                $this->kitchenOrange();
+        }
+
+         public function officeLimeGreen(){
+                $milight = MiLightHome::getInstance();
+                $milight->setRgbwActiveGroup(self::GROUP_OFFICE);
+                $milight->rgbwSetColorToLimeGreen();
+        }
+
+        public function kitchenLimeGreen(){
+                $milight = MiLightHome::getInstance();
+                $milight->setRgbwActiveGroup(self::GROUP_KITCHEN);
+                $milight->rgbwSetColorToLimeGreen();
+        }
+
+        public function allLimeGreen(){
+                $this->officeLimeGreen();
+                $this->kitchenLimeGreen();
+        }
+
 
 }
 
