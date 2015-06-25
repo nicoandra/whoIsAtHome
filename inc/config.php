@@ -7,7 +7,7 @@ class Config {
 
 	static public function init(){
 		self::$config['redis'] = array(
-				'host' => 'zoneminder.home',
+				'host' => '127.0.0.1',
 				'port' => 6379,
 				'db' => 0
 		);
@@ -23,7 +23,7 @@ class RedisConn {
 	static public function getConnection(){
 		if(!self::$connection){
 			$config = Config::$config['redis'];
-			self::$connection = new Redis()
+			self::$connection = new Redis();
 			self::$connection->connect($config['host'], $config['port']);
 		}
 		return self::$connection;
@@ -54,7 +54,7 @@ function isNicoAtHome(){
 	$status = $redis->hGet('deviceStatus', $ip.'.status');
 	$expire = $redis->hGet('deviceStatus', $ip.'.expire');
 
-	if($expire + 60 > time()){
+	if($expire + 300 > time()){
 		return $status == 'online';
 	}
 
