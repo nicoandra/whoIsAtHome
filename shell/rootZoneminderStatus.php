@@ -51,3 +51,5 @@ function setPeriferia(){
 	system("/usr/bin/zmpkg.pl Periferia");
 	$redis->hset('zoneminder', 'status', 'Periferia');
 }
+
+

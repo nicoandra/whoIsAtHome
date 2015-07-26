@@ -54,7 +54,7 @@ function isNicoAtHome(){
 	$status = $redis->hGet('deviceStatus', $ip.'.status');
 	$expire = $redis->hGet('deviceStatus', $ip.'.expire');
 
-	if($expire + 300 > time()){
+	if($expire + 10 > time()){
 		return $status == 'online';
 	}
 
