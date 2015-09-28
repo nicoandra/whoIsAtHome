@@ -9,9 +9,9 @@ require_once('/home/nico/code/whoIsAtHome/programs.php');
 
 function fixColors($color){
         switch($color){
-        		case 'white':
-        			return 'on';
-        			break;
+       		case 'white':
+       			return 'on';
+       			break;
                 case 'of':
                         return 'off';
                         break;
@@ -129,7 +129,13 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 
 	}
 
-	$method = $room.ucfirst($color);
+
+	if($color === 'disco' && isset($command[2]) && ($command[2] == 'slower' || $command[2] == 'faster')){
+		// Handle Disco Speed 
+		$method = $room.ucfirst($color).ucfirst($command[2]);
+	} else {
+		$method = $room.ucfirst($color);
+	}
 
 
  
@@ -198,36 +204,33 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 				$roomName = $room['name']; ?>
 
 
-				<div class="col-md-3">
-					<div class="flip-container">
-						<div class="flipper">
-							<div class="roomLetter front front<?=$roomName;?>"><?=substr($roomName, 0, 3);?></div>
-							<div class="roomOptions back">
-									<?php foreach(array('red','green','blue','lime','yellow','orange','violet', 'pink') as $colorName){?>
-										<a class="littleColorBox" href="javascript: setCommand('<?=$roomName;?>', '<?=$colorName;?>')" style="background-color: <?=$colorName;?>">&nbsp;</a>
-									<?php } ?>
-
-									<?php if($room['hasWhite']){?>
-										<a class="littleColorBox whiteOn" href="javascript: setCommand('<?=$roomName;?>', 'white')" >&nbsp;</a>
-									<?php } ?>
-
-									<a class="littleColorBox lightOff" href="javascript: setCommand('<?=$roomName;?>', 'off')" >&nbsp;</a>
-								<input type="range" min="0" max="100" id="brightness<?=$roomName;?>" class="brightnessSlider" data-roomName="<?=$roomName;?>"/>
-							</div>
-						</div>						
-					</div>
+				<div class="col-md-6">
+						<div class="roomOptions">
+							<?php foreach(array('red','green','blue','lime','yellow','orange','violet', 'pink') as $colorName){?>
+								<a class="littleColorBox" href="javascript: setCommand('<?=$roomName;?>', '<?=$colorName;?>')" style="background-color: <?=$colorName;?>">&nbsp;</a>
+							<?php } ?>
+							<?php if($room['hasWhite']){?>
+								<a class="littleColorBox whiteOn" href="javascript: setCommand('<?=$roomName;?>', 'white')" >&nbsp;</a>
+							<?php } ?>
+							<a class="littleColorBox lightOff" href="javascript: setCommand('<?=$roomName;?>', 'off')" >&nbsp;</a>
+							<input type="range" min="0" max="100" id="brightness<?=$roomName;?>" class="brightnessSlider" data-roomName="<?=$roomName;?>"/>
+						</div>
 				</div>
 				<?php } ?>
 
 
-				<div class="col-md-3">
+				<div class="col-md-6">
 					<span class="cameraStatus" ></span>
-					<a href="javascript: setCommand('cameras off for 2 hours', '');">Off for 2 hours</a></br>
-					<a href="javascript: setCommand('cameras off for 4 hours', '');">Off for 4 hours</a></br>
-					<a href="javascript: setCommand('cameras off for 6 hours', '');">Off for 6 hours</a></br>
-					<a href="javascript: setCommand('cameras off for 8 hours', '');">Off for 8 hours</a></br>
-					<a href="javascript: setCommand('cameras auto', '');">Auto</a></br>
-				</div>				
+					Cameras <a href="javascript: setCommand('cameras off for 2 hours', '');">2</a>
+					<a href="javascript: setCommand('cameras off for 4 hours', '');">4</a>
+					<a href="javascript: setCommand('cameras off for 6 hours', '');">6</a>
+					<a href="javascript: setCommand('cameras off for 8 hours', '');">8</a>
+					<a href="javascript: setCommand('cameras auto', '');">Auto</a>
+				</div>
+
+				<div class="col-md-6">
+				</div>
+
 			</div>
 
 

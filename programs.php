@@ -99,7 +99,22 @@ class HousePrograms {
 		$milight->rgbwSetGroupToWhite(self::GROUP_OFFICE);
 	}
 
+	private function roomDiscoSpeed($roomName, $increase = 0){
+		$roomName = trim(strtolower($roomName));
+		$roomId = constant('self::GROUP_' . strtoupper($roomName));
+                $milight = MiLightHome::getInstance();
+		$milight->setRgbwActiveGroup($roomId);
 
+		return $increase === 0 ? $milight->rgbwDiscoSlower() : $milight->rgbwDiscoFaster();
+	}
+
+	public function kitchenDiscoFaster(){
+		return $this->roomDiscoSpeed('kitchen', 1);
+	}
+
+	public function kitchenDiscoSlower(){
+		return $this->roomDiscoSpeed('kitchen', 0);
+	}
 
 
     private function roomDisco($roomName){
@@ -424,6 +439,21 @@ class HousePrograms {
                 $this->kitchenLimeGreen();
         }
 
+
+	public function kitchenLightning(){
+		$this->kitchenOff();
+		$this->kitchenOn();
+		sleep(.1);
+		$this->kitchenOff();
+	}
+
+
+	public function officeLightning(){
+		$this->officeOff();
+		$this->officeOn();
+		sleep(.1);
+		$this->officeOff();
+	}
 
 }
 
