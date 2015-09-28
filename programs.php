@@ -207,6 +207,7 @@ class HousePrograms {
 		if(!isNicoAtHome()){
 			// Turn on Office light
 			$this->officeOn();
+			$this->boardsBlue();
 		}
 	}
 
@@ -327,6 +328,7 @@ class HousePrograms {
 	public function goodnight(){
 		$this->officeOff();
 		$this->kitchenOff();
+		$this->boardsOff();
 	}
 
 	public function lightsOn(){
