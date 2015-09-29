@@ -159,7 +159,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 	<head>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/united/bootstrap.min.css">
-		<meta name="viewport" content="width=device-width, maximum-scale=1"/>
+		<meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1"/>
 	</head>
 	<body>
 		<div class="container">
@@ -177,11 +177,11 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 			</div>
 
 			<div class="row">
-				<div id="result">ResHere</div>
+				<div id="result"></div>
 			</div>
 
 
-		<div class="row">
+			<div class="row">
 
 			<?php
 
@@ -205,6 +205,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 
 
 				<div class="col-md-6">
+						<?=$roomName;?>
 						<div class="roomOptions">
 							<?php foreach(array('red','green','blue','lime','yellow','orange','violet', 'pink') as $colorName){?>
 								<a class="littleColorBox" href="javascript: setCommand('<?=$roomName;?>', '<?=$colorName;?>')" style="background-color: <?=$colorName;?>">&nbsp;</a>
@@ -218,19 +219,21 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 				</div>
 				<?php } ?>
 
+			</div>
 
+			<div class="row">
 				<div class="col-md-6">
-					<span class="cameraStatus" ></span>
-					Cameras <a href="javascript: setCommand('cameras off for 2 hours', '');">2</a>
-					<a href="javascript: setCommand('cameras off for 4 hours', '');">4</a>
-					<a href="javascript: setCommand('cameras off for 6 hours', '');">6</a>
-					<a href="javascript: setCommand('cameras off for 8 hours', '');">8</a>
+					Cameras <span class="cameraStatus" ></span> </br>
+					Off for <a href="javascript: setCommand('cameras off for 2 hours', '');">2 hours</a>
+					<a href="javascript: setCommand('cameras off for 4 hours', '');">4 hours</a>
+					<a href="javascript: setCommand('cameras off for 6 hours', '');">6 hours</a>
+					<a href="javascript: setCommand('cameras off for 8 hours', '');">8 hours</a>
 					<a href="javascript: setCommand('cameras auto', '');">Auto</a>
 				</div>
-
 				<div class="col-md-6">
+					All <a href="javascript: setCommand('lights on','');">On </a> <a href="javascript: setCommand('goodnight', '');"> Off</a>
+					
 				</div>
-
 			</div>
 
 
@@ -241,6 +244,10 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 	display: inline-block;
 	width: 30px;
 	height: 30px;
+}
+
+.roomOptions a.littleColorBox.lightOff {
+	background-color: black;
 }
 
 .flip-container {
@@ -303,41 +310,8 @@ background-image: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, 
 
 
 
+
 		<div class="row">
-
-
-			<?php 
-			$rooms = array(
-				/*array('name' => 'Kitchen', 'images' => array('http://ct5130.myfoscam.org/cgi-bin/nph-zms?mode=jpeg&monitor=7&scale=50&maxfps=5&connkey=1851123132&rand='.time())),
-				array('name' => 'Office', 'images' => array('http://ct5130.myfoscam.org/cgi-bin/nph-zms?mode=jpeg&monitor=6&scale=50&maxfps=5&connkey=305362&rand='.time())),
-				*/
-			);
-
-			foreach($rooms as $room){
-				$roomName = $room['name']; ?>
-				<div class="col-md-4 bg-primary">
-					<b><?=ucfirst($roomName);?></b></br>
-
-					<?php foreach($room['images'] as $image){ ?>
-						<img src="<?=$image;?>" />
-					<?php } ?>
-
-					<a href="javascript: setCommand('<?=$roomName;?> on')">White</a> <a href="javascript: setCommand('<?=$roomName;?> off');">Off</a>
-					
-					<div class="bg-info">
-						<a href="javascript: setCommand('<?=$roomName;?> on')" style="color: <?=$colorName;?>">On</a>
-						<a href="javascript: setCommand('<?=$roomName;?> off')" style="color: <?=$colorName;?>">Off</a>
-						<?php foreach(array('red','green','blue','lime','yellow','orange','violet') as $colorName){?>
-							<a href="javascript: setCommand('<?=$roomName;?> <?=$colorName;?>')" style="color: <?=$colorName;?>"><?=ucfirst($colorName);?></a>
-						<?php } ?>
-						</br>
-						Brightness
-						<?php for($i = 0; $i <= 100 ; $i = $i+10){ ?>
-							<a href="javascript: setCommand('<?=$roomName;?> brightness <?=$i;?>')"><?=$i;?></a>&nbsp;
-						<?php } ?>
-					</div>
-				</div>
-			<?php } ?>
 
 			<div class="col-md-4">
 				<ul id="commandHistory">
@@ -446,6 +420,8 @@ background-image: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, 
 				});
 
 				updatePanel();
+
+				refresh=setInterval(function(){updatePanel();}, 5000);
 			});
 
 
@@ -460,8 +436,11 @@ background-image: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, 
 					updateRoomBox('Office', data.response.office.color, data.response.office.brightness);
 					updateRoomBox('Boards', data.response.boards.color, data.response.boards.brightness);
 
-
-					jQuery('.cameraStatus').text("Status: " + data.response.zoneminder.status + "\nNewStatus:" + data.response.zoneminder.newStatus);
+					cameraStatusText = data.response.zoneminder.status;
+					if(data.response.zoneminder.status+'-Hash' != data.response.zoneminder.newStatus){
+						cameraStatusText += ' (Switching to '+data.response.zoneminder.newStatus+')';
+					}
+					jQuery('.cameraStatus').text(cameraStatusText);
 					
 				
 				});
@@ -469,12 +448,13 @@ background-image: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, 
 			}
 
 			function updateRoomBox(roomName, colorName, brightness){
-				console.log('me llamo con nom' + roomName + ' color ' + colorName + ' y brillo ' + brightness);
+				// console.log('me llamo con nom' + roomName + ' color ' + colorName + ' y brillo ' + brightness);
 				jQuery('div.front'+	roomName).css('background-color', colorName);
+				
 				jQuery('#brightness'+roomName).val(brightness);
 			}
 
-
+			
 
 		</script>
 
