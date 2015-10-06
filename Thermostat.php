@@ -46,6 +46,11 @@ class Thermostat {
 		return $this->desiredTemperature;
 		return $this->callApi('/getDesiredTemperature');
 	}
+
+	public function getStatus(){
+		return $this->heaterStatus;
+	}
+
 }
 
 
