@@ -252,7 +252,13 @@ $thermostats = array(
 
 				<?php foreach($thermostats as $roomName => $thermostat){ ?>
 					<div class="col-md-4">
-						<h4><?=$thermostat->getName();?></h4>
+						<h4>
+							<?=$thermostat->getName();?> 
+							<?php if($thermostat->getStatus()){ ?>
+								<span class="glyphicon glyphicon glyphicon-ok" aria-hidden="true"></span>
+							<?php } ?>
+						</h4>
+
 						Current: <span><?=$thermostat->getCurrentTemperature();?></span>
 						Desired: <span><?=$thermostat->getCurrentTemperature();?></span>
 					</div>
