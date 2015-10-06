@@ -130,6 +130,14 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 	}
 
 
+	if(isset($command[3]) && $command[3] == 'degrees' || isset($command[4]) && $command[4] == 'degrees'){
+		// Setting temperature
+		$room = sizeof($command) > 3 ? array_shift($command) : '';
+		$room .= $command[0];
+		$temperature = $command[1];
+		
+	}
+
 	if($color === 'disco' && isset($command[2]) && ($command[2] == 'slower' || $command[2] == 'faster')){
 		// Handle Disco Speed 
 		$method = $room.ucfirst($color).ucfirst($command[2]);
@@ -260,7 +268,7 @@ $thermostats = array(
 
 						Current: <span class="currentTemp <?=$roomName;?>" ><?=$thermostat->getCurrentTemperature();?></span>
 						Desired: <span class="desiredTemp <?=$roomName;?>"><?=$thermostat->getCurrentTemperature();?></span>
-						<input type="range" min="5" max="30" id="heater<?=$roomName;?>" class="heaterSlider" data-roomName="<?=$roomName;?>"/>
+						<input type="range" min="5" max="30" step=".5" id="heater<?=$roomName;?>" class="heaterSlider" data-roomName="<?=$roomName;?>"/>
 					</div>
 				<?php } ?>
 				
