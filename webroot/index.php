@@ -252,7 +252,7 @@ $thermostats = array(
 
 				<?foreach($thermostats as $thermostat){?>
 					<div class="col-md-4">
-						<h4><?=$thermostat->getName();=></h4>
+						<h4><?=$thermostat->getName();?></h4>
 						Current: <span><?=$thermostat->getCurrentTemperature();?></span>
 						Desired: <span><?=$thermostat->getCurrentTemperature();?></span>
 					</div>
