@@ -160,26 +160,20 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/united/bootstrap.min.css">
 		<meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1"/>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<title>HomePwn</title>
 	</head>
 	<body>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-9">
-					<form method="POST" id="form">
-						<input type="text" name="command" id="command">
-						<button onclick="javascript: doAjaxCall(); return false;">Ajax</button>
-						<button onclick="javascript: listen(); return false;">Listen</button>
-					</form>
-				</div>
-				<div class="col-md-3">
-					<input type="checkbox" id="speech" value="speech">
-				</div>
-			</div>
 
+	<div class="page-header">
+		<h1>1961</h1>
+	</div>
+
+
+		<div class="container">
 			<div class="row">
 				<div id="result"></div>
 			</div>
-
 
 			<div class="row">
 
@@ -188,13 +182,11 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 			$rooms = array(
 				array(
 					'name' => 'Kitchen', 
-					// 'images' => array('http://ct5130.myfoscam.org/cgi-bin/nph-zms?mode=jpeg&monitor=7&scale=50&maxfps=5&connkey=1851123132&rand='.time()),
 					'hasWhite' => true,
 				),
 				
 				array(
 					'name' => 'Office', 
-					// 'images' => array('http://ct5130.myfoscam.org/cgi-bin/nph-zms?mode=jpeg&monitor=6&scale=50&maxfps=5&connkey=305362&rand='.time()),
 					'hasWhite' => true,
 				),
 				
@@ -205,14 +197,15 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 
 
 				<div class="col-md-6">
-						<?=$roomName;?>
-						<div class="roomOptions">
+						<h3><?=$roomName;?></h3>
+						<div class="roomOptions <?=$roomName;?>">
 							<?php foreach(array('red','green','blue','lime','yellow','orange','violet', 'pink') as $colorName){?>
-								<a class="littleColorBox" href="javascript: setCommand('<?=$roomName;?>', '<?=$colorName;?>')" style="background-color: <?=$colorName;?>">&nbsp;</a>
+								<a class="littleColorBox box<?=$colorName;?>" href="javascript: setCommand('<?=$roomName;?>', '<?=$colorName;?>')" style="background-color: <?=$colorName;?>">&nbsp;</a>
 							<?php } ?>
 							<?php if($room['hasWhite']){?>
 								<a class="littleColorBox whiteOn" href="javascript: setCommand('<?=$roomName;?>', 'white')" >&nbsp;</a>
 							<?php } ?>
+							<a class="littleColorBox discoOn initial" href="javascript: setCommand('<?=$roomName;?>', 'disco')" >D</a>
 							<a class="littleColorBox lightOff" href="javascript: setCommand('<?=$roomName;?>', 'off')" >&nbsp;</a>
 							<input type="range" min="0" max="100" id="brightness<?=$roomName;?>" class="brightnessSlider" data-roomName="<?=$roomName;?>"/>
 						</div>
@@ -221,9 +214,10 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 
 			</div>
 
+
 			<div class="row">
 				<div class="col-md-6">
-					Cameras <span class="cameraStatus" ></span> </br>
+					<h3>Cameras <span class="cameraStatus" ></span></h3>
 					Off for <a href="javascript: setCommand('cameras off for 2 hours', '');">2 hours</a>
 					<a href="javascript: setCommand('cameras off for 4 hours', '');">4 hours</a>
 					<a href="javascript: setCommand('cameras off for 6 hours', '');">6 hours</a>
@@ -237,6 +231,21 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 			</div>
 
 
+			<div class="row">
+				<h3>Debug</h3>
+				<div class="col-md-9">
+					<form method="POST" id="form">
+						<input type="text" name="command" id="command">
+						<button onclick="javascript: doAjaxCall(); return false;">Ajax</button>
+						<button onclick="javascript: listen(); return false;">Listen</button>
+					</form>
+				</div>
+				<div class="col-md-3">
+					<input type="checkbox" id="speech" value="speech">
+				</div>
+
+			</div><!-- End div .row -->
+
 
 
 <style type="text/css">
@@ -249,6 +258,14 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 .roomOptions a.littleColorBox.lightOff {
 	background-color: black;
 }
+
+.roomOptions a.littleColorBox.initial {
+	text-align: center;
+	font-size: 16pt;
+	background-color: white;
+
+}
+
 
 .flip-container {
 	perspective: 1000;
@@ -293,25 +310,28 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 
 
 .whiteOn {
-
-background-size: 16px 16px;
-background-color: white;
-background-image: -webkit-linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 255, 255, .5)),
-                  -webkit-linear-gradient(0deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
-background-image: -moz-linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)),
-                  -moz-linear-gradient(0deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
-background-image: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)),
-                  linear-gradient(90deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
--pie-background: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)) 0 0 / 50px 50px,
-                 linear-gradient(90deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)) 0 0 / 50px 50px white;
+	background-size: 16px 16px;
+	background-color: white;
+	background-image: -webkit-linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 255, 255, .5)),
+        	          -webkit-linear-gradient(0deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
+	background-image: -moz-linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)),
+        	          -moz-linear-gradient(0deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
+	background-image: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)),
+        	          linear-gradient(90deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
+	-pie-background: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)) 0 0 / 50px 50px,
+        	         linear-gradient(90deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)) 0 0 / 50px 50px white;
 }
+
+
+body {
+	background-color: #191919;
+	color: #EEE;
+}
+
 </style>
-
-
-
-
-
 		<div class="row">
+
+			
 
 			<div class="col-md-4">
 				<ul id="commandHistory">
@@ -450,7 +470,9 @@ background-image: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, 
 			function updateRoomBox(roomName, colorName, brightness){
 				// console.log('me llamo con nom' + roomName + ' color ' + colorName + ' y brillo ' + brightness);
 				jQuery('div.front'+	roomName).css('background-color', colorName);
-				
+				jQuery('div.roomOptions.'+roomName+' a.littleColorBox').css('border','none').css('margin', '3px');
+				jQuery('div.roomOptions.'+roomName+' a.littleColorBox.box'+colorName).css('border', '3px solid white').css('margin','none');
+				console.log('div.roomOptions.'+roomName+' a.littleColorBox.box'+colorName);
 				jQuery('#brightness'+roomName).val(brightness);
 			}
 
