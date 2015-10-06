@@ -261,6 +261,7 @@ $thermostats = array(
 
 						Current: <span><?=$thermostat->getCurrentTemperature();?></span>
 						Desired: <span><?=$thermostat->getCurrentTemperature();?></span>
+						<input type="range" min="5" max="30" id="heater<?=$roomName;?>" class="heaterSlider" data-roomName="<?=$roomName;?>"/>
 					</div>
 				<?php } ?>
 				
