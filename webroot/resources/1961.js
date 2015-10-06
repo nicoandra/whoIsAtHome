@@ -91,6 +91,12 @@ jQuery(document).ready(function(){
 		setCommand(roomName + " " + value + ' degrees', '');
 	});
 
+	jQuery(".heaterSlider").on('input change', function(e,a){
+		roomName = $(this).data().roomname;
+		value = $(this).val();
+		jQuery('span.desiredTemp.'+roomName).text(value);
+	});
+
 
 	updatePanel();
 
