@@ -1,0 +1,80 @@
+.roomOptions a.littleColorBox {
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+}
+
+.roomOptions a.littleColorBox.lightOff {
+	background-color: black;
+}
+
+.roomOptions a.littleColorBox.initial {
+	text-align: center;
+	font-size: 16pt;
+	background-color: white;
+
+}
+
+
+.flip-container {
+	perspective: 1000;
+	border: 1px solid black;
+}
+
+.flip-container:hover .flipper, .flip-container.hover .flipper {
+	transform: rotateY(180deg);
+}
+
+.flip-container, .front, .back {
+	width: 160px;
+	height: 160px;
+}
+
+/* flip speed goes here */
+.flipper {
+	transition: 0.6s;
+	transform-style: preserve-3d;
+	position: relative;
+}
+
+/* hide back of pane during swap */
+.front, .back {
+	backface-visibility: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+/* front pane, placed above back */
+.front {
+	z-index: 2;
+	/* for firefox 31 */
+	transform: rotateY(0deg);
+}
+
+/* back, initially hidden pane */
+.back {
+	transform: rotateY(180deg);
+}
+
+
+.whiteOn {
+	background-size: 16px 16px;
+	background-color: white;
+	background-image: -webkit-linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 255, 255, .5)),
+        	          -webkit-linear-gradient(0deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
+	background-image: -moz-linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)),
+        	          -moz-linear-gradient(0deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
+	background-image: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)),
+        	          linear-gradient(90deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
+	-pie-background: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)) 0 0 / 50px 50px,
+        	         linear-gradient(90deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)) 0 0 / 50px 50px white;
+}
+
+
+body {
+	background-color: #191919;
+	color: #EEE;
+}
+
+

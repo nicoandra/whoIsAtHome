@@ -159,8 +159,10 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 	<head>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/united/bootstrap.min.css">
+		<link rel="stylesheet" href="/resources/style.css">
 		<meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1"/>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<script src="/resources/1961.js"></script>
 		<title>HomePwn</title>
 	</head>
 	<body>
@@ -232,7 +234,9 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 
 
 			<div class="row">
+				<h3>Temperature</h3>
 				<img src="/plot/cities">
+				
 			</div>
 
 
@@ -251,244 +255,30 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 
 			</div><!-- End div .row -->
 
-
-
-<style type="text/css">
-.roomOptions a.littleColorBox {
-	display: inline-block;
-	width: 30px;
-	height: 30px;
-}
-
-.roomOptions a.littleColorBox.lightOff {
-	background-color: black;
-}
-
-.roomOptions a.littleColorBox.initial {
-	text-align: center;
-	font-size: 16pt;
-	background-color: white;
-
-}
-
-
-.flip-container {
-	perspective: 1000;
-	border: 1px solid black;
-}
-
-.flip-container:hover .flipper, .flip-container.hover .flipper {
-	transform: rotateY(180deg);
-}
-
-.flip-container, .front, .back {
-	width: 160px;
-	height: 160px;
-}
-
-/* flip speed goes here */
-.flipper {
-	transition: 0.6s;
-	transform-style: preserve-3d;
-	position: relative;
-}
-
-/* hide back of pane during swap */
-.front, .back {
-	backface-visibility: hidden;
-	position: absolute;
-	top: 0;
-	left: 0;
-}
-
-/* front pane, placed above back */
-.front {
-	z-index: 2;
-	/* for firefox 31 */
-	transform: rotateY(0deg);
-}
-
-/* back, initially hidden pane */
-.back {
-	transform: rotateY(180deg);
-}
-
-
-.whiteOn {
-	background-size: 16px 16px;
-	background-color: white;
-	background-image: -webkit-linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 255, 255, .5)),
-        	          -webkit-linear-gradient(0deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
-	background-image: -moz-linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)),
-        	          -moz-linear-gradient(0deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
-	background-image: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)),
-        	          linear-gradient(90deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5));
-	-pie-background: linear-gradient(transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)) 0 0 / 50px 50px,
-        	         linear-gradient(90deg, transparent 50%, rgba(255, 250, 205, .5) 50%, rgba(255, 0, 0, .5)) 0 0 / 50px 50px white;
-}
-
-
-body {
-	background-color: #191919;
-	color: #EEE;
-}
-
-</style>
-		<div class="row">
+			<div class="row">
 
 			
 
-			<div class="col-md-4">
-				<ul id="commandHistory">
-					<?php 
-						$commands = array("office on", "office off", "kitchen on", "kitchen off", "all disco", "goodnight");
-						foreach($commands as $command){ ?>
-							<li onclick="javascript: jQuery('#command').val('<?=$command;?>'); doAjaxCall();"><?=$command;?></li>
+				<div class="col-md-4">
+					<ul id="commandHistory">
 						<?php 
-						} 
-					?>
-				</ul>
+							$commands = array("office on", "office off", "kitchen on", "kitchen off", "all disco", "goodnight");
+							foreach($commands as $command){ ?>
+								<li onclick="javascript: jQuery('#command').val('<?=$command;?>'); doAjaxCall();"><?=$command;?></li>
+							<?php 
+							} 
+						?>
+					</ul>
+				</div>
 			</div>
-		</div>
 
 		<script type="text/javascript">
-
-
-
-			function setCommand(roomName, colorName){
-
-				if(colorName != ''){
-					jQuery('div.front'+	roomName).css('background-color', colorName);
-					commandString = roomName+' '+colorName;
-				} else {
-					commandString = roomName;
-				}
-
-				jQuery('#command').val(commandString);
-				doAjaxCall();
-
-				
-			}
-
-			function listen(){
-				var recognition = new webkitSpeechRecognition();
-				recognition.lang = "en";
-				recognition.onresult = function(event) { 
-					recognition.stop();
-					console.log(event.results[0]);
-					command = event.results[0][0].transcript;
-					jQuery('#command').val(command);
-					// jQuery('#result').html("Sending command " + command);
-					doAjaxCall();
-					listen();
-				}
-				recognition.start();
-			}
-
-			function doAjaxCall(){
-				jQuery.post('index.php', jQuery('#form').serialize(), function(data){
-					// console.log(data); 
-					result = jQuery('#result');
-					result.text(data.message);
-
-					if(data.status == 'OK'){
-						result.addClass('bg-success').removeClass('bg-warning');
-						commandText = jQuery("#command").val();
-						add = true;
-						jQuery('#commandHistory li:contains('+commandText+')').each(function() {
-							if ($(this).text() === commandText) {
-								add = false;
-							}
-						});
-
-						if(add){
-							jQuery('#commandHistory').prepend(
-								$("<li>").text(commandText).click(function(){jQuery("#command").val(this.innerText); doAjaxCall(); })
-							);
-						}
-					} else {
-						result.addClass('bg-warning').removeClass('bg-success');
-					}
-
-
-					if(data.speech.length > 0 && $("#speech").prop("checked")){
-						var msg = new SpeechSynthesisUtterance(data.speech);
-						window.speechSynthesis.speak(msg);
-					}
-
-					updatePanel();
-				});
-			}
-
-			jQuery(document).ready(function(){
-				
-				// Enable microphone 
-				listen();
-
-				// Remove iframes
-				setTimeout(
-					function(){
-						// jQuery("#monitors").attr('src', "http://ct5130.myfoscam.org/index.php?view=montage&group=0");
-						jQuery("#monitors").remove();
-					}, 2);
-
-				// Enable Sliders
-				jQuery(".brightnessSlider").change(function(e,a){
-					roomName = $(this).data().roomname;
-					value = $(this).val();
-					setCommand(roomName + " brightness " + value + ' percent', '');
-
-					/*.attr('data-roomName');
-					value = e.currentTarget.value;
-					setCommand(roomName + " brighthness " + value + 'percent');
-					console.log(e);*/
-				});
-
-				updatePanel();
-
-				refresh=setInterval(function(){updatePanel();}, 5000);
-			});
-
-
-
-			function updatePanel(){
-				jQuery.post('index.php', {'command' : 'getstatus'}, function(data){
-					// response = data.response;
-					console.log(data, data.response);
-					// console.log('ererere');
-					
-					updateRoomBox('Kitchen', data.response.kitchen.color, data.response.kitchen.brightness);
-					updateRoomBox('Office', data.response.office.color, data.response.office.brightness);
-					updateRoomBox('Boards', data.response.boards.color, data.response.boards.brightness);
-
-					cameraStatusText = data.response.zoneminder.status;
-					if(data.response.zoneminder.status+'-Hash' != data.response.zoneminder.newStatus){
-						cameraStatusText += ' (Switching to '+data.response.zoneminder.newStatus+')';
-					}
-					jQuery('.cameraStatus').text(cameraStatusText);
-					
-				
-				});
-
-			}
-
-			function updateRoomBox(roomName, colorName, brightness){
-				// console.log('me llamo con nom' + roomName + ' color ' + colorName + ' y brillo ' + brightness);
-				jQuery('div.front'+	roomName).css('background-color', colorName);
-				jQuery('div.roomOptions.'+roomName+' a.littleColorBox').css('border','none').css('margin', '3px');
-				jQuery('div.roomOptions.'+roomName+' a.littleColorBox.box'+colorName).css('border', '3px solid white').css('margin','none');
-				console.log('div.roomOptions.'+roomName+' a.littleColorBox.box'+colorName);
-				jQuery('#brightness'+roomName).val(brightness);
-			}
-
-			
 
 		</script>
 
 
 		<div>
 			<iframe id="monitors" src="http://ct5130.myfoscam.org/peperompepepe" width="100%" height="70%"></iframe>
-
 		</div>
 		</div><!-- Class Container -->
 	</body>
