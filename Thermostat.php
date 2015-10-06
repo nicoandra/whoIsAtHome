@@ -48,6 +48,7 @@ class Thermostat {
 	}
 
 	public function getStatus(){
+		return (int) rand(0,1);
 		return $this->heaterStatus;
 	}
 
