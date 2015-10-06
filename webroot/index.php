@@ -250,13 +250,13 @@ $thermostats = array(
 					<img src="/plot/cities">
 				</div>
 
-				<?foreach($thermostats as $roomName => $thermostat){?>
+				<?php foreach($thermostats as $roomName => $thermostat){ ?>
 					<div class="col-md-4">
 						<h4><?=$thermostat->getName();?></h4>
 						Current: <span><?=$thermostat->getCurrentTemperature();?></span>
 						Desired: <span><?=$thermostat->getCurrentTemperature();?></span>
 					</div>
-				<? } ?>
+				<?php } ?>
 				
 			</div>
 
