@@ -4,8 +4,8 @@ var cities = {
 	'YYZ': {'name' : 'Toronto, Ontario, Canada'},
 };
 
-var refreshPeriod = 1000; // in milliseconds
-var sampleSize = 60; // How many samples to keep
+var refreshPeriod = 60*1000; // in milliseconds
+var sampleSize = 24*60; // How many samples to keep
 var values = {};
 var openWeatherMapAppId = 'bd537ac0061185142a6f6e69635415b0';
 var request = require('request');
@@ -20,6 +20,10 @@ var startServer = function(){
 	Object.keys(cities).forEach(function(key){
 		values[key] = [];
 	});
+
+	getValues();
+	getValues();
+
 	setInterval(getValues, refreshPeriod);
 }
 
@@ -37,8 +41,6 @@ var getValues = function(){
 			}
 		});
 	});
-
-	console.log(values);
 }
 
 var generatePlot = function(req, res){
