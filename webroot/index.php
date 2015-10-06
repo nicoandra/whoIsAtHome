@@ -5,6 +5,7 @@ ini_set('display_startup_errors',1);
 error_reporting(-1);
 
 require_once('/home/nico/code/whoIsAtHome/programs.php');
+require_once('Thermostat.php');
 
 
 function fixColors($color){
@@ -153,6 +154,16 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 	sendJsonResponse('OK', $rawCommand, $method, "Command ".$rawCommand." executed properly", $speech);
 	return;
 }
+
+
+$thermostats = array(
+	'kitchen' => new Thermostat('Kitchen', '192.168.1.201'),
+	'living' => new Thermostat('Living', '192.168.1.202'),
+	'office' => new Thermostat('Office', '192.168.1.203'),
+	'mainBedroom' => new Thermostat('Nic\'s', '192.168.1.204'),
+	'smallBedroom' => new Thermostat('Bed2', '192.168.1.205')
+);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -234,8 +245,18 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 
 
 			<div class="row">
-				<h3>Temperature</h3>
-				<img src="/plot/cities">
+				<div class="col-md-12">
+					<h3>Temperature</h3>
+					<img src="/plot/cities">
+				</div>
+
+				<?foreach($thermostats as $thermostat){?>
+					<div class="col-md-4">
+						<h4><?=$thermostat->getName();=></h4>
+						Current: <span><?=$thermostat->getCurrentTemperature();?></span>
+						Desired: <span><?=$thermostat->getCurrentTemperature();?></span>
+					</div>
+				<? } ?>
 				
 			</div>
 
@@ -271,11 +292,6 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 					</ul>
 				</div>
 			</div>
-
-		<script type="text/javascript">
-
-		</script>
-
 
 		<div>
 			<iframe id="monitors" src="http://ct5130.myfoscam.org/peperompepepe" width="100%" height="70%"></iframe>
