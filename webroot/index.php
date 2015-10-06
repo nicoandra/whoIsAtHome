@@ -251,7 +251,7 @@ $thermostats = array(
 				</div>
 
 				<?php foreach($thermostats as $roomName => $thermostat){ ?>
-					<div class="col-md-4">
+					<div class="col-md-6">
 						<h4>
 							<?=$thermostat->getName();?> 
 							<?php if($thermostat->getStatus()){ ?>
