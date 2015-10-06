@@ -232,6 +232,11 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 
 
 			<div class="row">
+				<img src="/plot/cities">
+			</div>
+
+
+			<div class="row">
 				<h3>Debug</h3>
 				<div class="col-md-9">
 					<form method="POST" id="form">
