@@ -83,6 +83,15 @@ jQuery(document).ready(function(){
 		console.log(e);*/
 	});
 
+
+	jQuery(".heaterSlider").change(function(e,a){
+		roomName = $(this).data().roomname;
+		value = $(this).val();
+		jQuery('span.desiredTemp.'+roomName).text(value);
+		setCommand(roomName + " " + value + ' degrees', '');
+	});
+
+
 	updatePanel();
 
 	refresh=setInterval(function(){updatePanel();}, 5000);

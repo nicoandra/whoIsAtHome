@@ -71,7 +71,6 @@ function getStatus(){
 		assignArrayByPath($return, $hashKey, $hashValue);
 	}
 
-
 	$return['zoneminder'] = HousePrograms::getZoneminderStatus();
 	return $return;
 }
@@ -259,8 +258,8 @@ $thermostats = array(
 							<?php } ?>
 						</h4>
 
-						Current: <span><?=$thermostat->getCurrentTemperature();?></span>
-						Desired: <span><?=$thermostat->getCurrentTemperature();?></span>
+						Current: <span class="currentTemp <?=$roomName;?>" ><?=$thermostat->getCurrentTemperature();?></span>
+						Desired: <span class="desiredTemp <?=$roomName;?>"><?=$thermostat->getCurrentTemperature();?></span>
 						<input type="range" min="5" max="30" id="heater<?=$roomName;?>" class="heaterSlider" data-roomName="<?=$roomName;?>"/>
 					</div>
 				<?php } ?>
