@@ -14,17 +14,6 @@ class Config {
 	}
 }
 
-
-class Redis {
-
-	function hSet(){}
-
-	function connect() {}
-
-
-}
-
-
 Config::init();
 
 class RedisConn {
