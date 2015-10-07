@@ -111,9 +111,9 @@ function updatePanel(){
 		console.log(data, data.response);
 		// console.log('ererere');
 		
-		updateRoomBox('Kitchen', data.response.kitchen.color, data.response.kitchen.brightness);
-		updateRoomBox('Office', data.response.office.color, data.response.office.brightness);
-		updateRoomBox('Boards', data.response.boards.color, data.response.boards.brightness);
+		updateRoomBox('Kitchen', data.response.lights.kitchen.color, data.response.lights.kitchen.brightness);
+		updateRoomBox('Office', data.response.lights.office.color, data.response.lights.office.brightness);
+		updateRoomBox('Boards', data.response.lights.boards.color, data.response.lights.boards.brightness);
 
 		cameraStatusText = data.response.zoneminder.status;
 		if(data.response.zoneminder.status+'-Hash' != data.response.zoneminder.newStatus){

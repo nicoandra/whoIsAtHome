@@ -66,11 +66,12 @@ function assignArrayByPath(&$arr, $path, $value) {
 function getStatus(){
 	$hashes = RedisConn::getConnection()->hGetAll('lights');
 
-	$return = array();
+	$lights = array();
 	foreach($hashes as $hashKey => $hashValue){
-		assignArrayByPath($return, $hashKey, $hashValue);
+		assignArrayByPath($lights, $hashKey, $hashValue);
 	}
-
+	$return['lights'] = $lights;
+	
 	$return['zoneminder'] = HousePrograms::getZoneminderStatus();
 	return $return;
 }
