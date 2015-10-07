@@ -15,7 +15,6 @@ $thermostats = array(
 	'smallBedroom' => new Thermostat('Bed2', '192.168.1.205')
 );
 
-
 function fixColors($color){
         switch($color){
        		case 'white':
