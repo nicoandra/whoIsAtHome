@@ -1,7 +1,7 @@
 
 function cityPlotter(){
 	var path = require('path');
-	
+
 	var cities = {
 		'BUE': {'name' : 'Buenos Aires, Argentina'},
 		'YUL': {'name' : 'Montreal, QC, Canada'}
@@ -24,8 +24,8 @@ function cityPlotter(){
 			values[key] = [];
 		});
 
-		for(i=0; i < 3; i++){
-			setTimeout( function(){ getValues}, 3000);
+		for(i=0; i < 10; i++){
+			setTimeout( function(){ getValues() }, 3000);
 		}
 		setInterval(getValues, refreshPeriod);
 	}
@@ -47,11 +47,13 @@ function cityPlotter(){
 	}
 
 	var generatePlot = function(req, res){
+
+		filePath = path.join(__dirname,'output.png');
 		plot({
 			data: values,
-			filename: 'output.png',
+			filename: filePath,
 			finish: function(){
-				res.sendFile(path.join(__dirname,'output.png'));
+				res.sendFile(filePath);
 			}
 		});
 	}

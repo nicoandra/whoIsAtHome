@@ -51,15 +51,127 @@ function LightPrograms(){
 		broadcast: true
 	});
 
+
+
+	this.getZonesByProgramName = function(programName){
+		
+		if(programName.match('^all lights (.*)')){
+			return {lights : [1,2,3,4] , heaters : [], partToStrip : 'all lights' , parseComplete : false}; 
+		}
+
+		if(programName.match('^all rooms (.*)')){
+			return {lights : [] , heaters : [1,2,3] , partToStrip : 'all rooms' , parseComplete : false}; 
+		}
+
+		if(programName.match('^all (.*)')){
+			return {lights : [1,2,3,4] , heaters : [1,2,3] }; 
+		}
+
+		if(programName.match('^office (.*)')){
+
+			if(programName.match('^office all (.*)')){
+				return {lights : [1,3] , heaters : [3] , partToStrip : 'office all' , parseComplete : false};
+			}
+
+			if(programName.match('^office lamp (.*)')){
+				return {lights : [1] , heaters : [], partToStrip : 'office lamp' , parseComplete : false };
+			} 
+
+			if(programName.match('^office boards (.*)')){
+				return {lights : [3] , heaters : [], partToStrip : 'office boards' , parseComplete : false };
+			} 
+			if(programName.match('^office light (.*)')){
+				return {lights : [1] , heaters : [], partToStrip : 'office light' , parseComplete : false };
+			}
+
+			expr = programName.match('^office ([0-9]+(\.5)?) degrees');
+			if(expr){
+				return {lights : [] , heaters : [3] , temperature: expr[1] , parseComplete : true};
+			}
+		}
+
+		if(programName.match('^kitchen (.*)')){
+
+			if(programName.match('^kitchen all (.*)')){
+				return {lights : [2,4] , heaters : [], partToStrip : 'kitchen all' , parseComplete : false };
+			}
+
+			if(programName.match('^kitchen lamp (.*)')){
+				return {lights : [2] , heaters : [], partToStrip : 'kitchen lamp' , parseComplete : false };
+			} 
+
+			if(programName.match('^kitchen countertop (.*)')){
+				return {lights : [4] , heaters : [], partToStrip : 'kitchen countertop'  , parseComplete : false};
+			} 
+			if(programName.match('^kitchen light (.*)')){
+				return {lights : [2] , heaters : [], partToStrip : 'kitchen light' , parseComplete : false };
+			}
+
+			expr = programName.match('^kitchen ([0-9]+(\.5)?) degrees');
+			if(expr){
+				return {lights : [] , heaters : [1] , temperature: expr[1] , parseComplete : true};
+			} 			
+		}
+
+		if(programName.match('^living (.*)')){
+
+			if(programName.match('^living all (.*)')){
+				return {lights : [1,3] , heaters : [3] , partToStrip : 'living all' , parseComplete : false};
+			}
+
+			if(programName.match('^living lamp (.*)')){
+				return {lights : [1] , heaters : [], partToStrip : 'living lamp' , parseComplete : false };
+			} 
+
+			if(programName.match('^living light (.*)')){
+				return {lights : [1] , heaters : [], partToStrip : 'living light' , parseComplete : false};
+			}
+
+			expr = programName.match('^living ([0-9]+(\.5)?) degrees');
+			if(expr){
+				return {lights : [] , heaters : [2] , temperature: expr[1], parseComplete : true};
+			}
+		}
+	}
+
+	this.getActionByProgramName = function(programName, affectedZones){
+		toParse = programName;
+		if(affectedZones.hasOwnProperty('partToStrip')){
+			toParse = programName.replace(affectedZones.partToStrip, '').trim();
+		}
+
+		affectedZones.toParse = toParse;
+
+		if(toParse === 'off' || toParse === 'on' || toParse === 'white'){
+			affectedZones.methodToRunOnZones = toParse;
+			affectedZones.parseComplete = true;
+			return affectedZones;
+		}
+
+		exp = toParse.match('([0-9]{2,3}) percent');
+		if(exp){
+			affectedZones.methodToRunOnZones = 'brightness';
+			affectedZones.parametersForMethod = exp[1];
+			affectedZones.parseComplete = true;
+			return affectedZones;
+		}
+
+		return affectedZones
+	}
+
 	this.runProgram = function(programName){
+		affectedZones = this.getZonesByProgramName(programName);
+		console.log(this.getActionByProgramName(programName, affectedZones));
 
 		/*
+			all [on / white / color / off / disco]
+			all [number] degrees
+
 			office [all] [on / white / color / off / disco]
 			office lamp [on / white / color / off / disco]
 			office boards [on / white / color / off / disco]
 			office light [on / white / color / off / disco]
 			office [number] degrees
-
 			
 			kitchen [all] [on / white / color / off / disco]
 			kitchen lamp [on / white / color / off / disco]
@@ -173,7 +285,7 @@ function receiveCommands(req, res){
 
 	var programs = new LightPrograms();
 	programs.runProgram(commandString);
-	res.send();
+	res.send("Command received.");
 }
 
 
