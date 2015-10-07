@@ -1,5 +1,7 @@
 
 function cityPlotter(){
+	var path = require('path');
+	
 	var cities = {
 		'BUE': {'name' : 'Buenos Aires, Argentina'},
 		'YUL': {'name' : 'Montreal, QC, Canada'}
