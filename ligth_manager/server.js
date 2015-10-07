@@ -1,7 +1,7 @@
 var Milight = require("milight");
 
-require('../plot/plot.js');
-cityPlotter = new cityPlotter();
+var CityPlotter = require('../plot/plot.js');
+cityPlotter = new CityPlotter();
 
 var express = require('express'),
 app = express(),
