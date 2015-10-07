@@ -22,7 +22,7 @@ function cityPlotter(){
 			values[key] = [];
 		});
 
-		for(i=0; i < sampleSize; i++){
+		for(i=0; i < 3; i++){
 			setTimeout( function(){ getValues}, 3000);
 		}
 		setInterval(getValues, refreshPeriod);
@@ -49,7 +49,7 @@ function cityPlotter(){
 			data: values,
 			filename: 'output.png',
 			finish: function(){
-				res.sendfile('output.png');
+				res.sendFile('output.png');
 			}
 		});
 	}
