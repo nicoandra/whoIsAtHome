@@ -5,7 +5,7 @@ ini_set('display_startup_errors',1);
 error_reporting(-1);
 
 require_once('/home/nico/code/whoIsAtHome/programs.php');
-require_once('Thermostat.php');
+require_once('../Thermostat.php');
 
 $thermostats = array(
 	'kitchen' => new Thermostat('Kitchen', '192.168.1.201'),
