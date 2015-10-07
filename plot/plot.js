@@ -2,8 +2,7 @@
 function cityPlotter(){
 	var cities = {
 		'BUE': {'name' : 'Buenos Aires, Argentina'},
-		'YUL': {'name' : 'Montreal, QC, Canada'},
-		'YYZ': {'name' : 'Toronto, Ontario, Canada'},
+		'YUL': {'name' : 'Montreal, QC, Canada'}
 	};
 
 	var refreshPeriod = 60*1000; // in milliseconds
@@ -23,9 +22,9 @@ function cityPlotter(){
 			values[key] = [];
 		});
 
-		getValues();
-		getValues();
-
+		for(i=0; i < sampleSize; i++){
+			setTimeout( function(){ getValues}, 3000);
+		}
 		setInterval(getValues, refreshPeriod);
 	}
 
@@ -65,10 +64,8 @@ function cityPlotter(){
 	app.get('/', generatePlot);
 	app.get('/json', json);
 	app.listen(port);
+	console.log('Plot generator is listening on 127.0.0.1:'+port+'. The avalilable methods are / and /json');
 
-	values.toString = function(){
-		return "Here are the temps for the cities" + JSON.stringify(this);
-	}
 }
 
 
