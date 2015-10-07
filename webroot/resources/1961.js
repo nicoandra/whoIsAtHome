@@ -109,7 +109,7 @@ function updatePanel(){
 	jQuery.post('index.php', {'command' : 'getstatus'}, function(data){
 		// response = data.response;
 		console.log(data, data.response);
-		// console.log('ererere');
+		
 		
 		updateRoomBox('Kitchen', data.response.lights.kitchen.color, data.response.lights.kitchen.brightness);
 		updateRoomBox('Office', data.response.lights.office.color, data.response.lights.office.brightness);
@@ -120,6 +120,15 @@ function updatePanel(){
 			cameraStatusText += ' (Switching to '+data.response.zoneminder.newStatus+')';
 		}
 		jQuery('.cameraStatus').text(cameraStatusText);
+
+
+
+		updateHeaterBox('kitchen', data.response.thermostats.kitchen.status, data.response.thermostats.kitchen.currentTemp, data.response.thermostats.kitchen.desiredTemp);
+		updateHeaterBox('living', data.response.thermostats.living.status, data.response.thermostats.living.currentTemp, data.response.thermostats.living.desiredTemp);
+		updateHeaterBox('mainBedroom', data.response.thermostats.mainBedroom.status, data.response.thermostats.mainBedroom.currentTemp, data.response.thermostats.mainBedroom.desiredTemp);
+		updateHeaterBox('office', data.response.thermostats.office.status, data.response.thermostats.office.currentTemp, data.response.thermostats.office.desiredTemp);
+		updateHeaterBox('smallBedroom', data.response.thermostats.smallBedroom.status, data.response.thermostats.smallBedroom.currentTemp, data.response.thermostats.smallBedroom.desiredTemp);
+
 		
 	
 	});
@@ -133,4 +142,18 @@ function updateRoomBox(roomName, colorName, brightness){
 	jQuery('div.roomOptions.'+roomName+' a.littleColorBox.box'+colorName).css('border', '3px solid white').css('margin','none');
 	console.log('div.roomOptions.'+roomName+' a.littleColorBox.box'+colorName);
 	jQuery('#brightness'+roomName).val(brightness);
+}
+
+function updateHeaterBox(roomName, status, currentTemperature, desiredTemperature){
+	// console.log('me llamo con nom' + roomName + ' color ' + colorName + ' y brillo ' + brightness);
+	jQuery('span.currentTemp.'+roomName).text(currentTemperature);
+	jQuery('span.desiredTemp.'+roomName).text(desiredTemperature);
+	jQuery('#heater'+roomName).val(desiredTemperature);
+
+	console.log('#heater'+roomName);
+	if(status){
+		jQuery('span.heaterstatus.'+roomName).show();
+	} else {
+		jQuery('span.heaterstatus.'+roomName).hide();
+	}
 }

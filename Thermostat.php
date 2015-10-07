@@ -4,7 +4,7 @@
 class Thermostat {
 
 	private $currentTemp = -1;
-	private $desiredTemp = -1;
+	private $desiredTemperature = -1;
 	private $heaterStatus = 0;
 	private $name = 'Anonymous';
 	private $ip = '';
@@ -43,6 +43,7 @@ class Thermostat {
 	}
 
 	public function getDesiredTemperature(){
+		return rand(15,25);
 		return $this->desiredTemperature;
 		return $this->callApi('/getDesiredTemperature');
 	}

@@ -34,9 +34,43 @@ class HousePrograms {
 		}
 		$milight->rgbwSetColorToBabyBlue();
 		sleep(.5);
-
-
 	}
+
+
+	function pinkPanther($roomName = 'office'){
+		$roomName = trim(strtolower($roomName));
+		$roomId = constant('self::GROUP_' . strtoupper($roomName));
+		$milight = MiLightHome::getInstance();
+		
+		$frequency = .1;
+		while(true){ 
+			for ($i = 0; $i < 32; ++$i) {
+				$red   = str_pad (dechex(sin($frequency*$i + 0) * 127 + 128), 2, '0', STR_PAD_LEFT);
+				$red   = str_pad (dechex(sin($frequency*$i + 0) * 127 + 128), 2, '0', STR_PAD_LEFT);
+				$green  = str_pad (dechex(sin($frequency*$i + 2) * 127 + 128), 2, '0', STR_PAD_LEFT);
+				$blue = str_pad (dechex(sin($frequency*$i + 4) * 127 + 128), 2, '0', STR_PAD_LEFT);
+				$milight->setRgbwActiveGroup(self::GROUP_OFFICE);
+				$milight->rgbwSetColorHexString($red.$green.$blue);
+				$milight->setRgbwActiveGroup(self::GROUP_BOARDS);
+				$milight->rgbwSetColorHexString($red.$green.$blue);
+
+				sleep(.1);
+   			}		
+
+			for ($i = 32; $i > 0; --$i) {
+				$red   = str_pad (dechex(sin($frequency*$i + 0) * 127 + 128), 2, '0', STR_PAD_LEFT);
+				$red   = str_pad (dechex(sin($frequency*$i + 0) * 127 + 128), 2, '0', STR_PAD_LEFT);
+				$green  = str_pad (dechex(sin($frequency*$i + 2) * 127 + 128), 2, '0', STR_PAD_LEFT);
+				$blue = str_pad (dechex(sin($frequency*$i + 4) * 127 + 128), 2, '0', STR_PAD_LEFT);
+				$milight->setRgbwActiveGroup(self::GROUP_OFFICE);
+				$milight->rgbwSetColorHexString($red.$green.$blue);
+				$milight->setRgbwActiveGroup(self::GROUP_BOARDS);
+				$milight->rgbwSetColorHexString($red.$green.$blue);
+				sleep(.1);
+   			}		   			
+   		}
+	}
+
 
 	private function roomBrightness($roomName, $percent){
 		$roomName = trim(strtolower($roomName));

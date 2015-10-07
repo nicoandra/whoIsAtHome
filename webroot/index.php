@@ -7,6 +7,14 @@ error_reporting(-1);
 require_once('/home/nico/code/whoIsAtHome/programs.php');
 require_once('Thermostat.php');
 
+$thermostats = array(
+	'kitchen' => new Thermostat('Kitchen', '192.168.1.201'),
+	'living' => new Thermostat('Living', '192.168.1.202'),
+	'office' => new Thermostat('Office', '192.168.1.203'),
+	'mainBedroom' => new Thermostat('Nic\'s', '192.168.1.204'),
+	'smallBedroom' => new Thermostat('Bed2', '192.168.1.205')
+);
+
 
 function fixColors($color){
         switch($color){
@@ -65,20 +73,29 @@ function assignArrayByPath(&$arr, $path, $value) {
 
 function getStatus(){
 	$hashes = RedisConn::getConnection()->hGetAll('lights');
+	global $thermostats;
 
 	$lights = array();
 	foreach($hashes as $hashKey => $hashValue){
 		assignArrayByPath($lights, $hashKey, $hashValue);
 	}
 	$return['lights'] = $lights;
-	
+
 	$return['zoneminder'] = HousePrograms::getZoneminderStatus();
+
+
+	foreach($thermostats as $thermostatName => $thermostat){
+		$return['thermostats'][$thermostatName] = array(
+			'status' => $thermostat->getStatus(), 
+			'currentTemp' => $thermostat->getCurrentTemperature(), 
+			'desiredTemp' => $thermostat->getDesiredTemperature()
+		);
+	}
 	return $return;
 }
 
 
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
-
 
 	$rawCommand = strtolower($_POST['command']);
 
@@ -131,11 +148,23 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 	}
 
 
-	if(isset($command[3]) && $command[3] == 'degrees' || isset($command[4]) && $command[4] == 'degrees'){
+	var_dump($command);
+
+	if(isset($command[2]) && $command[2] == 'degrees' || isset($command[3]) && $command[3] == 'degrees'){
 		// Setting temperature
 		$room = sizeof($command) > 3 ? array_shift($command) : '';
 		$room .= $command[0];
 		$temperature = $command[1];
+		
+		$thermostats[$room]->setDesiredTemperature($temperature);
+
+
+
+		return sendJsonResponse('OK', 'setting temperature', 'setting temperature',
+								"Temperature in room ".$room." set to ".$temperature." degrees", 
+								"Temperature in room ".$room." set to ".$temperature." degrees");
+
+
 		
 	}
 
@@ -163,14 +192,6 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH'])){
 	return;
 }
 
-
-$thermostats = array(
-	'kitchen' => new Thermostat('Kitchen', '192.168.1.201'),
-	'living' => new Thermostat('Living', '192.168.1.202'),
-	'office' => new Thermostat('Office', '192.168.1.203'),
-	'mainBedroom' => new Thermostat('Nic\'s', '192.168.1.204'),
-	'smallBedroom' => new Thermostat('Bed2', '192.168.1.205')
-);
 
 ?>
 <!DOCTYPE html>
@@ -262,9 +283,7 @@ $thermostats = array(
 					<div class="col-md-6">
 						<h4>
 							<?=$thermostat->getName();?> 
-							<?php if($thermostat->getStatus()){ ?>
-								<span class="glyphicon glyphicon glyphicon-ok" aria-hidden="true"></span>
-							<?php } ?>
+							<span class="glyphicon glyphicon glyphicon-ok heaterstatus <?=$roomName;?>" aria-hidden="true"></span>
 						</h4>
 
 						Current: <span class="currentTemp <?=$roomName;?>" ><?=$thermostat->getCurrentTemperature();?></span>
