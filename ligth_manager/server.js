@@ -1,7 +1,16 @@
 var Milight = require("milight");
 
+require('plot.plot.js');
+cityPlotter = new cityPlotter();
+
+var express = require('express'),
+app = express(),
+port = process.env.PORT || 3999;
+
+
 function CommandLineInterpreter(){
 	this.start = function(){
+		console.log('Command Line Interpreter: up and running!');
 		var stdin = process.openStdin();
 		var programs = new LightPrograms();
 
@@ -17,6 +26,23 @@ function CommandLineInterpreter(){
 }
 module.exports = CommandLineInterpreter;
 
+var lightStatus = {
+	boards : { color: 'FFFFFF' , brightness : 100 , status : 1 },
+	officeLamp : { color: 'FFFFFF' , brightness : 100 , status : 1 },
+	officeLight : { color: 'FFFFFF' , brightness : 100 , status : 1 },
+
+	kitchenLight : { color: 'FFFFFF' , brightness : 100 , status : 1 },
+	kitchenLamp : { color: 'FFFFFF' , brightness : 100 , status : 1 },
+	counterTop : { color: 'FFFFFF' , brightness : 100 , status : 1 },
+};
+
+var heaterStatus = {
+	office : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+	kitchen : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+	living : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+	bedroom : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+	guestroom : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+}
 
 
 function LightPrograms(){
@@ -51,32 +77,24 @@ function LightPrograms(){
 
 		*/
 
-		if(programName == 'office all white'){
-
-		}
-
-
 		if(programName == '1'){
-			this.milight.zone([1,2,3,4]).rgb("#FF0000");
-			this.milight.zone([1,2,3,4]).rgb("#00FF00");
-			this.milight.zone([1,2,3,4]).rgb("#0000FF");
+			console.log("START 1");
 
 			officeRoom.white();
 			kitchenRoom.white();
+			console.log("END 1");
 
 			// milight.zone([2,3]).white(50);
-			console.log("PROGRAM 1");
 		}
 
 		if(programName == '2'){
-			this.milight.zone(1).rgb("#00FF00");
-			this.milight.zone([1,2,3,4]).white(0);
-			this.milight.zone(2).rgb("#AAFFDD");
-			officeRoom.white();
-			kitchenRoom.white();
+			console.log("START 2");
+
+			officeRoom.off();
+			kitchenRoom.off();
 
 
-			console.log("PROGRAM 2");
+			console.log("END 2");
 		}
 
 
@@ -92,6 +110,7 @@ module.exports = LightPrograms;
 function RoomLights(){
 	this.name = '';
 	this.milightInstances = [];
+	this.milightZones = [];
 	this.program = '';
 	this.color = '';
 	this.brightness = 100;
@@ -100,13 +119,30 @@ function RoomLights(){
 		this.milightInstances.push(instance);
 	}
 
-	this.white = function(){
-		this.milightInstances.forEach(function(key){
-			this.milightInstances[key].on();
-		});
+	this.addMiLightZone = function(zone){
+		this.milightZones.push(zone);
 	}
 
-	this.color = function(rgbColor){
+
+
+	this.white = function(){
+		boardsMilight = new Milight({
+			host: '192.168.1.148',
+			broadcast: true
+		}).zone(this.milightZones).white();
+
+		/*
+		this.milightInstances.forEach(function(instance){
+			instance.white(function(){return true;});
+		});*/
+	}
+
+	this.off = function(rgbColor){
+
+		boardsMilight = new Milight({
+			host: '192.168.1.148',
+			broadcast: true
+		}).zone(this.milightZones).off();
 
 	}
 
@@ -116,33 +152,31 @@ module.exports = RoomLights;
 
 // Build Office Room
 var officeRoom = new RoomLights();
-boardsMilight = new Milight({
-	host: '192.168.1.148',
-	broadcast: true
-}).zone(3);
 
-officeLampMilight  = new Milight({
-	host: '192.168.1.148',
-	broadcast: true
-}).zone(1);
-
-officeRoom.addMiLightInstance(boardsMilight);
-officeRoom.addMiLightInstance(officeLampMilight);
+officeRoom.addMiLightZone(1);
+officeRoom.addMiLightZone(3);
 
 
 
 // Build Kitchen Room
 var kitchenRoom = new RoomLights();
-kitchenMilight = new Milight({
-	host: '192.168.1.148',
-	broadcast: true
-}).zone(2);
-
-
-kitchenRoom.addMiLightInstance(kitchenMilight);
+kitchenRoom.addMiLightZone(2);
 
 commandLineInterpreter = new CommandLineInterpreter();
 commandLineInterpreter.start();
 
 
 
+function receiveCommands(req, res){
+	commandString = req.query.command;
+	console.log(req.query);
+
+	var programs = new LightPrograms();
+	programs.runProgram(commandString);
+	res.send();
+}
+
+
+
+app.get('/', receiveCommands);
+app.listen(port);
