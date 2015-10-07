@@ -49,7 +49,7 @@ function cityPlotter(){
 			data: values,
 			filename: 'output.png',
 			finish: function(){
-				res.sendFile('output.png');
+				res.sendFile(path.join(__dirname,'output.png'));
 			}
 		});
 	}
