@@ -1,3 +1,5 @@
+// "use strict";
+
 var Milight = require("milight");
 
 var milight = new Milight({
@@ -7,10 +9,10 @@ var milight = new Milight({
 
 var led = require('limitless-gem/index.js');
  // require('LimitlessGEM');
-var limitless = led.createSocket({ host: 'ct5130.myfoscam.org' });
+// var limitless = led.createSocket({ host: 'ct5130.myfoscam.org' });
 
 var CityPlotter = require('../plot/plot.js');
-cityPlotter = new CityPlotter();
+var cityPlotter = new CityPlotter();
 
 
 var express = require('express'),
@@ -18,7 +20,7 @@ app = express(),
 port = process.env.PORT || 3999;
 
 
-
+var delayBetweenCommands = 200;
 
 var colorCodes = {
 	violet : [0x40, 0x00],
@@ -40,6 +42,26 @@ var colorCodes = {
 	lavendar : [0x40, 0xf0]
 };
 
+socket1 = new LightSocket('officeBoards', 3, 'ct5130.myfoscam.org', 8899);
+var lights = {
+    boards : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : socket1},
+    officeLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : socket1 },
+    officeLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket: socket1 },
+
+    kitchenLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : socket1 },
+    kitchenLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : socket1 },
+    counterTop : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : socket1 },
+};
+
+var heaterStatus = {
+    office : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+    kitchen : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+    living : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+    bedroom : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+    guestroom : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+}
+
+
 function CommandLineInterpreter(){
 	this.start = function(){
 		console.log('Command Line Interpreter: up and running!');
@@ -47,7 +69,7 @@ function CommandLineInterpreter(){
 		var programs = new LightPrograms();
 
 		stdin.addListener("data", function(d) {
-			programName = d.toString().trim();
+			var programName = d.toString().trim();
 			// note:  d is an object, and when converted to a string it will
 			// end with a linefeed.  so we (rather crudely) account for that  
 			// with toString() and then substring()
@@ -58,79 +80,136 @@ function CommandLineInterpreter(){
 }
 module.exports = CommandLineInterpreter;
 
-var lightStatus = {
-	boards : { color: 'FFFFFF' , brightness : 100 , status : 1 },
-	officeLamp : { color: 'FFFFFF' , brightness : 100 , status : 1 },
-	officeLight : { color: 'FFFFFF' , brightness : 100 , status : 1 },
+var cliInterpreter = new CommandLineInterpreter();
+cliInterpreter.start();
 
-	kitchenLight : { color: 'FFFFFF' , brightness : 100 , status : 1 },
-	kitchenLamp : { color: 'FFFFFF' , brightness : 100 , status : 1 },
-	counterTop : { color: 'FFFFFF' , brightness : 100 , status : 1 },
-};
 
-var heaterStatus = {
-	office : { status: 0, currentTemperature : 10, desiredTemperature : 10},
-	kitchen : { status: 0, currentTemperature : 10, desiredTemperature : 10},
-	living : { status: 0, currentTemperature : 10, desiredTemperature : 10},
-	bedroom : { status: 0, currentTemperature : 10, desiredTemperature : 10},
-	guestroom : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+function LightSocket(name, group, socket){
+    this.name = name;
+    this.group = group;
+    this.socket = socket;
+    this.limitlessLedInstance = led.createSocket({ host: 'ct5130.myfoscam.org' , port: this.port});
+
+    this.commandOn = led.RGBW['GROUP'+group+'_ON'];
+    this.commandOff = led.RGBW['GROUP'+group+'_OFF'];
+    this.commandWhite = led.RGBW['GROUP'+group+'_SET_TO_WHITE'];
+    this.commandDisco = led.RGBW.DISCO_MODE;
+    this.commandDiscoFaster = led.RGBW.DISCO_FASTER;
+    this.commandDiscoSlower = led.RGBW.DISCO_SLOWER;
+
+    this.on = function(cb){
+        this.limitlessLedInstance.queueStuff(this.commandOn);
+    }
+
+    this.off = function(cb){
+        this.limitlessLedInstance.queueStuff(this.commandOff);
+    }
+
+    this.white = function(cb){
+        this.limitlessLedInstance.queueStuff(this.commandWhite);
+    }
+
+    this.disco = function(cb){
+
+        this.limitlessLedInstance.queueStuff(this.commandOn);
+        this.limitlessLedInstance.queueStuff(this.commandDisco);
+        cb;
+        /*
+        // Turn it on
+        this.limitlessLedInstance.send(this.commandOn, function(cb){
+            // Make it white
+            this.limitlessLedInstance.send(this.commandDisco, cb);
+        });*/
+    }
+
+    this.discoFaster = function(cb){
+        // Turn it on
+        this.limitlessLedInstance.queueStuff(this.commandOn);
+        this.limitlessLedInstance.queueStuff(this.commandDiscoFaster);
+
+    }
+
+    this.discoSlower = function(cb){
+        // Turn it on
+        this.limitlessLedInstance.queueStuff(this.commandOn);
+        this.limitlessLedInstance.queueStuff(this.commandDiscoSlower);
+    }
+
+    this.sendStuff = function(){
+        this.limitlessLedInstance.sendStuff();
+    }
 }
 
 
-
-
 function LightPrograms(){
-	this.milight = new Milight({
-		host: '192.168.1.148',
-		broadcast: true
-	});
+
+    console.log(lights);
 
 	this.getZonesByProgramName = function(programName){
-		
+
+        var exp;
+
 		if(programName.match('^all lights off')){
-			return {lights : [1,2,3,4] , heaters : [], commandsToSend : [led.RGBW.ALL_OFF] , parseComplete : true}; 
+            lights.boards.socket.off();
+            lights.officeLamp.socket.off();
+            lights.kitchenLamp.socket.off();
+            lights.boards.socket.sendStuff();
+            return true;
 		}
 
 		if(programName.match('^all lights on')){
-			return {lights : [1,2,3,4] , heaters : [], commandsToSend : [led.RGBW.ALL_ON] , parseComplete : true}; 
+            lights.boards.socket.on();
+            lights.officeLamp.socket.on();
+            lights.kitchenLamp.socket.on();
+            lights.boards.socket.sendStuff();
+            return true;
 		}
 
 		if(programName.match('^all lights white')){
-			return {lights : [1,2,3,4] , heaters : [], commandsToSend : [led.RGBW.ALL_SET_TO_WHITE] , parseComplete : true}; 
-		}
+            lights.boards.socket.white();
+            lights.officeLamp.socket.white();
+            lights.kitchenLamp.socket.white();
+            lights.boards.socket.sendStuff();
+            return true;
+        }
 
 		exp = programName.match('^all lights (.*)');
 		if(exp){
 			console.log(exp[1]);
 			if(exp[1] == 'disco'){
-				return {lights : [1,2,3,4] , heaters : [], commandsToSend : [
-					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP2_ON, led.RGBW.DISCO_MODE, 
-					led.RGBW.GROUP3_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP4_ON, led.RGBW.DISCO_MODE ] , parseComplete : true}; 	
+                lights.boards.socket.disco();
+                lights.officeLamp.socket.disco();
+                lights.kitchenLamp.socket.disco();
+                lights.boards.socket.sendStuff();
+
+                /*
+                lights.boards.socket.disco(function() {
+                    lights.officeLamp.socket.disco(function () {
+                        lights.kitchenLamp.socket.disco();
+                    });
+                });
+                */
+                return true;
 			}
 
 			if(exp[1] == 'disco faster'){
-				return {lights : [1,2,3,4] , heaters : [], commandsToSend : [
-					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP2_ON, led.RGBW.DISCO_MODE, 
-					led.RGBW.GROUP3_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP4_ON, led.RGBW.DISCO_MODE ] , parseComplete : true}; 	
+                lights.boards.socket.discoFaster(
+                    lights.officeLamp.socket.discoFaster(
+                        lights.kitchenLamp.socket.discoFaster()
+                    )
+                );
+                return true;
 			}
 
 			if(exp[1] == 'disco slower'){
-				return {lights : [1,2,3,4] , heaters : [], commandsToSend : [
-					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP2_ON, led.RGBW.DISCO_MODE, 
-					led.RGBW.GROUP3_ON, led.RGBW.DISCO_MODE,
-					led.RGBW.GROUP4_ON, led.RGBW.DISCO_MODE ] , parseComplete : true}; 	
-			}
+                lights.boards.socket.discoSlower(
+                    lights.officeLamp.socket.discoSlower(
+                        lights.kitchenLamp.socket.discoSlower()
+                    )
+                );
+                return true;
+
+            }
 		}
 
 
@@ -278,6 +357,11 @@ function LightPrograms(){
 
 	this.runProgram = function(programName){
 		affectedZones = this.getZonesByProgramName(programName);
+
+        if(affectedZones === true){
+            return ;
+        }
+
 		if(!affectedZones.parseComplete){
 			affectedZones = this.getActionByProgramName(programName, affectedZones);
 		}
@@ -322,6 +406,17 @@ function LightPrograms(){
 module.exports = LightPrograms;
 
 
+
+
+
+
+
+
+
+
+
+/** HTTP SERVER **/
+
 /** Command HTTP API **/
 function receiveCommands(req, res){
 	commandString = req.query.command;
@@ -332,16 +427,16 @@ function receiveCommands(req, res){
 }
 
 
-function getLightStatus(req, res){}
+function getLightStatus(req, res){
+    res.send(JSON.stringify(lightStatus));
+}
 
-
-function getHeaterStatus(req, res){}
+function getHeaterStatus(req, res){
+    res.send(JSON.stringify(heaterStatus));
+}
 
 function renderIndexPage(req,res){}
 
-
-cliInterpreter = new CommandLineInterpreter();
-cliInterpreter.start();
 
 app.get('/commands/', receiveCommands);
 app.get('/getStatus/lights/', getLightStatus);
@@ -349,3 +444,6 @@ app.get('/getStatus/heaters/', getHeaterStatus);
 app.get('/', renderIndexPage);
 
 app.listen(port);
+
+
+/** END OF HTTP SERVER **/

@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^1.4.2",
     "express": "^4.13.3",
     "limitless-gem": "^0.3.0",
     "milight": "^0.1.0",
