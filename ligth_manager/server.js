@@ -50,8 +50,7 @@ function CommandLineInterpreter(){
 			programName = d.toString().trim();
 			// note:  d is an object, and when converted to a string it will
 			// end with a linefeed.  so we (rather crudely) account for that  
-			// with toString() and then substring() 
-			console.log("you entered: [" + programName + "]");
+			// with toString() and then substring()
 			programs.runProgram(programName);
 		});
 	}
@@ -77,13 +76,13 @@ var heaterStatus = {
 }
 
 
+
+
 function LightPrograms(){
 	this.milight = new Milight({
 		host: '192.168.1.148',
 		broadcast: true
 	});
-
-
 
 	this.getZonesByProgramName = function(programName){
 		
@@ -111,8 +110,27 @@ function LightPrograms(){
 					led.RGBW.GROUP3_ON, led.RGBW.DISCO_MODE,
 					led.RGBW.GROUP4_ON, led.RGBW.DISCO_MODE ] , parseComplete : true}; 	
 			}
-		}
 
+			if(exp[1] == 'disco faster'){
+				return {lights : [1,2,3,4] , heaters : [], commandsToSend : [
+					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP2_ON, led.RGBW.DISCO_MODE, 
+					led.RGBW.GROUP3_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP4_ON, led.RGBW.DISCO_MODE ] , parseComplete : true}; 	
+			}
+
+			if(exp[1] == 'disco slower'){
+				return {lights : [1,2,3,4] , heaters : [], commandsToSend : [
+					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP2_ON, led.RGBW.DISCO_MODE, 
+					led.RGBW.GROUP3_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP4_ON, led.RGBW.DISCO_MODE ] , parseComplete : true}; 	
+			}
+		}
 
 
 		if(programName.match('^all rooms (.*)')){
@@ -121,8 +139,29 @@ function LightPrograms(){
 
 		if(programName.match('^office (.*)')){
 
-			if(programName.match('^office all (.*)')){
-				return {lights : [1,3] , heaters : [3] , partToStrip : 'office all' , parseComplete : false};
+			exp = programName.match('^office all (.*)');
+			if(exp){
+				if(exp[1] == 'on'){
+					return {lights : [1,3] , heaters : [3] ,commandsToSend : [
+					led.RGBW.GROUP1_ON, led.RGBW.GROUP2_ON ] , parseComplete : true};
+				}
+
+				if(exp[1] == 'off'){
+					return {lights : [1,3] , heaters : [3] ,commandsToSend : [
+					led.RGBW.GROUP1_OFF, led.RGBW.GROUP2_OFF ] , parseComplete : true};
+				}
+
+
+				if(exp[1] == 'white'){
+					return {
+						lights : [1,3] , 
+						heaters : [3] ,
+						commandsToSend : [led.RGBW.GROUP1_SET_TO_WHITE, led.RGBW.GROUP3_SET_TO_WHITE] , 
+						parseComplete : true
+					};
+				}
+
+
 			}
 
 			if(programName.match('^office lamp (.*)')){
@@ -196,9 +235,12 @@ function LightPrograms(){
 
 		affectedZones.toParse = toParse;
 
-		if(toParse === 'off' || toParse === 'on' || toParse === 'white' || toParse == 'disco'){
-
-
+		if(	toParse === 'off' || 
+			toParse === 'on' || 
+			toParse === 'white' || 
+			toParse == 'disco' || 
+			toParse == 'disco faster' || 
+			toParse == 'disco slower'){
 
 			affectedZones.methodToRunOnZones = toParse;
 			affectedZones.parseComplete = true;
@@ -273,106 +315,24 @@ function LightPrograms(){
 			living [all|lamp|light] [on|white|#color|off|disco|#number brightess]
 			living [#number] degrees
 		*/
-
-		if(programName == '1'){
-			console.log("START 1");
-
-			officeRoom.white();
-			kitchenRoom.white();
-			console.log("END 1");
-
-			// milight.zone([2,3]).white(50);
-		}
-
-		if(programName == '2'){
-			console.log("START 2");
-
-			officeRoom.off();
-			kitchenRoom.off();
-
-
-			console.log("END 2");
-		}
-
-
-		if(programName == 'nightMode'){
-			this.milight.zone([1,2,3,4]).nightMode();
-		}
 	}
 }
 
 module.exports = LightPrograms;
 
 
-function RoomLights(){
-	this.name = '';
-	this.milightInstances = [];
-	this.milightZones = [];
-	this.program = '';
-	this.color = '';
-	this.brightness = 100;
-
-	this.addMiLightInstance = function(instance){
-		this.milightInstances.push(instance);
-	}
-
-	this.addMiLightZone = function(zone){
-		this.milightZones.push(zone);
-	}
-
-
-
-	this.white = function(){
-		boardsMilight = new Milight({
-			host: '192.168.1.148',
-			broadcast: true
-		}).zone(this.milightZones).white();
-
-		/*
-		this.milightInstances.forEach(function(instance){
-			instance.white(function(){return true;});
-		});*/
-	}
-
-	this.off = function(rgbColor){
-
-		boardsMilight = new Milight({
-			host: '192.168.1.148',
-			broadcast: true
-		}).zone(this.milightZones).off();
-
-	}
-
-}
-module.exports = RoomLights;
-
-
-// Build Office Room
-var officeRoom = new RoomLights();
-officeRoom.addMiLightZone(1);
-officeRoom.addMiLightZone(3);
-
-
-
-// Build Kitchen Room
-var kitchenRoom = new RoomLights();
-kitchenRoom.addMiLightZone(2);
-
-commandLineInterpreter = new CommandLineInterpreter();
-commandLineInterpreter.start();
-
-
-
+/** Command HTTP API **/
 function receiveCommands(req, res){
 	commandString = req.query.command;
-	console.log(req.query);
 
 	var programs = new LightPrograms();
 	programs.runProgram(commandString);
 	res.send("Command received.");
 }
 
+app.get('/commands/', receiveCommands);
+app.get('/getStatus/lights/', getLightStatus);
+app.get('/getStatus/heaters/', getHeaterStatus);
+app.get('/', renderIndexPage);
 
-
-app.get('/', receiveCommands);
 app.listen(port);
