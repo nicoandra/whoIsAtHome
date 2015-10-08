@@ -1,13 +1,13 @@
 var Milight = require("milight");
 
 var milight = new Milight({
-	host: '192.168.1.148',
+	host: 'ct5130.myfoscam.org',
 	broadcast: true
 });
 
 var led = require('limitless-gem/index.js');
  // require('LimitlessGEM');
-var limitless = led.createSocket({ host: '192.168.1.148' });
+var limitless = led.createSocket({ host: 'ct5130.myfoscam.org' });
 
 var CityPlotter = require('../plot/plot.js');
 cityPlotter = new CityPlotter();

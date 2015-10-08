@@ -7,6 +7,9 @@
   "main": "server.js",
   "devDependencies": {
     "coffee-script": "~1.6.3",
-    "pingwrap":"0.0.1"
+    "pingwrap": "0.0.1"
+  },
+  "dependencies": {
+    "plotter": "^0.5.0"
   }
 }
