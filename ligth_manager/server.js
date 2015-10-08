@@ -51,6 +51,7 @@ function CommandLineInterpreter(){
 			// note:  d is an object, and when converted to a string it will
 			// end with a linefeed.  so we (rather crudely) account for that  
 			// with toString() and then substring()
+			console.log("running program ", programName);
 			programs.runProgram(programName);
 		});
 	}
@@ -329,6 +330,18 @@ function receiveCommands(req, res){
 	programs.runProgram(commandString);
 	res.send("Command received.");
 }
+
+
+function getLightStatus(req, res){}
+
+
+function getHeaterStatus(req, res){}
+
+function renderIndexPage(req,res){}
+
+
+cliInterpreter = new CommandLineInterpreter();
+cliInterpreter.start();
 
 app.get('/commands/', receiveCommands);
 app.get('/getStatus/lights/', getLightStatus);

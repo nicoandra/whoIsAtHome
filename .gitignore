@@ -1,1 +1,2 @@
-ligth_manager/node_modules/*
+node_modules/**
+ligth_manager/node_modules/**
