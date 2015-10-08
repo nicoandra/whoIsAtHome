@@ -1,12 +1,44 @@
 var Milight = require("milight");
 
+var milight = new Milight({
+	host: '192.168.1.148',
+	broadcast: true
+});
+
+var led = require('limitless-gem/index.js');
+ // require('LimitlessGEM');
+var limitless = led.createSocket({ host: '192.168.1.148' });
+
 var CityPlotter = require('../plot/plot.js');
 cityPlotter = new CityPlotter();
+
 
 var express = require('express'),
 app = express(),
 port = process.env.PORT || 3999;
 
+
+
+
+var colorCodes = {
+	violet : [0x40, 0x00],
+	royalBlue : [0x40, 0x10],
+	blue : [0x40, 0x10],
+	babyBlue : [0x40, 0x20],
+	aqua : [0x40, 0x30],
+	royalMint : [0x40, 0x40],
+	seafoamGreen : [0x40, 0x50],
+	green : [0x40, 0x60],
+	limeGreen : [0x40, 0x70],
+	yellow : [0x40, 0x80],
+	yellowOrange : [0x40, 0x90],
+	orange : [0x40, 0xa0],
+	red : [0x40, 0xb0],
+	pink : [0x40, 0xc0],
+	fusia : [0x40, 0xd0],
+	lilac : [0x40, 0xe0],
+	lavendar : [0x40, 0xf0]
+};
 
 function CommandLineInterpreter(){
 	this.start = function(){
@@ -55,16 +87,36 @@ function LightPrograms(){
 
 	this.getZonesByProgramName = function(programName){
 		
-		if(programName.match('^all lights (.*)')){
-			return {lights : [1,2,3,4] , heaters : [], partToStrip : 'all lights' , parseComplete : false}; 
+		if(programName.match('^all lights off')){
+			return {lights : [1,2,3,4] , heaters : [], commandsToSend : [led.RGBW.ALL_OFF] , parseComplete : true}; 
 		}
+
+		if(programName.match('^all lights on')){
+			return {lights : [1,2,3,4] , heaters : [], commandsToSend : [led.RGBW.ALL_ON] , parseComplete : true}; 
+		}
+
+		if(programName.match('^all lights white')){
+			return {lights : [1,2,3,4] , heaters : [], commandsToSend : [led.RGBW.ALL_SET_TO_WHITE] , parseComplete : true}; 
+		}
+
+		exp = programName.match('^all lights (.*)');
+		if(exp){
+			console.log(exp[1]);
+			if(exp[1] == 'disco'){
+				return {lights : [1,2,3,4] , heaters : [], commandsToSend : [
+					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP1_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP2_ON, led.RGBW.DISCO_MODE, 
+					led.RGBW.GROUP3_ON, led.RGBW.DISCO_MODE,
+					led.RGBW.GROUP4_ON, led.RGBW.DISCO_MODE ] , parseComplete : true}; 	
+			}
+		}
+
+
 
 		if(programName.match('^all rooms (.*)')){
 			return {lights : [] , heaters : [1,2,3] , partToStrip : 'all rooms' , parseComplete : false}; 
-		}
-
-		if(programName.match('^all (.*)')){
-			return {lights : [1,2,3,4] , heaters : [1,2,3] }; 
 		}
 
 		if(programName.match('^office (.*)')){
@@ -132,6 +184,8 @@ function LightPrograms(){
 				return {lights : [] , heaters : [2] , temperature: expr[1], parseComplete : true};
 			}
 		}
+
+		return {};
 	}
 
 	this.getActionByProgramName = function(programName, affectedZones){
@@ -142,7 +196,10 @@ function LightPrograms(){
 
 		affectedZones.toParse = toParse;
 
-		if(toParse === 'off' || toParse === 'on' || toParse === 'white'){
+		if(toParse === 'off' || toParse === 'on' || toParse === 'white' || toParse == 'disco'){
+
+
+
 			affectedZones.methodToRunOnZones = toParse;
 			affectedZones.parseComplete = true;
 			return affectedZones;
@@ -156,37 +213,65 @@ function LightPrograms(){
 			return affectedZones;
 		}
 
-		return affectedZones
+		// Still need to parse: #color
+		Object.keys(colorCodes).forEach(function(a,b){
+
+			affectedZones.methodToRunOnZones = '_send';
+			affectedZones.parametersForMethod = [0x40, 0x20];
+			affectedZones.parseComplete = true;
+			return affectedZones.methodToRunOnZones;
+
+			exp = toParse.match('^('+a+')$');
+			if(exp){
+				console.log('Match!', a, colorCodes[a]);
+				affectedZones.methodToRunOnZones = '_send';
+				affectedZones.parametersForMethod = colorCodes[a];
+				affectedZones.parseComplete = true;
+			}
+		})
+
+		return affectedZones;
 	}
 
 	this.runProgram = function(programName){
 		affectedZones = this.getZonesByProgramName(programName);
-		console.log(this.getActionByProgramName(programName, affectedZones));
+		if(!affectedZones.parseComplete){
+			affectedZones = this.getActionByProgramName(programName, affectedZones);
+		}
+
+
+		if(affectedZones.parseComplete){
+
+			console.log('*********',affectedZones,'*********');
+			if(affectedZones.hasOwnProperty('parametersForMethod')){
+				console.log(milight.zone(affectedZones.lights));
+			} else {
+				affectedZones.commandsToSend.forEach(function(command, index){
+					setTimeout(function () {
+       					limitless.send(command);
+   					}, index * 100);
+				});
+				
+			}
+		}
 
 		/*
 			all [on / white / color / off / disco]
 			all [number] degrees
 
-			office [all] [on / white / color / off / disco]
-			office lamp [on / white / color / off / disco]
-			office boards [on / white / color / off / disco]
-			office light [on / white / color / off / disco]
-			office [number] degrees
+			office [all|lamp|boards|light] [on|white|#color|off|disco|#number brightess]
+			office [#number] degrees
 			
-			kitchen [all] [on / white / color / off / disco]
-			kitchen lamp [on / white / color / off / disco]
-			kitchen countertop [on / white / color / off / disco]
-			kitchen [number] degrees
+			kitchen [all|lamp|countertop|light] [on|white|#color|off|disco|#number brightess]
+			kitchen [#number] degrees
 
 			front door [on / white / color / off / disco]
 			back door [on / white / color / off / disco]
 
-			corridor [on / white / color / off / disco]
+			corridor [on|white|#color|off|disco|#number brightess]
 
-			living [all] [on / white / color / off / disco]
-			living light [on / white / color / off / disco]
-			living lamp [on / white / color / off / disco]
-
+			living [all|lamp|light] [on|white|#color|off|disco|#number brightess]
+			living [#number] degrees
 		*/
 
 		if(programName == '1'){
@@ -264,7 +349,6 @@ module.exports = RoomLights;
 
 // Build Office Room
 var officeRoom = new RoomLights();
-
 officeRoom.addMiLightZone(1);
 officeRoom.addMiLightZone(3);
 

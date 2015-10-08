@@ -46,7 +46,7 @@ function cityPlotter(){
 		});
 	}
 
-	var generatePlot = function(req, res){
+	var servePlot = function(req, res){
 
 		filePath = path.join(__dirname,'output.png');
 		plot({
@@ -59,13 +59,27 @@ function cityPlotter(){
 	}
 
 
+	var generatePlot = function(callback){
+
+		filePath = path.join(__dirname,'output.png');
+		plot({
+			data: values,
+			filename: filePath,
+			finish: function(){
+				res.sendFile(filePath);
+			}
+		});
+	}
+
+
+
 	var json = function(req, res){
 		res.send(JSON.stringify(values));
 	}
 
 	startServer();
 
-	app.get('/', generatePlot);
+	app.get('/', servePlot);
 	app.get('/json', json);
 	app.listen(port);
 	console.log('Plot generator is listening on 127.0.0.1:'+port+'. The avalilable methods are / and /json');
