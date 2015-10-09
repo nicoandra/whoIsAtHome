@@ -1,37 +1,23 @@
-// "use strict";
-
-/*
-var Milight = require("milight");
-
-var milight = new Milight({
-	host: 'ct5130.myfoscam.org',
-	broadcast: true
-});
-
-
-*/
-
-
 var dgram = require('dgram');
+var debug = require('debug');
 
 var led = require('limitless-gem/index.js');
 
 var CityPlotter = require('../plot/plot.js');
 var cityPlotter = new CityPlotter();
 
-
 var express = require('express'),
 app = express(),
 port = process.env.PORT || 3999;
 
 
-var delayBetweenCommands = 200;
+var delayBetweenCommands = 300;
 
 var colorCodes = {
 	violet : [0x40, 0x00],
 	royalBlue : [0x40, 0x10],
 	blue : [0x40, 0x10],
-	babyBlue : [0x40, 0x20],
+	lightBlue : [0x40, 0x20],
 	aqua : [0x40, 0x30],
 	royalMint : [0x40, 0x40],
 	seafoamGreen : [0x40, 0x50],
@@ -50,13 +36,9 @@ var colorCodes = {
 var receiver1 = new ReceiverSocket('ct5130.myfoscam.org' , 8899);
 
 var lights = {
-    boards : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('boards', 3, receiver1) },
-    officeLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('officeLamp', 1, receiver1)},
-    officeLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('officeLight', 5, receiver1)},
-
-    kitchenLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('kitchenLight', 5, receiver1)},
-    kitchenLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('kitchenLamp', 2, receiver1)},
-    counterTop : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('countertop', 5, receiver1)},
+    boards : new Light('boards', new LightSocket('boards', 3, receiver1)),
+    officeLamp : new Light('officeLamp', new LightSocket('officeLampObject', 1, receiver1)),
+    kitchenLamp : new Light('kitchenLamp', new LightSocket('officeLampObject', 2, receiver1)),
 };
 
 var heaterStatus = {
@@ -76,6 +58,10 @@ function CommandLineInterpreter(){
 
 		stdin.addListener("data", function(d) {
 			var programName = d.toString().trim();
+
+            if(!programName){
+                return ;
+            }
 			console.log("running program ", programName);
 			programs.runProgram(programName);
 		});
@@ -90,7 +76,7 @@ cliInterpreter.start();
 function ReceiverSocket(host, port){
 	this.client = dgram.createSocket('udp4');
 	this.buffer = [];
-    this.port = 8899;
+    this.port = port;
     this.host = host;
     this.CLOSE_BYTE = 0x55;
     var self = this;
@@ -103,26 +89,29 @@ function ReceiverSocket(host, port){
 	}
 
     this.sendQueuedStuff = function(){
-        if(self.buffer.length == 0){
+        var queueSize = self.buffer.length;
+
+        if(queueSize  == 0){
+            setTimeout(self.sendQueuedStuff.bind(self), delayBetweenCommands);
             return false;
         }
 
         toSend = self.buffer.shift();
+
         var buffer = new Buffer(toSend.concat(), 'hex');
         console.log('sending: ', buffer);
 
         this.client.send(
-            buffer,
-            0,
-            buffer.length,
-            8899,
-            '192.222.203.34'
+            buffer, 0, buffer.length, self.port,
+            self.host,
+            function(err){
+                setTimeout(self.sendQueuedStuff.bind(self), delayBetweenCommands);
+            }
         );
     }
 
 
-    setInterval(this.sendQueuedStuff.bind(self), 100);
-
+    setTimeout(this.sendQueuedStuff.bind(self), delayBetweenCommands);
 }
 
 function LightSocket(name, group, receiver){
@@ -167,9 +156,59 @@ function LightSocket(name, group, receiver){
         this.receiver.queueStuff(this.commandDiscoSlower);
     }
 
+    this.setColor = function(colorName){
+        this.receiver.queueStuff(this.commandOn);
+        this.receiver.queueStuff(colorCodes[colorName]);
+    }
+
     this.sendStuff = function(){
         this.receiver.sendStuff();
     }
+}
+
+
+function Light(name, socket){
+    this.name = name;
+    this.socket = socket;
+    this.status = 0;
+    this.color = 'white';
+    this.brightness = 100;
+
+    this.on = function(){
+        this.socket.on();
+        this.status = 1;
+    }
+
+    this.off = function(){
+        this.socket.off();
+        this.status = 0;
+    }
+
+    this.white = function(){
+        this.socket.white();
+        this.status = 1;
+    }
+
+    this.disco = function(){
+        this.socket.disco();
+        this.status = 1;
+    }
+
+    this.discoFaster = function(){
+        this.socket.discoFaster();
+        this.status = 1;
+    }
+
+    this.discoSlower = function(){
+        this.socket.discoSlower();
+        this.status = 1;
+    }
+
+    this.setColor = function(colorName){
+        this.socket.setColor(colorName);
+        this.status = 1;
+    }
+
 }
 
 
@@ -179,24 +218,31 @@ function LightPrograms(){
 
         var exp;
 
+        if(programName.match('get lights status')){
+            lights.boards.off();
+            lights.officeLamp.off();
+            lights.kitchenLamp.off();
+            return {methodToExecute : 'getLightsStatus' };
+        }
+
 		if(programName.match('^all lights off')){
-            lights.boards.socket.off();
-            lights.officeLamp.socket.off();
-            lights.kitchenLamp.socket.off();
+            lights.boards.off();
+            lights.officeLamp.off();
+            lights.kitchenLamp.off();
             return true;
 		}
 
 		if(programName.match('^all lights on')){
-            lights.boards.socket.on();
-            lights.officeLamp.socket.on();
-            lights.kitchenLamp.socket.on();
+            lights.boards.on();
+            lights.officeLamp.on();
+            lights.kitchenLamp.on();
             return true;
 		}
 
 		if(programName.match('^all lights white')){
-            lights.boards.socket.white();
-            lights.officeLamp.socket.white();
-            lights.kitchenLamp.socket.white();
+            lights.boards.white();
+            lights.officeLamp.white();
+            lights.kitchenLamp.white();
             return true;
         }
 
@@ -204,28 +250,34 @@ function LightPrograms(){
 		if(exp){
 			console.log(exp[1]);
 			if(exp[1] == 'disco'){
-                lights.boards.socket.disco();
-                lights.officeLamp.socket.disco();
-                lights.kitchenLamp.socket.disco();
+                lights.boards.disco();
+                lights.officeLamp.disco();
+                lights.kitchenLamp.disco();
                 return true;
 			}
 
 			if(exp[1] == 'disco faster'){
-                lights.boards.socket.discoFaster();
-                lights.officeLamp.socket.discoFaster();
-                lights.kitchenLamp.socket.discoFaster();
+                lights.boards.discoFaster();
+                lights.officeLamp.discoFaster();
+                lights.kitchenLamp.discoFaster();
                 return true;
 			}
 
 			if(exp[1] == 'disco slower'){
-                lights.boards.socket.discoSlower();
-                lights.officeLamp.socket.discoSlower();
-                lights.kitchenLamp.socket.discoSlower();
+                lights.boards.discoSlower();
+                lights.officeLamp.discoSlower();
+                lights.kitchenLamp.discoSlower();
                 return true;
-
             }
-		}
 
+            if(colorCodes.hasOwnProperty(exp[1])){
+                lights.boards.setColor(exp[1]);
+                lights.officeLamp.setColor(exp[1]);
+                lights.kitchenLamp.setColor(exp[1]);
+                return true;
+            }
+
+		}
 
 		if(programName.match('^all rooms (.*)')){
 			return {lights : [] , heaters : [1,2,3] , partToStrip : 'all rooms' , parseComplete : false}; 
@@ -236,37 +288,127 @@ function LightPrograms(){
 			exp = programName.match('^office all (.*)');
 			if(exp){
 				if(exp[1] == 'on'){
-					return {lights : [1,3] , heaters : [3] ,commandsToSend : [
-					led.RGBW.GROUP1_ON, led.RGBW.GROUP2_ON ] , parseComplete : true};
+                    lights.officeLamp.on();
+                    lights.boards.on();
+                    return true;
 				}
 
 				if(exp[1] == 'off'){
-					return {lights : [1,3] , heaters : [3] ,commandsToSend : [
-					led.RGBW.GROUP1_OFF, led.RGBW.GROUP2_OFF ] , parseComplete : true};
+                    lights.officeLamp.off();
+                    lights.boards.off();
+                    return true;
 				}
-
 
 				if(exp[1] == 'white'){
-					return {
-						lights : [1,3] , 
-						heaters : [3] ,
-						commandsToSend : [led.RGBW.GROUP1_SET_TO_WHITE, led.RGBW.GROUP3_SET_TO_WHITE] , 
-						parseComplete : true
-					};
+                    lights.officeLamp.white();
+                    lights.boards.white();
+                    return true;
 				}
 
+                if(exp[1] == 'disco'){
+                    lights.officeLamp.disco();
+                    lights.boards.disco();
+                    return true;
+                }
+
+                if(exp[1] == 'disco faster'){
+                    lights.officeLamp.discoFaster();
+                    lights.boards.discoFaster();
+                    return true;
+                }
+
+                if(exp[1] == 'disco slower'){
+                    lights.officeLamp.discoSlower();
+                    lights.boards.discoSlower();
+                    return true;
+                }
+
+                if(colorCodes.hasOwnProperty(exp[1])){
+                    lights.officeLamp.setColor(exp[1]);
+                    lights.boards.setColor(exp[1]);
+                    return true;
+                }
 
 			}
 
-			if(programName.match('^office lamp (.*)')){
-				return {lights : [1] , heaters : [], partToStrip : 'office lamp' , parseComplete : false };
-			} 
+            exp = programName.match('^office lamp (.*)');
+			if(exp){
+                if(exp[1] == 'on'){
+                    lights.officeLamp.on();
+                    return true;
+                }
 
-			if(programName.match('^office boards (.*)')){
-				return {lights : [3] , heaters : [], partToStrip : 'office boards' , parseComplete : false };
-			} 
+                if(exp[1] == 'off'){
+                    lights.officeLamp.off();
+                    return true;
+                }
+
+                if(exp[1] == 'white'){
+                    lights.officeLamp.white();
+                    return true;
+                }
+
+                if(exp[1] == 'disco'){
+                    lights.officeLamp.disco();
+                    return true;
+                }
+
+                if(exp[1] == 'disco faster'){
+                    lights.officeLamp.discoFaster();
+                    return true;
+                }
+
+                if(exp[1] == 'disco slower'){
+                    lights.officeLamp.discoSlower();
+                    return true;
+                }
+
+                if(colorCodes.hasOwnProperty(exp[1])){
+                    lights.officeLamp.setColor(exp[1]);
+                    return true;
+                }
+			}
+
+			exp = programName.match('^office boards (.*)');
+            if(exp){
+                if(exp[1] == 'on'){
+                    lights.boards.on();
+                    return true;
+                }
+
+                if(exp[1] == 'off'){
+                    lights.boards.off();
+                    return true;
+                }
+
+                if(exp[1] == 'white'){
+                    lights.boards.white();
+                    return true;
+                }
+
+                if(exp[1] == 'disco'){
+                    lights.boards.disco();
+                    return true;
+                }
+
+                if(exp[1] == 'disco faster'){
+                    lights.boards.discoFaster();
+                    return true;
+                }
+
+                if(exp[1] == 'disco slower'){
+                    lights.boards.discoSlower();
+                    return true;
+                }
+
+                if(colorCodes.hasOwnProperty(exp[1])){
+                    lights.boards.setColor(exp[1]);
+                    return true;
+                }
+            }
+
 			if(programName.match('^office light (.*)')){
-				return {lights : [1] , heaters : [], partToStrip : 'office light' , parseComplete : false };
+				return "COMMAND NOT IMPLEMENTED";
 			}
 
 			expr = programName.match('^office ([0-9]+(\.5)?) degrees');
@@ -281,15 +423,48 @@ function LightPrograms(){
 				return {lights : [2,4] , heaters : [], partToStrip : 'kitchen all' , parseComplete : false };
 			}
 
-			if(programName.match('^kitchen lamp (.*)')){
-				return {lights : [2] , heaters : [], partToStrip : 'kitchen lamp' , parseComplete : false };
-			} 
+
+            exp = programName.match('^kitchen lamp (.*)');
+            if(exp){
+                if(exp[1] == 'on'){
+                    lights.kitchenLamp.on();
+                    return true;
+                }
+
+                if(exp[1] == 'off'){
+                    lights.kitchenLamp.off();
+                    return true;
+                }
+
+                if(exp[1] == 'white'){
+                    lights.kitchenLamp.white();
+                    return true;
+                }
+
+                if(exp[1] == 'disco'){
+                    lights.kitchenLamp.disco();
+                    return true;
+                }
+
+                if(exp[1] == 'disco faster'){
+                    lights.kitchenLamp.discoFaster();
+                    return true;
+                }
+
+                if(exp[1] == 'disco slower'){
+                    lights.kitchenLamp.discoSlower();
+                    return true;
+                }
+
+                if(colorCodes.hasOwnProperty(exp[1])){
+                    lights.kitchenLamp.setColor(exp[1]);
+                    return true;
+                }
+            }
 
 			if(programName.match('^kitchen countertop (.*)')){
-				return {lights : [4] , heaters : [], partToStrip : 'kitchen countertop'  , parseComplete : false};
-			} 
+			}
 			if(programName.match('^kitchen light (.*)')){
-				return {lights : [2] , heaters : [], partToStrip : 'kitchen light' , parseComplete : false };
 			}
 
 			expr = programName.match('^kitchen ([0-9]+(\.5)?) degrees');
@@ -371,12 +546,18 @@ function LightPrograms(){
 
 	this.runProgram = function(programName){
 		affectedZones = this.getZonesByProgramName(programName);
-
-        return ;
-
         if(affectedZones === true){
             return ;
         }
+
+        if(affectedZones.hasOwnProperty('methodToExecute')){
+            return global[affectedZones.methodToExecute]();
+        }
+
+        // console.log('CurrentStatus', lights);
+        return ;
+
+
 
 		if(!affectedZones.parseComplete){
 			affectedZones = this.getActionByProgramName(programName, affectedZones);
@@ -417,6 +598,11 @@ function LightPrograms(){
 			living [#number] degrees
 		*/
 	}
+
+    this.getLightsStatus = function(){
+        return lights;
+    }
+
 }
 
 module.exports = LightPrograms;
@@ -434,31 +620,40 @@ module.exports = LightPrograms;
 /** HTTP SERVER **/
 
 /** Command HTTP API **/
-function receiveCommands(req, res){
-	commandString = req.query.command;
 
-	var programs = new LightPrograms();
-	programs.runProgram(commandString);
-	res.send("Command received.");
+function HttpResponses() {
+    this.receiveCommands = function(req, res) {
+        commandString = req.query.command;
+        var programs = new LightPrograms();
+        console.log("http", req.ip, commandString);
+        response = programs.runProgram(commandString);
+        if(!response){
+            response = programs.getLightsStatus();
+        }
+        res.send(JSON.stringify(response));
+    }
+
+
+    function getLightStatus(req, res) {
+        res.send(JSON.stringify(lightStatus));
+    }
+
+    function getHeaterStatus(req, res) {
+        res.send(JSON.stringify(heaterStatus));
+    }
+
+    function renderIndexPage(req, res) {
+    }
+
 }
+module.exports = HttpResponses;
 
+app.get('/commands/', function(req, res){ new HttpResponses().receiveCommands(req, res); });
+// app.get('/getStatus/lights/', new HttpResponses.getLightStatus);
+// app.get('/getStatus/heaters/', HttpResponses.getHeaterStatus);
+// app.get('/', HttpResponses.renderIndexPage);
 
-function getLightStatus(req, res){
-    res.send(JSON.stringify(lightStatus));
-}
-
-function getHeaterStatus(req, res){
-    res.send(JSON.stringify(heaterStatus));
-}
-
-function renderIndexPage(req,res){}
-
-
-app.get('/commands/', receiveCommands);
-app.get('/getStatus/lights/', getLightStatus);
-app.get('/getStatus/heaters/', getHeaterStatus);
-app.get('/', renderIndexPage);
-
+console.log('http interface listening on port '+port);
 app.listen(port);
 
 
