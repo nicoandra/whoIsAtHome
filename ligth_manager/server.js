@@ -1,5 +1,6 @@
 // "use strict";
 
+/*
 var Milight = require("milight");
 
 var milight = new Milight({
@@ -7,9 +8,9 @@ var milight = new Milight({
 	broadcast: true
 });
 
+
+*/
 var led = require('limitless-gem/index.js');
- // require('LimitlessGEM');
-// var limitless = led.createSocket({ host: 'ct5130.myfoscam.org' });
 
 var CityPlotter = require('../plot/plot.js');
 var cityPlotter = new CityPlotter();
@@ -42,15 +43,16 @@ var colorCodes = {
 	lavendar : [0x40, 0xf0]
 };
 
-socket1 = new LightSocket('officeBoards', 3, 'ct5130.myfoscam.org', 8899);
-var lights = {
-    boards : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : socket1},
-    officeLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : socket1 },
-    officeLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket: socket1 },
+var receiver1 = led.createSocket({ host: 'ct5130.myfoscam.org' , port: this.port });
 
-    kitchenLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : socket1 },
-    kitchenLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : socket1 },
-    counterTop : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : socket1 },
+var lights = {
+    boards : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('boards', 3, receiver1) },
+    officeLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('officeLamp', 1, receiver1)},
+    officeLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('officeLight', 5, receiver1)},
+
+    kitchenLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('kitchenLight', 2, receiver1)},
+    kitchenLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('kitchenLamp', 5, receiver1)},
+    counterTop : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('countertop', 5, receiver1)},
 };
 
 var heaterStatus = {
@@ -70,25 +72,34 @@ function CommandLineInterpreter(){
 
 		stdin.addListener("data", function(d) {
 			var programName = d.toString().trim();
-			// note:  d is an object, and when converted to a string it will
-			// end with a linefeed.  so we (rather crudely) account for that  
-			// with toString() and then substring()
 			console.log("running program ", programName);
 			programs.runProgram(programName);
 		});
 	}
 }
 module.exports = CommandLineInterpreter;
-
 var cliInterpreter = new CommandLineInterpreter();
 cliInterpreter.start();
 
 
-function LightSocket(name, group, socket){
+
+function ReceiverSocket(host, port){
+	this.client = dgram.createSocket('udp4');
+	this.buffer = [];
+
+	this.queueStuff = function(stuff){
+		this.buffer.push(stuff);
+	}
+	
+	this.sendStuff = function(){
+
+	}
+}
+
+function LightSocket(name, group, receiver){
     this.name = name;
     this.group = group;
-    this.socket = socket;
-    this.limitlessLedInstance = led.createSocket({ host: 'ct5130.myfoscam.org' , port: this.port});
+    this.receiver = receiver;
 
     this.commandOn = led.RGBW['GROUP'+group+'_ON'];
     this.commandOff = led.RGBW['GROUP'+group+'_OFF'];
@@ -98,45 +109,37 @@ function LightSocket(name, group, socket){
     this.commandDiscoSlower = led.RGBW.DISCO_SLOWER;
 
     this.on = function(cb){
-        this.limitlessLedInstance.queueStuff(this.commandOn);
+        this.receiver.queueStuff(this.commandOn);
     }
 
     this.off = function(cb){
-        this.limitlessLedInstance.queueStuff(this.commandOff);
+        this.receiver.queueStuff(this.commandOff);
     }
 
     this.white = function(cb){
-        this.limitlessLedInstance.queueStuff(this.commandWhite);
+        this.receiver.queueStuff(this.commandWhite);
     }
 
     this.disco = function(cb){
-
-        this.limitlessLedInstance.queueStuff(this.commandOn);
-        this.limitlessLedInstance.queueStuff(this.commandDisco);
+		// this.receiver.queueStuff(this.commandOn);
+        this.receiver.queueStuff(this.commandDisco);
         cb;
-        /*
-        // Turn it on
-        this.limitlessLedInstance.send(this.commandOn, function(cb){
-            // Make it white
-            this.limitlessLedInstance.send(this.commandDisco, cb);
-        });*/
     }
 
     this.discoFaster = function(cb){
         // Turn it on
-        this.limitlessLedInstance.queueStuff(this.commandOn);
-        this.limitlessLedInstance.queueStuff(this.commandDiscoFaster);
-
+        this.receiver.queueStuff(this.commandOn);
+        this.receiver.queueStuff(this.commandDiscoFaster);
     }
 
     this.discoSlower = function(cb){
         // Turn it on
-        this.limitlessLedInstance.queueStuff(this.commandOn);
-        this.limitlessLedInstance.queueStuff(this.commandDiscoSlower);
+        this.receiver.queueStuff(this.commandOn);
+        this.receiver.queueStuff(this.commandDiscoSlower);
     }
 
     this.sendStuff = function(){
-        this.limitlessLedInstance.sendStuff();
+        this.receiver.sendStuff();
     }
 }
 
@@ -177,10 +180,16 @@ function LightPrograms(){
 		if(exp){
 			console.log(exp[1]);
 			if(exp[1] == 'disco'){
-                lights.boards.socket.disco();
-                lights.officeLamp.socket.disco();
-                lights.kitchenLamp.socket.disco();
-                lights.boards.socket.sendStuff();
+				lights.boards.socket.disco();
+				lights.boards.socket.sendStuff();
+
+				lights.officeLamp.socket.disco();
+				lights.officeLamp.socket.sendStuff();
+
+				lights.kitchenLamp.socket.disco();
+
+				lights.kitchenLamp.socket.sendStuff();
+
 
                 /*
                 lights.boards.socket.disco(function() {
