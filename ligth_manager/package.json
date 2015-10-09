@@ -13,6 +13,7 @@
     "express": "^4.13.3",
     "limitless-gem": "^0.3.0",
     "milight": "^0.1.0",
-    "request": "^2.64.0"
+    "request": "^2.64.0",
+    "step": "0.0.6"
   }
 }

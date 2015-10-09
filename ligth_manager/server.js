@@ -10,6 +10,10 @@ var milight = new Milight({
 
 
 */
+
+
+var dgram = require('dgram');
+
 var led = require('limitless-gem/index.js');
 
 var CityPlotter = require('../plot/plot.js');
@@ -43,15 +47,15 @@ var colorCodes = {
 	lavendar : [0x40, 0xf0]
 };
 
-var receiver1 = led.createSocket({ host: 'ct5130.myfoscam.org' , port: this.port });
+var receiver1 = new ReceiverSocket('ct5130.myfoscam.org' , 8899);
 
 var lights = {
     boards : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('boards', 3, receiver1) },
     officeLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('officeLamp', 1, receiver1)},
     officeLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('officeLight', 5, receiver1)},
 
-    kitchenLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('kitchenLight', 2, receiver1)},
-    kitchenLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('kitchenLamp', 5, receiver1)},
+    kitchenLight : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('kitchenLight', 5, receiver1)},
+    kitchenLamp : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('kitchenLamp', 2, receiver1)},
     counterTop : { color: 'FFFFFF' , brightness : 100 , status : 1, socket : new LightSocket('countertop', 5, receiver1)},
 };
 
@@ -86,14 +90,39 @@ cliInterpreter.start();
 function ReceiverSocket(host, port){
 	this.client = dgram.createSocket('udp4');
 	this.buffer = [];
+    this.port = 8899;
+    this.host = host;
+    this.CLOSE_BYTE = 0x55;
+    var self = this;
 
-	this.queueStuff = function(stuff){
-		this.buffer.push(stuff);
-	}
-	
-	this.sendStuff = function(){
 
+    this.queueStuff = function(stuff){
+        stuff = JSON.parse(JSON.stringify(stuff));
+        stuff.push(this.CLOSE_BYTE);
+        this.buffer.push(stuff);
 	}
+
+    this.sendQueuedStuff = function(){
+        if(self.buffer.length == 0){
+            return false;
+        }
+
+        toSend = self.buffer.shift();
+        var buffer = new Buffer(toSend.concat(), 'hex');
+        console.log('sending: ', buffer);
+
+        this.client.send(
+            buffer,
+            0,
+            buffer.length,
+            8899,
+            '192.222.203.34'
+        );
+    }
+
+
+    setInterval(this.sendQueuedStuff.bind(self), 100);
+
 }
 
 function LightSocket(name, group, receiver){
@@ -121,7 +150,7 @@ function LightSocket(name, group, receiver){
     }
 
     this.disco = function(cb){
-		// this.receiver.queueStuff(this.commandOn);
+        this.receiver.queueStuff(this.commandOn);
         this.receiver.queueStuff(this.commandDisco);
         cb;
     }
@@ -146,8 +175,6 @@ function LightSocket(name, group, receiver){
 
 function LightPrograms(){
 
-    console.log(lights);
-
 	this.getZonesByProgramName = function(programName){
 
         var exp;
@@ -156,7 +183,6 @@ function LightPrograms(){
             lights.boards.socket.off();
             lights.officeLamp.socket.off();
             lights.kitchenLamp.socket.off();
-            lights.boards.socket.sendStuff();
             return true;
 		}
 
@@ -164,7 +190,6 @@ function LightPrograms(){
             lights.boards.socket.on();
             lights.officeLamp.socket.on();
             lights.kitchenLamp.socket.on();
-            lights.boards.socket.sendStuff();
             return true;
 		}
 
@@ -172,7 +197,6 @@ function LightPrograms(){
             lights.boards.socket.white();
             lights.officeLamp.socket.white();
             lights.kitchenLamp.socket.white();
-            lights.boards.socket.sendStuff();
             return true;
         }
 
@@ -180,42 +204,23 @@ function LightPrograms(){
 		if(exp){
 			console.log(exp[1]);
 			if(exp[1] == 'disco'){
-				lights.boards.socket.disco();
-				lights.boards.socket.sendStuff();
-
-				lights.officeLamp.socket.disco();
-				lights.officeLamp.socket.sendStuff();
-
-				lights.kitchenLamp.socket.disco();
-
-				lights.kitchenLamp.socket.sendStuff();
-
-
-                /*
-                lights.boards.socket.disco(function() {
-                    lights.officeLamp.socket.disco(function () {
-                        lights.kitchenLamp.socket.disco();
-                    });
-                });
-                */
+                lights.boards.socket.disco();
+                lights.officeLamp.socket.disco();
+                lights.kitchenLamp.socket.disco();
                 return true;
 			}
 
 			if(exp[1] == 'disco faster'){
-                lights.boards.socket.discoFaster(
-                    lights.officeLamp.socket.discoFaster(
-                        lights.kitchenLamp.socket.discoFaster()
-                    )
-                );
+                lights.boards.socket.discoFaster();
+                lights.officeLamp.socket.discoFaster();
+                lights.kitchenLamp.socket.discoFaster();
                 return true;
 			}
 
 			if(exp[1] == 'disco slower'){
-                lights.boards.socket.discoSlower(
-                    lights.officeLamp.socket.discoSlower(
-                        lights.kitchenLamp.socket.discoSlower()
-                    )
-                );
+                lights.boards.socket.discoSlower();
+                lights.officeLamp.socket.discoSlower();
+                lights.kitchenLamp.socket.discoSlower();
                 return true;
 
             }
@@ -366,6 +371,8 @@ function LightPrograms(){
 
 	this.runProgram = function(programName){
 		affectedZones = this.getZonesByProgramName(programName);
+
+        return ;
 
         if(affectedZones === true){
             return ;
