@@ -1,3 +1,5 @@
+$(document).ready(function() {
+
 
 	var sendBrightnessChangeCommand = function(a, b){
 
@@ -8,7 +10,7 @@
 			return " "+l.toLowerCase();
 		});
 
-		sendCommandString(lampName + ' brightness ' + brightnessToRequest);
+		// sendCommandString(lampName + ' brightness ' + brightnessToRequest);
 	}
 
 	// Handle timeouts for the 3 RGB sliders. It waits 1 sec before making the actual HTTP request.
@@ -96,7 +98,7 @@
 	setInterval(getStatus, 5000);
 	setInterval(requestPlotData, 60000);
 
-
+});
 
 
 /**
