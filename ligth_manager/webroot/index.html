@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap-slider.css">
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/jquery.roundslider/1.0/roundslider.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/jquery.roundslider/1.0/roundslider.min.js"></script>    
+
+    <title>HomeOwn</title>
+
+    <script src="/static/bootstrap-slider.js" type="text/javascript"></script>
+    <script src="/static/script.js" type="text/javascript"></script>
+    <script src="/static/highcharts.js" type="text/javascript"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1>HomeOwn <span class="lead">1961 Proliant server</span></h1>
+      </div><!-- Page-header -->
+
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">All Rooms</h3>
+        </div>
+        <div class="panel-body">
+           
+           <div class="row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('all lights white')">White</button>
+              <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('all lights off')">Off</button>
+              <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('all lights disco')">Disco</button>
+              <button type="button" class="btn btn-default btnocean" onclick="sendCommandString('all lights ocean')">Ocean</button>
+              <button type="button" class="btn btn-default btnpinks" onclick="sendCommandString('all lights pinks')">Pinks</button>
+              <button type="button" class="btn btn-default btngreens" onclick="sendCommandString('all lights greens')">Greens</button>
+              <button type="button" class="btn btn-default btnfire" onclick="sendCommandString('all lights fire')">Fire</button>
+            </div>           
+          </div>
+
+
+          <div class="row">
+            <div class="col-sm-3">Red</div>
+            <div class="col-sm-3">Green</div>
+            <div class="col-sm-3">Blue</div>
+            <button type="button" class="btn btn-default" onclick="RGBChange();">Resend</button>
+          </div>
+
+
+          <div class="row" id="allRoomsColorRow">
+            <div class="col-sm-3">
+              <input id="allRoomsColorRSlider" data-slider-id='allRoomsColorRSlider' type="text" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="16" />
+            </div>
+
+            <div class="col-sm-3">
+              <input id="allRoomsColorGSlider" data-slider-id='allRoomsColorGSlider' type="text" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="16" />
+            </div>
+
+            <div class="col-sm-3">
+              <input id="allRoomsColorBSlider" data-slider-id='allRoomsColorBSlider' type="text" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="16" />
+            </div>
+
+            <div class="col-sm-3"></div>            
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="panel panel-default kitchenLamp">
+        <div class="panel-heading">
+          <h3 class="panel-title">Kitchen</h3>
+        </div>
+        <div class="panel-body">
+           <div class="row">
+            <div class="col-sm-3">
+              <input id="kitchenLampBrightnessSlider" data-slider-id='kitchenLampBrightnessSlider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="100" />
+            </div>
+            <div class="col-sm-9">
+              <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('kitchen lamp white')">White</button>
+              <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('kitchen lamp off')">Off</button>
+              <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('kitchen lamp disco')">Disco</button>
+              <button type="button" class="btn btn-default btnocean" onclick="sendCommandString('kitchen lamp ocean')">Ocean</button>
+              <button type="button" class="btn btn-default btnpinks" onclick="sendCommandString('kitchen lamp pinks')">Pinks</button>
+              <button type="button" class="btn btn-default btngreens" onclick="sendCommandString('kitchen lamp greens')">Greens</button>
+              <button type="button" class="btn btn-default btnfire" onclick="sendCommandString('kitchen lamp fire')">Fire</button>
+            </div>
+          </div>
+        </div><!-- panel-body -->
+      </div>      
+
+      <div class="panel panel-default officeLamp">
+        <div class="panel-heading">
+          <h3 class="panel-title">Office Lamp</h3>
+        </div>
+        <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-3">
+              <input id="officeLampBrightnessSlider" data-slider-id='officeLampBrightnessSlider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="100" />
+
+
+              <div id="slider"></div>
+
+              <script type="text/javascript">
+                $("#slider").roundSlider({
+                    sliderType: "min-range",
+                    width: 10,
+                    radius: 50,
+                    value: 36,
+                    mouseScrollAction: true,
+                    keyboardAction: false,
+                    handleShape: "dot",
+
+                    change: function (args) {
+                        sendBrightnessChangeCommand('officeLampBrightness', args);
+                    }
+                });
+              </script>
+            </div>
+            <div class="col-sm-9">
+              <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('office lamp white')">White</button>
+              <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('office lamp off')">Off</button>
+              <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('office lamp disco')">Disco</button>
+              <button type="button" class="btn btn-default btnocean" onclick="sendCommandString('office lamp ocean')">Ocean</button>
+              <button type="button" class="btn btn-default btnpinks" onclick="sendCommandString('office lamp pinks')">Pinks</button>
+              <button type="button" class="btn btn-default btngreens" onclick="sendCommandString('office lamp greens')">Greens</button>
+              <button type="button" class="btn btn-default btnfire" onclick="sendCommandString('office lamp fire')">Fire</button>
+            </div>           
+          </div>
+        </div>
+      </div>
+
+
+      <div class="panel panel-default officeBoards">
+        <div class="panel-heading">
+          <h3 class="panel-title">Office Boards</h3>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-sm-3">
+              <input id="officeBoardsBrightnessSlider" data-slider-id='officeBoardsBrightnessSlider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="100" />
+            </div>
+            <div class="col-sm-9">
+              <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('office boards white')">White</button>
+              <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('office boards off')">Off</button>
+              <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('office boards disco')">Disco</button>
+              <button type="button" class="btn btn-default btnocean" onclick="sendCommandString('office boards ocean')">Ocean</button>
+              <button type="button" class="btn btn-default btnpinks" onclick="sendCommandString('office boards pinks')">Pinks</button>
+              <button type="button" class="btn btn-default btngreens" onclick="sendCommandString('office boards greens')">Greens</button>
+              <button type="button" class="btn btn-default btnfire" onclick="sendCommandString('office boards fire')">Fire</button>
+            </div>           
+          </div>
+        </div>
+      </div>      
+
+      <div class="panel panel-default system">
+        <div class="panel-heading">
+          <h3 class="panel-title">Temperatures</h3>
+        </div>
+        <div class="panel-body">
+          <div id="plotContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        </div>
+      </div>
+
+
+      <div class="panel panel-default system">
+        <div class="panel-heading">
+          <h3 class="panel-title">Status and technical details</h3>
+        </div>
+        <div class="panel-body">
+          <dl class="dl-horizontal">
+            <dt>Global queues</dt> <dd id="globalQueueSize">123</dd>
+            <dt>Delay between commands</dt> <dd id="delayBetweenCommands">55</dd>
+          </dl>
+        </div>
+      </div>
+
+
+      
+
+    </div><!-- container -->
+</body>
+</html>
