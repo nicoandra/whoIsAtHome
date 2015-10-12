@@ -14,6 +14,7 @@
 	// Handle timeouts for the 3 RGB sliders. It waits 1 sec before making the actual HTTP request.
 	// This is to avoid flooding the queue with numbers as the slider changes values
 	// It will wait for 1 sec without changes before posting the request
+	/*
 	var RGBChangeTimeout = -1;
 	var RGBChange = function(){
 		r = allRoomsColorRSlider.getValue();
@@ -36,6 +37,7 @@
 	allRoomsColorRSlider.on('change', RGBChange);
 	allRoomsColorGSlider.on('change', RGBChange);
 	allRoomsColorBSlider.on('change', RGBChange);
+	*/
 
 	function updateInterfaceWithStatusObject(response){
 		if(response.lights){
