@@ -1242,10 +1242,12 @@ var rgbToMilightColor = function(r, g, b){
 }	
 
 
-
+/*
 var peopleAtHome = {
 	nico : { devices : ['192.168.1.141'] , status : 0 , lastCheck : 0 }
 }
+
+
 
 
 var ping = require ("net-ping");
@@ -1282,3 +1284,4 @@ var pingDevices = function(){
 // setInterval(pingDevices, 1000);
 
 
+*/
