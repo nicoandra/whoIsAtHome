@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/static/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/static/bootstrap-slider.css">
+
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 
     <link href="https://cdn.jsdelivr.net/jquery.roundslider/1.0/roundslider.min.css" rel="stylesheet" />
@@ -13,7 +13,7 @@
 
     <title>HomeOwn</title>
 
-    <script src="/static/bootstrap-slider.js" type="text/javascript"></script>
+    
     <script src="/static/script.js" type="text/javascript"></script>
     <script src="/static/highcharts.js" type="text/javascript"></script>
 
@@ -77,12 +77,31 @@
 
       <div class="panel panel-default kitchenLamp">
         <div class="panel-heading">
-          <h3 class="panel-title">Kitchen</h3>
+          <h3 class="panel-title">Kitchen Lamp</h3>
         </div>
         <div class="panel-body">
            <div class="row">
             <div class="col-sm-3">
-              <input id="kitchenLampBrightnessSlider" data-slider-id='kitchenLampBrightnessSlider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="100" />
+
+              <div id="kitchenLampBrightnessSlider"></div>
+              <script type="text/javascript">
+                $("#kitchenLampBrightnessSlider").roundSlider({
+                    sliderType: "min-range",
+                    width: 15,
+                    radius: 50,
+                    value: 100,
+                    mouseScrollAction: true,
+                    keyboardAction: false,
+                    handleShape: "dot",
+                    startAngle: 0,
+                    endAngle: "+270",                    
+
+                    change: function (args) {
+                        sendBrightnessChangeCommand('kitchenLampBrightness', args);
+                    }
+                });
+              </script>
+
             </div>
             <div class="col-sm-9">
               <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('kitchen lamp white')">White</button>
@@ -97,6 +116,49 @@
         </div><!-- panel-body -->
       </div>      
 
+
+      <div class="panel panel-default kitchenCountertop">
+        <div class="panel-heading">
+          <h3 class="panel-title">Kitchen Countertop</h3>
+        </div>
+        <div class="panel-body">
+           <div class="row">
+            <div class="col-sm-3">
+
+              <div id="kitchenCountertopBrightnessSlider"></div>
+              <script type="text/javascript">
+                $("#kitchenCountertopBrightnessSlider").roundSlider({
+                    sliderType: "min-range",
+                    width: 15,
+                    radius: 50,
+                    value: 100,
+                    mouseScrollAction: true,
+                    keyboardAction: false,
+                    handleShape: "dot",
+                    startAngle: 0,
+                    endAngle: "+270",                    
+
+                    change: function (args) {
+                        sendBrightnessChangeCommand('kitchenCountertopBrightness', args);
+                    }
+                });
+              </script>
+
+            </div>
+            <div class="col-sm-9">
+              <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('kitchen countertop white')">White</button>
+              <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('kitchen countertop off')">Off</button>
+              <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('kitchen countertop disco')">Disco</button>
+              <button type="button" class="btn btn-default btnocean" onclick="sendCommandString('kitchen countertop ocean')">Ocean</button>
+              <button type="button" class="btn btn-default btnpinks" onclick="sendCommandString('kitchen countertop pinks')">Pinks</button>
+              <button type="button" class="btn btn-default btngreens" onclick="sendCommandString('kitchen countertop greens')">Greens</button>
+              <button type="button" class="btn btn-default btnfire" onclick="sendCommandString('kitchen countertop fire')">Fire</button>
+            </div>
+          </div>
+        </div><!-- panel-body -->
+      </div>      
+
+
       <div class="panel panel-default officeLamp">
         <div class="panel-heading">
           <h3 class="panel-title">Office Lamp</h3>
@@ -104,20 +166,19 @@
         <div class="panel-body">
         <div class="row">
             <div class="col-sm-3">
-              <input id="officeLampBrightnessSlider" data-slider-id='officeLampBrightnessSlider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="100" />
 
-
-              <div id="slider"></div>
-
+              <div id="officeLampBrightnessSlider"></div>
               <script type="text/javascript">
-                $("#slider").roundSlider({
+                $("#officeLampBrightnessSlider").roundSlider({
                     sliderType: "min-range",
-                    width: 10,
+                    width: 15,
                     radius: 50,
                     value: 36,
                     mouseScrollAction: true,
                     keyboardAction: false,
                     handleShape: "dot",
+                    startAngle: 0,
+                    endAngle: "+270",
 
                     change: function (args) {
                         sendBrightnessChangeCommand('officeLampBrightness', args);
@@ -146,7 +207,25 @@
         <div class="panel-body">
           <div class="row">
             <div class="col-sm-3">
-              <input id="officeBoardsBrightnessSlider" data-slider-id='officeBoardsBrightnessSlider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="100" />
+
+              <div id="officeBoardsBrightnessSlider"></div>
+              <script type="text/javascript">
+                $("#officeBoardsBrightnessSlider").roundSlider({
+                    sliderType: "min-range",
+                    width: 15,
+                    radius: 50,
+                    value: 36,
+                    mouseScrollAction: true,
+                    keyboardAction: false,
+                    handleShape: "dot",
+                    startAngle: 0,
+                    endAngle: "+270",                    
+
+                    change: function (args) {
+                        sendBrightnessChangeCommand('officeBoardsBrightness', args);
+                    }
+                });
+              </script>              
             </div>
             <div class="col-sm-9">
               <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('office boards white')">White</button>

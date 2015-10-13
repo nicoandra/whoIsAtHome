@@ -42,7 +42,8 @@ var receiver3 = new ReceiverSocket('192.168.1.148' , 8899);
 
 var lights = {
     officeLamp : new Light('officeLamp', new LightSocket('officeLampObject', 1, receiver1)),
-	kitchenLamp : new Light('kitchenLamp', new LightSocket('officeLampObject', 2, receiver1)),    
+	kitchenLamp : new Light('kitchenLamp', new LightSocket('officeLampObject', 2, receiver1)),
+	kitchenCountertop : new Light('KitchenCountertop', new LightSocket('officeLampObject', 4, receiver1)),
     officeBoards : new Light('officeBoards', new LightSocket('boards', 3, receiver1)),
 
 };
@@ -199,21 +200,18 @@ function LightSocket(name, group, receiver){
     }
 
     this.disco = function(cb){
-        this.receiver.queueStuff(this.commandOn);
-        this.receiver.queueStuff(this.commandDisco);
+        this.receiver.queueStuff(this.commandOn.concat(0x55, this.commandDisco));
         cb;
     }
 
     this.discoFaster = function(cb){
         // Turn it on
-        this.receiver.queueStuff(this.commandOn);
-        this.receiver.queueStuff(this.commandDiscoFaster);
+        this.receiver.queueStuff(this.commandOn.concat(0x55, this.commandDiscoFaster));
     }
 
     this.discoSlower = function(cb){
         // Turn it on
-        this.receiver.queueStuff(this.commandOn);
-        this.receiver.queueStuff(this.commandDiscoSlower);
+        this.receiver.queueStuff(this.commandOn.concat(0x55, this.commandDiscoSlower));
     }
 
 	this.setColor = function(colorName){
@@ -230,21 +228,17 @@ function LightSocket(name, group, receiver){
 	}
 
 	this.brightnessMax = function(){
-		this.receiver.queueStuff(this.commandOn);
-		this.receiver.queueStuff(this.commandBrightnessMax);
+		this.receiver.queueStuff(this.commandOn.concat(this.commandBrightnessMax));
 	}
 
 	this.brightnessMin = function(){
-		this.receiver.queueStuff(this.commandOn);
-		this.receiver.queueStuff(this.commandBrightnessMin);
+		this.receiver.queueStuff(this.commandOn.concat(this.commandBrightnessMin));
 	}	
 
 	this.brightness = function(value){
 		value = Math.round(2+((value/100)*25));
 		this.receiver.queueStuff(this.commandOn.concat(0x55, 0x4e, value));
 	}
-
-
 
     this.queueStuff = function(stuff){
         this.receiver.queueStuff(stuff);
@@ -533,9 +527,6 @@ function LightPrograms(){
         var affectedLights = [];
 
         if(programName.match('get lights status')){
-            lights.officeBoards.off();
-            lights.officeLamp.off();
-            lights.kitchenLamp.off();
             return {methodToExecute : 'getLightsStatus' };
         }
 
@@ -545,6 +536,7 @@ function LightPrograms(){
 			affectedLights.push(lights.officeBoards);
 			affectedLights.push(lights.officeLamp);
 			affectedLights.push(lights.kitchenLamp);
+			affectedLights.push(lights.kitchenCountertop);
 		}
 
 		exp = programName.match('^office all (.*)');
@@ -573,10 +565,17 @@ function LightPrograms(){
 			affectedLights.push(lights.kitchenLamp);
 		}
 
+		exp = programName.match('^kitchen countertop (.*)');
+		if(exp){
+			action = exp[1];
+			affectedLights.push(lights.kitchenCountertop);
+		}
+
 		exp = programName.match('^kitchen all (.*)');
 		if(exp){
 			action = exp[1];
 			affectedLights.push(lights.kitchenLamp);
+			affectedLights.push(lights.kitchenCountertop);
 		}
 
 		// Now parse the action!
@@ -601,7 +600,7 @@ function LightPrograms(){
 				action = 'brightnessMax';
 			} else if(exp[1] == 'min'){
 				action = 'brightnessMin';
-			} else {
+			} else if(exp[1] >= 0 && exp[1] <= 100) {
 				action = 'brightness';
 				actionArguments.push(exp[1]);
 			}
@@ -1135,13 +1134,17 @@ function HttpResponses() {
         console.log("http", req.ip, commandString);
         response = programs.runProgram(commandString);
         if(!response){
+
+			memoryUsage = process.memoryUsage();
+
             response = { 
             	lights : programs.getLightsStatus(), 
             	system : {
             		queueSize : [receiver1.getQueueSize(),receiver2.getQueueSize(),receiver3.getQueueSize()],
-            		delayBetweenCommands : delayBetweenCommands
+            		delayBetweenCommands : delayBetweenCommands,
+            		memory : memoryUsage
 
-            		},
+            	},
             	heaters : {},
             };
         }
@@ -1177,19 +1180,8 @@ app.get('/plot/json', function(req, res){
 	cityPlotter.json(req, res);
 });
 
-
-
-	var error = debug('app:error');
-	error("conchapeluda");
-
-
-// app.get('/getStatus/lights/', new HttpResponses.getLightStatus);
-// app.get('/getStatus/heaters/', HttpResponses.getHeaterStatus);
 app.use('/', function(req, res, next){
-
-
 	new HttpResponses().renderIndexPage(req, res);
-	
 });
 
 console.log('http interface listening on port '+port);
@@ -1197,9 +1189,6 @@ app.listen(port);
 
 
 /** END OF HTTP SERVER **/
-
-
-
 var rgbToMilightColor = function(r, g, b){
     r = r / 255;
     g = g / 255;
