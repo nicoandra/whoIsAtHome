@@ -7,6 +7,10 @@ var CityPlotter = require(__dirname + '/plot.js');
 var cityPlotter = new CityPlotter();
 
 
+var env = process.env.NODE_ENV || 'development'
+    , cfg = require(__dirname + '/config/config.'+env+'.js');
+
+
 var delayBetweenCommands = 80;
 
 var colorCodes = {
@@ -1137,7 +1141,8 @@ function HttpResponses() {
             	system : {
             		queueSize : [receiver1.getQueueSize(),receiver2.getQueueSize(),receiver3.getQueueSize()],
             		delayBetweenCommands : delayBetweenCommands,
-            		memory : memoryUsage
+            		memory : memoryUsage,
+                    socketInfo : { host : cfg.httpHost , port : cfg.httpPort }
 
             	},
             	heaters : {},
@@ -1167,7 +1172,7 @@ module.exports = HttpResponses;
 
 var express = require('express'),
 app = express(),
-port = process.env.PORT || 3999;
+port = cfg.httpPort;
 
 var httpServer = require('http').Server(app);
 var io = require('socket.io')(httpServer);
@@ -1193,8 +1198,7 @@ io.sockets.on('connection', function(socket){
 });
 
 sendResponse = function(){
-	
-	
+
 	var programs = new LightPrograms();
 
 	io.emit('statusUpdate', { 
