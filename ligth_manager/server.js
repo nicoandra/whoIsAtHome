@@ -1,15 +1,10 @@
 var dgram = require('dgram');
 var debug = require('debug');
 
-
 var led = require('limitless-gem/index.js');
 
 var CityPlotter = require(__dirname + '/plot.js');
 var cityPlotter = new CityPlotter();
-
-var express = require('express'),
-app = express(),
-port = process.env.PORT || 3999;
 
 
 var delayBetweenCommands = 80;
@@ -691,7 +686,7 @@ function LightPrograms(){
 
 			if(exp[1] == 'ocean' || exp[1] == 'pinks' || exp[1] == 'greens'){
 				try {
-					lights.boards[exp[1]]();
+					lights.officeBoards[exp[1]]();
 					lights.officeLamp[exp[1]]();
 					lights.kitchenLamp[exp[1]]();
 				} catch(e){
@@ -872,7 +867,7 @@ function LightPrograms(){
                 }
 
 				if(exp[1] == 'ocean' || exp[1] == 'pinks' || exp[1] == 'greens'){
-					lights.boards[exp[1]]();
+					lights.officeBoards[exp[1]]();
 					return true;
 				}
 
@@ -1168,6 +1163,57 @@ function HttpResponses() {
 module.exports = HttpResponses;
 
 
+
+
+var express = require('express'),
+app = express(),
+port = process.env.PORT || 3999;
+
+var httpServer = require('http').Server(app);
+var io = require('socket.io')(httpServer);
+
+
+io.sockets.on('connection', function(socket){
+
+	socket.on('sendCommand', function (commands) {
+		var programs = new LightPrograms();
+
+		console.log("vino esteee", commands);
+
+		// commands = JSON.parse(commands);
+
+		commands.forEach(function(programName){
+			console.log(programName)
+			programs.runProgram(programName);	
+		});
+
+		sendResponse();
+	});
+
+});
+
+sendResponse = function(){
+	
+	
+	var programs = new LightPrograms();
+
+	io.emit('statusUpdate', { 
+		lights : programs.getLightsStatus(), 
+		system : {
+			queueSize : [receiver1.getQueueSize(),receiver2.getQueueSize(),receiver3.getQueueSize()],
+			delayBetweenCommands : delayBetweenCommands,
+			memory : process.memoryUsage()
+		},
+		heaters : {},
+	});
+}
+
+
+// setInterval(sendResponse, 2000);
+
+
+
+
 app.use('/static', express.static(__dirname + '/webroot'));
 
 app.get('/commands/', function(req, res){ new HttpResponses().receiveCommands(req, res); });
@@ -1184,8 +1230,10 @@ app.use('/', function(req, res, next){
 	new HttpResponses().renderIndexPage(req, res);
 });
 
-console.log('http interface listening on port '+port);
-app.listen(port);
+
+httpServer.listen(port, function(){
+	console.log('http interface listening on port '+port);	
+});
 
 
 /** END OF HTTP SERVER **/

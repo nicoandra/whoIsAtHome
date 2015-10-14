@@ -1,35 +1,3 @@
-$(document).ready(function() {
-
-
-
-	// Handle timeouts for the 3 RGB sliders. It waits 1 sec before making the actual HTTP request.
-	// This is to avoid flooding the queue with numbers as the slider changes values
-	// It will wait for 1 sec without changes before posting the request
-	/*
-	var RGBChangeTimeout = -1;
-	var RGBChange = function(){
-		r = allRoomsColorRSlider.getValue();
-		g = allRoomsColorGSlider.getValue();
-		b = allRoomsColorBSlider.getValue();
-		$('#allRoomsColorRow').css('background', 'rgb('+r+','+g+','+b+')');
-
-		if(RGBChangeTimeout > 0){
-			clearTimeout(RGBChangeTimeout);
-		}
-
-		RGBChangeTimeout = setTimeout(function(){
-			sendCommandString("all lights "+r+" "+g+" "+b, getStatus);
-		}, 1000);
-
-	}
-
-
-	// Bind the OnChangeEvent
-	allRoomsColorRSlider.on('change', RGBChange);
-	allRoomsColorGSlider.on('change', RGBChange);
-	allRoomsColorBSlider.on('change', RGBChange);
-	*/
-});
 
 
 function sendBrightnessChangeCommand(lampName, b){
@@ -43,14 +11,28 @@ function sendBrightnessChangeCommand(lampName, b){
 /**
 Sends a command and executes the callback, if specified.
 **/
-function sendCommandString(command, cb){
+function sendCommandString(commands, cb){
+
+	var socket = io.connect('http://192.168.1.112:3999');
+
+	// commands = "office boards off";
+
+	if(!Array.isArray(commands)){
+		arr = new Array;
+		arr.push(commands);
+		commands = arr;
+	}
+
+	console.log(commands);
+
+	socket.emit('sendCommand', commands);
+	/*
 	$.get('/commands/', { command :  command}, cb);	
 
 	if(typeof cb != 'function'){
 		getStatus();
-	}
+	}*/
 }
-
 
 
 function requestPlotData(){
@@ -90,14 +72,13 @@ function generatePlot(res, status, statusName){
 
 /** Ajax request to query the system status and update the UI **/
 function getStatus(){
-	sendCommandString("getStatus", function(res, status, statusName){
+	$.get('/commands/', { command :  "getStatus"}, function(res, status, statusName){
 		if(status != 'success'){
 			console.log("Call didn't work...", res,status, statusName);
 			return ;
 		}
 		res = jQuery.parseJSON(res);
 		updateInterfaceWithStatusObject(res);
-
 	});
 }
 
@@ -137,9 +118,38 @@ function updateInterfaceWithStatusObject(response){
 }
 
 $(document).ready(function(){
-	/** Setting UI Intervals to refresh status and plotData **/
-	setInterval(getStatus, 5000);
-	getStatus();
-	setInterval(requestPlotData, 60000);
-	requestPlotData();
+
+	if(false){
+		/** Setting UI Intervals to refresh status and plotData **/
+		setInterval(getStatus, 5000);
+		getStatus();
+		setInterval(requestPlotData, 60000);
+		requestPlotData();
+	}
+
+	if('ontouchstart' in window){
+		setInterval(getStatus, 2000);
+		getStatus();
+	}
+
+	var socket = io.connect('http://127.0.0.1:3999');
+
+	socket.on('statusUpdate', function (data) {
+		updateInterfaceWithStatusObject(data);
+	});
+	// socket.emit('sendCommand', ['all lights off', 'all lights red']);	
+
+
 });
+
+	function listen(){
+		var recognition = new webkitSpeechRecognition();
+		recognition.lang = "en";
+		recognition.onresult = function(event) { 
+			recognition.stop();
+			console.log(event.results[0]);
+			command = event.results[0][0].transcript;
+			sendCommandString(command);
+		}
+		recognition.start();
+	}	
