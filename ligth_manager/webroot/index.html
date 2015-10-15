@@ -16,6 +16,9 @@
     
     <script src="/static/script.js" type="text/javascript"></script>
     <script src="/static/highcharts.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+
+    
 
   </head>
 
@@ -43,10 +46,13 @@
               <button type="button" class="btn btn-default btnpinks" onclick="sendCommandString('all lights pinks')">Pinks</button>
               <button type="button" class="btn btn-default btngreens" onclick="sendCommandString('all lights greens')">Greens</button>
               <button type="button" class="btn btn-default btnfire" onclick="sendCommandString('all lights fire')">Fire</button>
+              <button type="button" class="btn btn-default " onclick="sendCommandString(['kitchen countertop pinks', 'kitchen lamp ocean', 'office lamp ocean', 'office boards pinks'])">SpankWire</button>
+              <button type="button" class="btn btn-default " onclick="listen();">V</button>              
             </div>           
           </div>
 
 
+          <!--
           <div class="row">
             <div class="col-sm-3">Red</div>
             <div class="col-sm-3">Green</div>
@@ -70,6 +76,8 @@
 
             <div class="col-sm-3"></div>            
           </div>
+          -->
+
         </div>
       </div>
 
@@ -81,14 +89,14 @@
         </div>
         <div class="panel-body">
            <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
 
               <div id="kitchenLampBrightnessSlider"></div>
               <script type="text/javascript">
                 $("#kitchenLampBrightnessSlider").roundSlider({
                     sliderType: "min-range",
                     width: 15,
-                    radius: 50,
+                    radius: 40,
                     value: 100,
                     mouseScrollAction: true,
                     keyboardAction: false,
@@ -103,7 +111,7 @@
               </script>
 
             </div>
-            <div class="col-sm-9">
+            <div class="col-sm-10">
               <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('kitchen lamp white')">White</button>
               <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('kitchen lamp off')">Off</button>
               <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('kitchen lamp disco')">Disco</button>
@@ -123,7 +131,7 @@
         </div>
         <div class="panel-body">
            <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
 
               <div id="kitchenCountertopBrightnessSlider"></div>
               <script type="text/javascript">
@@ -145,7 +153,7 @@
               </script>
 
             </div>
-            <div class="col-sm-9">
+            <div class="col-sm-10">
               <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('kitchen countertop white')">White</button>
               <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('kitchen countertop off')">Off</button>
               <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('kitchen countertop disco')">Disco</button>
@@ -165,7 +173,7 @@
         </div>
         <div class="panel-body">
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
 
               <div id="officeLampBrightnessSlider"></div>
               <script type="text/javascript">
@@ -186,7 +194,7 @@
                 });
               </script>
             </div>
-            <div class="col-sm-9">
+            <div class="col-sm-10">
               <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('office lamp white')">White</button>
               <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('office lamp off')">Off</button>
               <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('office lamp disco')">Disco</button>
@@ -206,7 +214,7 @@
         </div>
         <div class="panel-body">
           <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
 
               <div id="officeBoardsBrightnessSlider"></div>
               <script type="text/javascript">
@@ -227,7 +235,7 @@
                 });
               </script>              
             </div>
-            <div class="col-sm-9">
+            <div class="col-sm-10">
               <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('office boards white')">White</button>
               <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('office boards off')">Off</button>
               <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('office boards disco')">Disco</button>
