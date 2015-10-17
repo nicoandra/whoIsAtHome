@@ -69,9 +69,9 @@ function CommandLineInterpreter(){
 
 		stdin.addListener("data", function(d) {
 			var programName = d.toString().trim();
-            if(!programName){
-                return ;
-            }
+			if(!programName){
+				return ;
+			}
 			programs.runProgram(programName);
 		});
 	}

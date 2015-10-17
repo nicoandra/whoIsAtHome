@@ -1,0 +1,15 @@
+{
+  "name": "thermostat_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "onoff": "^1.0.3",
+    "pi-blaster.js": "^0.1.1"
+  }
+}
