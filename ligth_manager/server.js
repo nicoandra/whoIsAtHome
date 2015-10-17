@@ -35,9 +35,9 @@ var colorCodes = {
 
 //var receiver1 = new ReceiverSocket('ct5130.myfoscam.org' , 8899);
 // var receiver1 = new ReceiverSocket('192.168.1.106' , 8899);
-var receiver1 = new ReceiverSocket('192.168.1.148' , 8899);
-var receiver2 = new ReceiverSocket('192.168.1.148' , 8899);
-var receiver3 = new ReceiverSocket('192.168.1.148' , 8899);
+var receiver1 = new ReceiverSocket(cfg.milight1);
+var receiver2 = new ReceiverSocket(cfg.milight1);
+var receiver3 = new ReceiverSocket(cfg.milight1);
 
 var lights = {
     officeLamp : new Light('officeLamp', new LightSocket('officeLampObject', 1, receiver1)),
@@ -82,11 +82,11 @@ cliInterpreter.start();
 
 
 
-function ReceiverSocket(host, port){
+function ReceiverSocket(params){
 	this.client = dgram.createSocket('udp4');
 	this.buffer = [];
-    this.port = port;
-    this.host = host;
+    this.port = params.port;
+    this.host = params.host;
     this.CLOSE_BYTE = 0x55;
     var self = this;
 
@@ -1183,25 +1183,16 @@ io.sockets.on('connection', function(socket){
 	socket.on('sendCommand', function (commands) {
 		var programs = new LightPrograms();
 
-		console.log("vino esteee", commands);
-
-		// commands = JSON.parse(commands);
-
 		commands.forEach(function(programName){
-			console.log(programName)
-			programs.runProgram(programName);	
+			programs.runProgram(programName);
 		});
-
 		sendResponse();
 	});
-
 });
 
 sendResponse = function(){
-
 	var programs = new LightPrograms();
-
-	io.emit('statusUpdate', { 
+	io.emit('statusUpdate', {
 		lights : programs.getLightsStatus(), 
 		system : {
 			queueSize : [receiver1.getQueueSize(),receiver2.getQueueSize(),receiver3.getQueueSize()],

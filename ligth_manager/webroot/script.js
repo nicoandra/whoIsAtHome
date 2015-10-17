@@ -10,6 +10,12 @@ function sendBrightnessChangeCommand(lampName, b){
 }
 
 
+
+function changeRgbWheels(){
+
+}
+
+
 /**
 Sends a command and executes the callback, if specified.
 **/
