@@ -139,6 +139,9 @@ $(document).ready(function(){
 
     getStatus();
     initializeSocket();
+
+	setInterval(requestPlotData, 30000);
+	requestPlotData();    
 });
 
 
