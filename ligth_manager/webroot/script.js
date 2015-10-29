@@ -54,12 +54,21 @@ function generatePlot(res, status, statusName){
 		subtitle: {
 			text: 'HomePwn'
 		},
-		series: []
+		series: [],
+		xAxis: {
+			type: 'datetime'
+		},
 	}
 
 
 	Object.keys(res).forEach(function(cityName, index){
-		plotObject.series.push({'name': cityName, data : []});
+		plotObject.series.push(
+			{
+				'name': cityName, data : [],
+				pointStart: Date.now()-(res[cityName].length * 60 * 1000),
+				pointInterval: 60 * 1000 // one minute
+			}
+		);
 
 		res[cityName].forEach(function(temp){
 			plotObject.series[index].data.push(temp);
