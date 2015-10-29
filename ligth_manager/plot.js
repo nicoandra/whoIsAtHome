@@ -33,11 +33,22 @@ function cityPlotter(){
 
 	var getValues = function(){
 		Object.keys(cities).forEach(function(key){
+
+
 			url = 'http://api.openweathermap.org/data/2.5/weather?APPID='+openWeatherMapAppId+'&q='+cities[key].name+'&units=metric';
+			url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22"+cities[key].name+"%22)%20AND%20u%3D'c'&format=json&diagnostics=true&callback=";
+
+			// url = 'http://api.openweathermap.org/data/2.5/weather?APPID='+openWeatherMapAppId+'&q='+cities[key].name+'&units=metric';
+
+
 			request(url, function(error, response, body){
 				if(!error && response.statusCode == 200){
+
 					var info = JSON.parse(body);
-					values[key].push(info.main.temp);
+
+					console.log(info.query.results.channel.item.condition.temp);
+
+					values[key].push(parseFloat(info.query.results.channel.item.condition.temp));
 					if(values[key].length > sampleSize){
 						values[key].shift();
 					}
