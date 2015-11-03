@@ -11,6 +11,10 @@ var env = process.env.NODE_ENV || 'development'
     , cfg = require(__dirname + '/config/config.'+env+'.js');
 
 
+var request = require('request');
+
+
+
 var delayBetweenCommands = 80;
 
 var colorCodes = {
@@ -48,13 +52,29 @@ var lights = {
 };
 
 var heaterStatus = {
-    office : { status: 0, currentTemperature : 10, desiredTemperature : 10},
-    kitchen : { status: 0, currentTemperature : 10, desiredTemperature : 10},
-    living : { status: 0, currentTemperature : 10, desiredTemperature : 10},
-    bedroom : { status: 0, currentTemperature : 10, desiredTemperature : 10},
-    guestroom : { status: 0, currentTemperature : 10, desiredTemperature : 10},
+    // office : {name: 'Office', status: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/office' },
+    kitchen : {name : 'Kitchen', power: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/kitchen' },
+    living : {name: 'Living', power: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/living' },
+    // bedroom : { status: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/office' },
+    // guestroom : { status: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/office' },
 }
 
+function pollHeaterStatus(){
+
+	Object.keys(heaterStatus).forEach(function(key){
+		url = heaterStatus[key].url;
+		request(url, function(error, response, body){
+			if(!error && response.statusCode == 200){
+				var info = JSON.parse(body);
+				currTemp = parseFloat(info.currentTemperature);
+				cityPlotter.addValue(heaterStatus[key].name, currTemp);
+				heaterStatus[key].desiredTemperature = info.desiredTemperature;
+			}
+		});
+	});
+}
+pollHeaterStatus();
+setInterval(pollHeaterStatus, 60000); // Poll heater status every minute
 
 
 /**
@@ -214,9 +234,6 @@ function LightSocket(name, group, receiver){
     }
 
 	this.setColor = function(colorName){
-		console.log(colorName);
-		// this.receiver.queueStuff(this.commandOn);
-
 		if(Array.isArray(colorName)){
 			colorCode = colorName;
 		} else {
@@ -1049,31 +1066,7 @@ function LightPrograms(){
             return global[affectedZones.methodToExecute]();
         }
 
-        // console.log('CurrentStatus', lights);
         return ;
-
-
-
-		if(!affectedZones.parseComplete){
-			affectedZones = this.getActionByProgramName(programName, affectedZones);
-		}
-
-
-		if(affectedZones.parseComplete){
-
-			console.log('*********',affectedZones,'*********');
-			if(affectedZones.hasOwnProperty('parametersForMethod')){
-				console.log(milight.zone(affectedZones.lights));
-			} else {
-				affectedZones.commandsToSend.forEach(function(command, index){
-					setTimeout(function () {
-       					limitless.send(command);
-   					}, index * 100);
-				});
-				
-			}
-		}
-
 		/*
 			all [on / white / color / off / disco]
 			all [number] degrees
@@ -1095,9 +1088,7 @@ function LightPrograms(){
 	}
 
     this.getLightsStatus = function(){
-
     	var status = {};
-
     	Object.keys(lights).forEach(function(key){
     		status[key] = {
     			'status' : lights[key].status,
@@ -1106,21 +1097,14 @@ function LightPrograms(){
     			'queueSize' : lights[key].commandQueue.length
     		};
     	});
-
         return status;
     }
-
 }
 
+
+
+
 module.exports = LightPrograms;
-
-
-
-
-
-
-
-
 /** HTTP SERVER **/
 
 /** Command HTTP API **/
@@ -1145,7 +1129,7 @@ function HttpResponses() {
                     socketInfo : { host : cfg.httpHost , port : cfg.httpPort }
 
             	},
-            	heaters : {},
+            	heaters : heaterStatus,
             };
         }
         res.send(JSON.stringify(response));
@@ -1163,10 +1147,8 @@ function HttpResponses() {
     this.renderIndexPage = function (req, res) {
     	res.sendFile(__dirname + '/webroot/index.html');
     }
-
 }
 module.exports = HttpResponses;
-
 
 
 
@@ -1176,7 +1158,6 @@ port = cfg.httpPort;
 
 var httpServer = require('http').Server(app);
 var io = require('socket.io')(httpServer);
-
 
 io.sockets.on('connection', function(socket){
 
@@ -1199,14 +1180,9 @@ sendResponse = function(){
 			delayBetweenCommands : delayBetweenCommands,
 			memory : process.memoryUsage()
 		},
-		heaters : {},
+		heaters : heaters,
 	});
 }
-
-
-// setInterval(sendResponse, 2000);
-
-
 
 
 app.use('/static', express.static(__dirname + '/webroot'));

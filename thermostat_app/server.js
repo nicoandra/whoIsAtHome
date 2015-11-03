@@ -1,109 +1,127 @@
-var rpio = require('rpio');
+var rpio = require('rpio'),
+sensorLib = require('node-dht-sensor');	// https://github.com/momenso/node-dht-sensor
 
 
-function ShiftRegister(options){
+
+var sensor = {
+	sensors: [ {
+			name: "kitchen",
+			type: 22,
+			pin: 17
+		}, {
+			name: "living",
+			type: 22,
+			pin: 4
+		}
+	],
+	read: function() {
+		for (var a in this.sensors) {
+			var b = sensorLib.readSpec(this.sensors[a].type, this.sensors[a].pin);
+
+			// console.log(this.sensors[a].name + ": " + b.temperature.toFixed(1) + "C, " + b.humidity.toFixed(1) + "%"); 
+
+			if(this.sensors[a].name=='kitchen'){
+				heaters.kitchen.currentTemp = b.temperature.toFixed(1);
+			}
+
+			if(this.sensors[a].name=='living'){
+				heaters.living.currentTemp = b.temperature.toFixed(1);
+			}
+		}
+		setTimeout(function() {
+			sensor.read();
+		}, 2000);
+	}
+};
 
 
-	this.pinDs = options.pinDs;
-	this.pinClk = options.pinClk;
-	this.pinClear = 21;
-	this.pinRClk = options.pinRClk;
 
-	// console.log(options, this.pinDs, this.pinClk);
-	this.data = [0,0,0,0,0,0,0,0];
 
-	this.init = function(){
-		rpio.setOutput(this.pinDs);
-		rpio.setOutput(this.pinClk);
-		rpio.setOutput(this.pinClear);
+
+function Heater(name, pinNumber) {
+	this.name = name;
+	this.currentTemp = 19.8;
+	this.desiredTemp = 20;
+	this.power = 0;
+	this.pinNumber = pinNumber;
+
+	this.calculate = function(){
+		diff = this.currentTemp - this.desiredTemp;
+		// console.log(this.name, this.currentTemp, this.desiredTemp, diff);
+
+		if(diff > .5){
+			this.power = 0;
+			return ;
+		}
+
+		if(diff < -1){
+			this.power = 100;
+			return ;
+		}
+		this.power = 50;
+	}
+
+
+	this.writeValue = function(){
+		steps = 100;
+		for(i=0; i<steps ;i++){
+			bit = (i < this.power);
+			// console.log('Power ', this.power, ' Loop ', i, ' Value ', value, 'CurrentBit ', bit);
+			setTimeout(function(bit){
+				console.log('Setting power', this.pinNumber, this.power, bit);
+				rpio.write(this.pinNumber, bit ? 1 : 0);
+			}.bind(this, bit), i*300);
+		}
 		
-
-		// Start with the clock pin low
-		rpio.write(this.pinClk, 0);
-		rpio.write(this.pinClear, 0);
+		
 	}
 
-	this.reset = function(){
-		// rpio.write(this.pinClear, 0);	
-		// rpio.write(this.pinClear, 1);
+	this.start = function(){
+		rpio.setFunction(this.pinNumber, rpio.OUTPUT);
+		setInterval(this.calculate.bind(this), 10000);
+		setInterval(this.writeValue.bind(this), 30000);
+		this.calculate();
+		this.writeValue();
 	}
-
-	this.setData = function(data){
-		this.data = data;
-	}
-
-	this.writeData = function(){
-
-		dataToWrite = this.data.concat().reverse();
-
-		var step = 1;
-		var delay = 2;
-
-		setTimeout(function(){
-			rpio.write(this.pinClear, 0);
-		}.bind(this), delay*step++);
-
-
-		setTimeout(function(){
-			rpio.write(this.pinClear, 1);
-		}.bind(this), delay*step++);
-
-
-		setTimeout(function(){
-			console.log("Closing request ");
-			// rpio.write(this.pinClk, 0);
-			rpio.write(this.pinRClk, 0);
-		}.bind(this), delay*step++);
-
-
-		dataToWrite.forEach(function(value, index){
-
-			setTimeout(function(){
-				console.log("Setting clk low");
-				;
-				rpio.write(this.pinClk, 0);
-			}.bind(this), delay*step++);
-
-			setTimeout(function(){
-				console.log("Writing ", value, " now ");
-				rpio.write(this.pinDs, value);
-			}.bind(this), delay*step++);
-
-
-			setTimeout(function(){
-				console.log("Setting clk High")
-				rpio.write(this.pinClk, 1);
-			}.bind(this), delay*step++);
-		}.bind(this));
-
-		setTimeout(function(){
-			console.log("Closing request ");
-			// rpio.write(this.pinClk, 0);
-			rpio.write(this.pinRClk, 1);
-		}.bind(this), delay*step++);
-	}
-
 }
 
-module.exports = ShiftRegister;
-var tempControl = new ShiftRegister({pinDs : 17 , pinClk : 18, pinRClk : 23 });
-tempControl.init();
-// tempControl.writeData();
+var heaters = {
+	kitchen : new Heater('kitchen', 18),
+	living : new Heater('living', 23)
+}
 
-tempControl.reset();
+heaters.kitchen.start();
+heaters.living.start();
 
-setInterval(
-	function(){
-		a=Math.round(Math.random());
-		tempControl.setData([
-			a,a,a,a,
-			a,a,a,a,
-			a,a,a,0,
-			0,0,0,0
-		]);
-		tempControl.writeData();
+sensor.read();
 
 
 
-	}.bind(tempControl)
-, 30);
+var express = require('express'),
+app = express();
+app.get('/get/:room/', function(req, res){
+	room = req.params.room;
+
+	res.json({response: 'OK', name : room, currentTemperature: heaters[room].currentTemp, desiredTemperature : heaters[room].desiredTemp, power : heaters[room].power });
+	console.log('Getting stats for ', room);
+
+});
+
+app.get('/set/:room/', function(req, res){
+	room = req.params.room;
+	desiredTemperature = parseInt(req.query.temperature);
+
+	if(desiredTemperature < 8 || desiredTemperature > 28){
+		res.json({response: "Temperature out of boundaries", status:"KO"});
+		return ;
+	}
+
+	heaters[room].desiredTemp = desiredTemperature;
+	res.json({response: 'OK', name : room, currentTemperature: heaters[room].currentTemp, desiredTemperature : heaters[room].desiredTemp, power : heaters[room].power });
+	console.log('Setting temperature for', req.params.room, 'to', heaters[room].desiredTemp);
+});
+
+var PORT = 80;
+app.listen(PORT, function(){
+	console.log('Thermostat listening at port', PORT);
+})

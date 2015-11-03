@@ -46,8 +46,32 @@
               <button type="button" class="btn btn-default btnfire" onclick="sendCommandString('all lights fire')">Fire</button>
               <button type="button" class="btn btn-default " onclick="sendCommandString(['kitchen countertop pinks', 'kitchen lamp ocean', 'office lamp ocean', 'office boards pinks'])">SpankWire</button>
               <button type="button" class="btn btn-default " onclick="listen();">V</button>              
-            </div>           
-          </div>
+            </div>   
+
+            <div class="col-sm-6">
+              <div id="allLightsBrightnessSlider"></div>
+              <script type="text/javascript">
+                $("#allLightsBrightnessSlider").roundSlider({
+                    sliderType: "min-range",
+                    width: 15,
+                    radius: 40,
+                    value: 100,
+                    mouseScrollAction: true,
+                    keyboardAction: false,
+                    handleShape: "dot",
+                    startAngle: 0,
+                    endAngle: "+270",                    
+
+                    change: function (args) {
+                        sendBrightnessChangeCommand('officeLampBrightness', args);
+                        sendBrightnessChangeCommand('officeBoardsBrightness', args);
+                        sendBrightnessChangeCommand('kitchenCountertopBrightness', args);
+                        sendBrightnessChangeCommand('kitchenLampBrightness', args);
+                    }
+                });
+              </script>
+            </div>
+          
 
 
           <!--
@@ -303,6 +327,22 @@
         </div>
         <div class="panel-body">
           <div id="plotContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+          <div class="row">
+            <div class="col-sm-3">
+              Kitchen
+              Current: <span class="current">23</span>&circ;<br />
+              Desired: <span class="desired">22</span>&circ;<br />
+              Power: <span class="power"></span><br />
+            </div>
+
+            <div class="col-sm-3">
+              Living
+              Current: <span class="current">23</span>&circ;<br />
+              Desired: <span class="desired">22</span>&circ;<br />
+              Power: <span class="power"></span><br />
+            </div>
+          </div>
         </div>
       </div>
 

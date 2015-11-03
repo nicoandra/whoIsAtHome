@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "onoff": "^1.0.3",
-    "pi-blaster.js": "^0.1.1"
+    "express": "^4.13.3"
   }
 }
