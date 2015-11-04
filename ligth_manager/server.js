@@ -1180,7 +1180,7 @@ sendResponse = function(){
 			delayBetweenCommands : delayBetweenCommands,
 			memory : process.memoryUsage()
 		},
-		heaters : heaterStatus,
+//		heaters : heaterStatus,
 	});
 }
 
