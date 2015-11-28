@@ -13,7 +13,8 @@ function cityPlotter(){
 	}
 
 
-	
+	var stats = require("stats-lite");
+
 	var refreshPeriod = 60*1000; // in milliseconds
 	var sampleSize = 24*60; // How many samples to keep
 	var values = {};
@@ -64,8 +65,15 @@ function cityPlotter(){
 					var info = JSON.parse(body);
 
 					console.log(info.query.results.channel.item.condition.temp);
+					var currentTemperature = parseFloat(info.query.results.channel.item.condition.temp);
 
-					values[key].push(parseFloat(info.query.results.channel.item.condition.temp));
+					latestTemperatures = values[key].slice(Math.max(values[key].length - 2, 1));
+
+					latestTemperatures.push(currentTemperature);
+
+					temperature = Math.round(stats.mean(latestTemperatures) * 100) / 100;
+
+					values[key].push(temperature);
 					if(values[key].length > sampleSize){
 						values[key].shift();
 					}

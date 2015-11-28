@@ -66,6 +66,7 @@ function generatePlot(res, status, statusName){
 			{
 				'name': cityName, data : [],
 				pointStart: Date.now()-(res[cityName].length * 60 * 1000),
+				animation: false,
 				pointInterval: 60 * 1000 // one minute
 			}
 		);
