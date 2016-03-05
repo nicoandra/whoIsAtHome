@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/custom.css">
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <link href="https://cdn.jsdelivr.net/jquery.roundslider/1.0/roundslider.min.css" rel="stylesheet" />
+
+
+    <!-- <script src="https://cdn.jsdelivr.net/jquery.roundslider/1.0/roundslider.min.js"></script>     -->
+
+    <title>HomeOwn</title>
+
+    <script src="/static/script.js" type="text/javascript"></script>
+    <script src="/static/highcharts.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+  </head>
+  <body>
+
+    <div class="container">
+
+      <div class="page-header hidden-lg hidden-phone hidden-xs ">
+        <h1>HomeOwn <span class="lead">1961 Proliant server</span></h1>
+      </div><!-- Page-header -->
+
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">All Rooms</h3>
+        </div>
+        <div class="panel-body">
+           
+           <div class="row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('all lights white')">White</button>
+              <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('all lights off')">Off</button>
+              <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('all lights disco')">Disco</button>
+              <button type="button" class="btn btn-default btnocean" onclick="sendCommandString('all lights ocean')">Ocean</button>
+              <button type="button" class="btn btn-default btnpinks" onclick="sendCommandString('all lights pinks')">Pinks</button>
+              <button type="button" class="btn btn-default btngreens" onclick="sendCommandString('all lights greens')">Greens</button>
+              <button type="button" class="btn btn-default btnfire" onclick="sendCommandString('all lights fire')">Fire</button>
+              <button type="button" class="btn btn-default btnromantic" onclick="sendCommandString('romantic mode')">Romantic</button>
+              <button type="button" class="btn btn-default" onclick="sendCommandString(['kitchen countertop pinks', 'kitchen lamp ocean', 'office lamp ocean', 'office boards pinks'])">SpankWire</button>
+              <button type="button" class="btn btn-default " onclick="listen();">V</button>              
+            </div>   
+
+            <div class="col-sm-6">
+              <div id="allLightsBrightnessSlider"></div>
+              <script type="text/javascript">
+                /*$("#allLightsBrightnessSlider").roundSlider({
+                    sliderType: "min-range",
+                    width: 15,
+                    radius: 40,
+                    value: 100,
+                    mouseScrollAction: true,
+                    keyboardAction: false,
+                    handleShape: "dot",
+                    startAngle: 0,
+                    endAngle: "+270",                    
+
+                    change: function (args) {
+                        sendBrightnessChangeCommand('officeLampBrightness', args);
+                        sendBrightnessChangeCommand('officeBoardsBrightness', args);
+                        sendBrightnessChangeCommand('kitchenCountertopBrightness', args);
+                        sendBrightnessChangeCommand('kitchenLampBrightness', args);
+                    }
+                });*/
+              </script>
+            </div>
+        </div>
+      </div>
+
+
+
+       <div class="row" id="row1">
+        
+        <div class="col-xs-3" id="kitchenLampModule">
+          <h3 class="panel-title" data-toggle="collapse" data-target="#kitchenLampCollapsedPanel">Kitchen Lamp</h3>
+
+          <script type="text/javascript">
+          /*
+            $("#kitchenLampBrightnessSlider").roundSlider({
+                sliderType: "min-range",
+                width: 15,
+                radius: 50,
+                value: 100,
+                mouseScrollAction: true,
+                keyboardAction: false,
+                handleShape: "dot",
+                startAngle: 0,
+                endAngle: "+270",                    
+
+                change: function (args) {
+                    sendBrightnessChangeCommand('kitchenLampBrightness', args);
+                }
+            }); */
+          </script>
+
+          <button type="button" class="btn btn-default btnwhite sqr" onclick="sendCommandString('kitchen lamp white')">W</button>
+          <button type="button" class="btn btn-default btnoff sqr" onclick="sendCommandString('kitchen lamp off')">X</button>
+          <button type="button" class="btn btn-default btndisco sqr" onclick="sendCommandString('kitchen lamp disco')">Dis</button>
+          <button type="button" class="btn btn-default btnocean sqr" onclick="sendCommandString('kitchen lamp ocean')">Oc</button>
+          <button type="button" class="btn btn-default btnpinks sqr" onclick="sendCommandString('kitchen lamp pinks')">Pnk</button>
+          <button type="button" class="btn btn-default btngreens sqr" onclick="sendCommandString('kitchen lamp greens')">Grn</button>
+          <button type="button" class="btn btn-default btnfire sqr" onclick="sendCommandString('kitchen lamp fire')">Fre</button>
+
+          <button type="button" class="btn btn-default btnviolet sqr" onclick="sendCommandString('kitchen lamp violet')">Vlt</button>
+          <button type="button" class="btn btn-default btnlightblue sqr" onclick="sendCommandString('kitchen lamp lightBlue')">LgB</button>
+          <button type="button" class="btn sqr btn-default btnroyalblue" onclick="sendCommandString('kitchen lamp royalBlue')">DkB</button>
+          <button type="button" class="btn sqr btn-default btnaqua" onclick="sendCommandString('kitchen lamp aqua')">Aqa</button>
+          <button type="button" class="btn btn-default btnyellow sqr" onclick="sendCommandString('kitchen lamp yellow')">Ylw</button>
+          
+          <button type="button" class="btn sqr btn-default btnred" onclick="sendCommandString('kitchen lamp red')">Red</button>
+          <button type="button" class="btn sqr btn-default btngreen" onclick="sendCommandString('kitchen lamp green')">Grn</button>
+          <button type="button" class="btn sqr btn-default btnblue" onclick="sendCommandString('kitchen lamp blue')">Blu</button>
+          
+          <input id="kitchenLampBrightnessSlider" type="range" min="0" max="100" onchange="
+              myValue = this.value;
+              console.log(myValue);
+             $('#kitchenLampBrightnessSliderValue').html(myValue);
+          sendBrightnessChangeCommand('kitchenLampBrightness', this);" value="100"/><br />
+          <p class="note"><span id="kitchenLampBrightnessSliderValue">0</span></p>
+
+
+        </div>
+      </div><!-- row -->
+
+
+      <script type="text/javascript">
+
+          blockToPaste = $("#row1").clone().html();
+
+          $("#row1").append(
+            blockToPaste
+              .replace(/Lamp/g,'Countertop')
+              .replace(/lamp/g,'countertop')
+          );
+
+          $("#row1").append(
+            blockToPaste
+              .replace(/kitchenLamp/g,'officeLamp')
+              .replace(/kitchen/g,'office')
+              .replace(/Kitchen/g,'Office')
+          );
+
+          $("#row1").append(
+            blockToPaste
+              .replace(/kitchenLamp/g,'officeBoards')
+              .replace(/kitchen/g,'office')
+              .replace(/Kitchen/g,'Office')
+              .replace(/lamp/g,'boards')
+              .replace(/Lamp/g,'Boards')
+          );    
+      </script>
+
+
+
+      <div class="panel panel-default system">
+        <div class="panel-heading">
+          <h3 class="panel-title">Temperatures</h3>
+        </div>
+        <div class="panel-body">
+          <div id="plotContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+
+          <div class="row heater">
+
+              <div class="col-xs-3 kitchen">
+                <b><span class="roomName"></span></b><br />
+                Current: <span class="current">?</span>&circ;<br />
+                Desired: <span class="desired">?</span>&circ;<br />
+                Power: <span class="power"></span><br />
+              </div>
+
+              <div class="col-xs-3 living">
+                <b><span class="roomName"></span></b><br />
+                Current: <span class="current">?</span>&circ;<br />
+                Desired: <span class="desired">?</span>&circ;<br />
+                <select onchange="javascript: sendCommandString('temperature living ' + this.value )";>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="16">16</option>
+                  <option value="17">17</option>
+                  <option value="18">18</option>
+                  <option value="19">19</option>
+                  <option value="20">20</option>
+                  <option value="21">21</option>
+                  <option value="22">22</option>
+                </select>
+                
+                Power: <span class="power"></span><br />
+              </div>              
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="panel panel-default system">
+        <div class="panel-heading">
+          <h3 class="panel-title">Status and technical details</h3>
+        </div>
+        <div class="panel-body">
+          <dl class="dl-horizontal">
+            <dt>Global queues</dt> <dd id="globalQueueSize">123</dd>
+            <dt>Delay between commands</dt> <dd id="delayBetweenCommands">55</dd>
+          </dl>
+        </div>
+      </div>
+
+
+      
+
+    </div><!-- container -->
+</body>
+</html>
