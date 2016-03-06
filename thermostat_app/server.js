@@ -58,6 +58,7 @@ function Heater(name, pinNumber) {
 			this.power = 100;
 			return ;
 		}
+
 		this.power = 50;
 	}
 
@@ -70,19 +71,19 @@ function Heater(name, pinNumber) {
 			setTimeout(function(bit){
 				console.log('Setting power', this.pinNumber, this.power, bit);
 				rpio.write(this.pinNumber, bit ? 1 : 0);
-			}.bind(this, bit), i*300);
+			}.bind(this, bit), i*50);
 		}
-		
-		
 	}
 
 	this.start = function(){
 		rpio.setFunction(this.pinNumber, rpio.OUTPUT);
 		setInterval(this.calculate.bind(this), 10000);
-		setInterval(this.writeValue.bind(this), 30000);
+		setInterval(this.writeValue.bind(this), 5000);
 		this.calculate();
 		this.writeValue();
 	}
+
+	this.powerCycleDuration = 10; // in seconds
 }
 
 var heaters = {
@@ -111,7 +112,7 @@ app.get('/set/:room/', function(req, res){
 	room = req.params.room;
 	desiredTemperature = parseInt(req.query.temperature);
 
-	if(desiredTemperature < 8 || desiredTemperature > 28){
+	if(desiredTemperature < 8 || desiredTemperature > 35){
 		res.json({response: "Temperature out of boundaries", status:"KO"});
 		return ;
 	}

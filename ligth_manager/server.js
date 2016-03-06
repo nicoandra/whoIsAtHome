@@ -69,11 +69,31 @@ function pollHeaterStatus(){
 				currTemp = parseFloat(info.currentTemperature);
 				cityPlotter.addValue(heaterStatus[key].name, currTemp);
 				heaterStatus[key].desiredTemperature = info.desiredTemperature;
+				heaterStatus[key].currentTemperature = info.currentTemperature;
+				heaterStatus[key].power = info.power;
 			}
 		});
 	});
 }
 pollHeaterStatus();
+
+function setHeaterTemperature(heaterName, desiredTemperature){
+	if(!heaterStatus[heaterName]){
+		return ;
+	}
+
+	url = heaterStatus[heaterName].url;
+	url = url.replace('/get/', '/set/') + "?temperature=" + desiredTemperature;
+
+	request(url, function(error, response, body){
+		if(!error && response.statusCode == 200){
+			var info = JSON.parse(body);
+			currTemp = parseFloat(info.currentTemperature);
+
+		}
+	});
+}
+
 setInterval(pollHeaterStatus, 60000); // Poll heater status every minute
 
 
@@ -148,8 +168,10 @@ function ReceiverSocket(params){
     	        buffer1, 0, buffer1.length, self.port,
             	self.host,
             	function(err){
+
+
             		setTimeout(function(){
-						// console.log('[>Buffer1] ', buffer2);
+
 						this.client.send(
 							buffer2, 0, buffer2.length, self.port,
 							self.host,
@@ -183,7 +205,6 @@ function ReceiverSocket(params){
     	return this.buffer.length;
     }
 
-
     // Start sending queued messages. The function will call itself in the queue
     setTimeout(this.sendQueuedStuff.bind(self), delayBetweenCommands);
 }
@@ -215,6 +236,7 @@ function LightSocket(name, group, receiver){
     }
 
     this.white = function(cb){
+        this.receiver.queueStuff(this.commandWhite);
         this.receiver.queueStuff(this.commandWhite);
     }
 
@@ -265,7 +287,6 @@ function LightSocket(name, group, receiver){
     }
 }
 
-
 function Light(name, socket){
     this.name = name;
     this.socket = socket;
@@ -300,8 +321,6 @@ function Light(name, socket){
 
 	self = this;
 	setInterval(this.sendQueue.bind(self), 100);
-
-
 
     this.on = function(){
         this.socket.on();
@@ -541,10 +560,48 @@ function LightPrograms(){
         var action = '';
         var actionArguments = [];
         var affectedLights = [];
+        var affectedHeaters = [];
+
+        //console.log(heaterStatus);
+
+		if(programName.match('romantic mode')){
+			this.getZonesByProgramName('all lamps white');
+			
+			this.getZonesByProgramName('all lamps brightness 5');
+			this.getZonesByProgramName('all lamps brightness 10');
+			this.getZonesByProgramName('all lamps brightness 15');
+			this.getZonesByProgramName('all lamps brightness 20');
+			
+			return true;
+		}
 
         if(programName.match('get lights status')){
             return {methodToExecute : 'getLightsStatus' };
         }
+
+
+		exp = programName.match('^temperature ([a-zA-Z]+) ([0-9\.]+)');
+		if(exp){
+			roomName = exp[1]
+			desiredTemperature = exp[2];
+
+			if(roomName == "all"){
+				affectedHeaters = Object.keys(heaterStatus);
+			} else {
+				affectedHeaters.push(roomName);
+			}
+
+			affectedHeaters.forEach(function(name){
+				setHeaterTemperature(name, desiredTemperature);
+				console.log(name, desiredTemperature);
+			})
+			
+			/*
+			()*/
+			console.log("roomName is", roomName, heaterStatus[exp[2]], "cambiando ", affectedHeaters);
+
+		}
+
 
 		exp = programName.match('^all lights (.*)');
 		if(exp){
@@ -554,6 +611,13 @@ function LightPrograms(){
 			affectedLights.push(lights.kitchenLamp);
 			affectedLights.push(lights.kitchenCountertop);
 		}
+
+		exp = programName.match('^all lamps (.*)');
+		if(exp){
+			action = exp[1];
+			affectedLights.push(lights.officeLamp);
+			affectedLights.push(lights.kitchenLamp);
+		}		
 
 		exp = programName.match('^office all (.*)');
 		if(exp){
@@ -608,7 +672,7 @@ function LightPrograms(){
 			actionArguments.push(colorToSet);
 		}
 
-		console.log(action);
+		// console.log(action);
 
 		exp = action.match("^brightness (.*)");
 		if(exp){
@@ -681,6 +745,8 @@ function LightPrograms(){
                 return true;
             }
 
+
+            // Handle explicit colors (ie red, blue, green) as defined in the property
 			if(colorCodes.hasOwnProperty(exp[1])){
 				lights.officeBoards.setColor(exp[1]);
 				lights.officeLamp.setColor(exp[1]);
@@ -1048,6 +1114,7 @@ function LightPrograms(){
 
 	this.runProgram = function(programName){
 
+		console.log("Running program", programName);
 
 		exp = programName.match('config set delayBetweenCommands ([0-9]+)');
 		if(exp){
@@ -1056,11 +1123,12 @@ function LightPrograms(){
 			return ;
 		}
 
-
 		affectedZones = this.getZonesByProgramName(programName);
         if(affectedZones === true){
             return ;
         }
+
+        console.log(affectedZones);
 
         if(affectedZones.hasOwnProperty('methodToExecute')){
             return global[affectedZones.methodToExecute]();
@@ -1145,7 +1213,7 @@ function HttpResponses() {
     }
 
     this.renderIndexPage = function (req, res) {
-    	res.sendFile(__dirname + '/webroot/index.html');
+    	res.sendFile(__dirname + '/webroot/index-2.html');
     }
 }
 module.exports = HttpResponses;
@@ -1160,15 +1228,24 @@ var httpServer = require('http').Server(app);
 var io = require('socket.io')(httpServer);
 
 io.sockets.on('connection', function(socket){
+	console.log("[Socket] on");
 
 	socket.on('sendCommand', function (commands) {
+
 		var programs = new LightPrograms();
 
+		console.log("[Socket] Received ", commands);
+
 		commands.forEach(function(programName){
+			console.log("[rec socket] ", programName);
 			programs.runProgram(programName);
 		});
+
 		sendResponse();
+
+
 	});
+
 });
 
 sendResponse = function(){
@@ -1199,6 +1276,12 @@ app.get('/plot/json', function(req, res){
 
 app.use('/', function(req, res, next){
 	new HttpResponses().renderIndexPage(req, res);
+});
+
+app.post('/heater/', function(req, res){
+	var room = req.query.room;
+	var temperature = req.query.temperature;
+	
 });
 
 

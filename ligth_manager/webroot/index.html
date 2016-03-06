@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/static/bootstrap.css">
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
     <link href="https://cdn.jsdelivr.net/jquery.roundslider/1.0/roundslider.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/jquery.roundslider/1.0/roundslider.min.js"></script>    
@@ -44,7 +45,8 @@
               <button type="button" class="btn btn-default btnpinks" onclick="sendCommandString('all lights pinks')">Pinks</button>
               <button type="button" class="btn btn-default btngreens" onclick="sendCommandString('all lights greens')">Greens</button>
               <button type="button" class="btn btn-default btnfire" onclick="sendCommandString('all lights fire')">Fire</button>
-              <button type="button" class="btn btn-default " onclick="sendCommandString(['kitchen countertop pinks', 'kitchen lamp ocean', 'office lamp ocean', 'office boards pinks'])">SpankWire</button>
+              <button type="button" class="btn btn-default btnromantic" onclick="sendCommandString('romantic mode')">Romantic</button>
+              <button type="button" class="btn btn-default" onclick="sendCommandString(['kitchen countertop pinks', 'kitchen lamp ocean', 'office lamp ocean', 'office boards pinks'])">SpankWire</button>
               <button type="button" class="btn btn-default " onclick="listen();">V</button>              
             </div>   
 
@@ -158,18 +160,18 @@
 
       <div class="panel panel-default kitchenLamp">
         <div class="panel-heading">
-          <h3 class="panel-title">Kitchen Lamp</h3>
+          <h3 class="panel-title" data-toggle="collapse" data-target="#kitchenLampCollapsedPanel">Kitchen Lamp</h3>
         </div>
-        <div class="panel-body">
+        <div class="panel-body collapse" id="kitchenLampCollapsedPanel">
            <div class="row">
-            <div class="col-sm-2">
+            <div class="col-xs-3">
 
               <div id="kitchenLampBrightnessSlider"></div>
               <script type="text/javascript">
                 $("#kitchenLampBrightnessSlider").roundSlider({
                     sliderType: "min-range",
                     width: 15,
-                    radius: 40,
+                    radius: 50,
                     value: 100,
                     mouseScrollAction: true,
                     keyboardAction: false,
@@ -184,7 +186,7 @@
               </script>
 
             </div>
-            <div class="col-sm-10">
+            <div class="col-xs-9">
               <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('kitchen lamp white')">White</button>
               <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('kitchen lamp off')">Off</button>
               <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('kitchen lamp disco')">Disco</button>
@@ -197,14 +199,13 @@
         </div><!-- panel-body -->
       </div>      
 
-
       <div class="panel panel-default kitchenCountertop">
         <div class="panel-heading">
-          <h3 class="panel-title">Kitchen Countertop</h3>
+          <h3 class="panel-title" data-toggle="collapse" data-target="#kitchenCountertopCollapsedPanel">Kitchen Countertop</h3>
         </div>
-        <div class="panel-body">
+        <div class="panel-body collapse" id="kitchenCountertopCollapsedPanel">
            <div class="row">
-            <div class="col-sm-2">
+            <div class="col-xs-3">
 
               <div id="kitchenCountertopBrightnessSlider"></div>
               <script type="text/javascript">
@@ -226,7 +227,7 @@
               </script>
 
             </div>
-            <div class="col-sm-10">
+            <div class="col-xs-9">
               <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('kitchen countertop white')">White</button>
               <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('kitchen countertop off')">Off</button>
               <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('kitchen countertop disco')">Disco</button>
@@ -242,11 +243,11 @@
 
       <div class="panel panel-default officeLamp">
         <div class="panel-heading">
-          <h3 class="panel-title">Office Lamp</h3>
+          <h3 class="panel-title" data-toggle="collapse" data-target="#officeLampCollapsedPanel">Office Lamp</h3>
         </div>
-        <div class="panel-body">
+        <div class="panel-body collapse" id="officeLampCollapsedPanel">
         <div class="row">
-            <div class="col-sm-2">
+            <div class="col-xs-3">
 
               <div id="officeLampBrightnessSlider"></div>
               <script type="text/javascript">
@@ -267,7 +268,7 @@
                 });
               </script>
             </div>
-            <div class="col-sm-10">
+            <div class="col-xs-9">
               <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('office lamp white')">White</button>
               <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('office lamp off')">Off</button>
               <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('office lamp disco')">Disco</button>
@@ -283,11 +284,11 @@
 
       <div class="panel panel-default officeBoards">
         <div class="panel-heading">
-          <h3 class="panel-title">Office Boards</h3>
+          <h3 class="panel-title" data-toggle="collapse" data-target="#officeBoardsCollapsedPanel">Office Boards</h3>
         </div>
-        <div class="panel-body">
+        <div class="panel-body collapse" id="officeBoardsCollapsedPanel">
           <div class="row">
-            <div class="col-sm-2">
+            <div class="col-xs-3">
 
               <div id="officeBoardsBrightnessSlider"></div>
               <script type="text/javascript">
@@ -308,9 +309,21 @@
                 });
               </script>              
             </div>
-            <div class="col-sm-10">
+            <div class="col-xs-9">
               <button type="button" class="btn btn-default btnwhite" onclick="sendCommandString('office boards white')">White</button>
               <button type="button" class="btn btn-default btnoff" onclick="sendCommandString('office boards off')">Off</button>
+
+              <button type="button" class="btn btn-default btnviolet" onclick="sendCommandString('office boards violet')">Violet</button>
+              <button type="button" class="btn btn-default btnlightblue" onclick="sendCommandString('office boards lightBlue')">Light Blue</button>
+              <button type="button" class="btn btn-default btnroyalblue" onclick="sendCommandString('office boards royalBlue')">Royal Blue</button>
+              <button type="button" class="btn btn-default btnaqua" onclick="sendCommandString('office boards aqua')">Aqua</button>
+              <button type="button" class="btn btn-default btnyellow" onclick="sendCommandString('office boards yellow')">Yellow</button>
+              
+              <button type="button" class="btn btn-default btnred" onclick="sendCommandString('office boards red')">Red</button>
+              <button type="button" class="btn btn-default btngreen" onclick="sendCommandString('office boards green')">Green</button>
+              <button type="button" class="btn btn-default btnblue" onclick="sendCommandString('office boards blue')">Blue</button>
+
+
               <button type="button" class="btn btn-default btndisco" onclick="sendCommandString('office boards disco')">Disco</button>
               <button type="button" class="btn btn-default btnocean" onclick="sendCommandString('office boards ocean')">Ocean</button>
               <button type="button" class="btn btn-default btnpinks" onclick="sendCommandString('office boards pinks')">Pinks</button>
@@ -328,20 +341,35 @@
         <div class="panel-body">
           <div id="plotContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
-          <div class="row">
-            <div class="col-sm-3">
-              Kitchen
-              Current: <span class="current">23</span>&circ;<br />
-              Desired: <span class="desired">22</span>&circ;<br />
-              Power: <span class="power"></span><br />
-            </div>
 
-            <div class="col-sm-3">
-              Living
-              Current: <span class="current">23</span>&circ;<br />
-              Desired: <span class="desired">22</span>&circ;<br />
-              Power: <span class="power"></span><br />
-            </div>
+          <div class="row heater">
+
+              <div class="col-xs-3 kitchen">
+                <b><span class="roomName"></span></b><br />
+                Current: <span class="current">?</span>&circ;<br />
+                Desired: <span class="desired">?</span>&circ;<br />
+                Power: <span class="power"></span><br />
+              </div>
+
+              <div class="col-xs-3 living">
+                <b><span class="roomName"></span></b><br />
+                Current: <span class="current">?</span>&circ;<br />
+                Desired: <span class="desired">?</span>&circ;<br />
+                <select onchange="javascript: sendCommandString('temperature living ' + this.value )";>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="16">16</option>
+                  <option value="17">17</option>
+                  <option value="18">18</option>
+                  <option value="19">19</option>
+                  <option value="20">20</option>
+                  <option value="21">21</option>
+                  <option value="22">22</option>
+                </select>
+                
+                Power: <span class="power"></span><br />
+              </div>              
+
           </div>
         </div>
       </div>

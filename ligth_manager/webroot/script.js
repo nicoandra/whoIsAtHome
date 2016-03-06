@@ -7,6 +7,8 @@ function sendBrightnessChangeCommand(lampName, b){
 		return " "+l.toLowerCase();
 	});
 	sendCommandString(lampName + " " + b.value);
+
+	
 }
 
 
@@ -21,7 +23,8 @@ Sends a command and executes the callback, if specified.
 **/
 function sendCommandString(commands, cb){
 
-	var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
+	var socket = io.connect('http://192.168.1.112:3999');
+	// var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
 
 	// commands = "office boards off";
 
@@ -100,7 +103,8 @@ function updateInterfaceWithStatusObject(response){
 			$("div.panel."+name+" div.panel-body button.btn.btn-primary").removeClass('btn-primary').addClass('btn-default');
 			$("div.panel."+name+" div.panel-body button.btn.btn-primary").removeClass('btn-primary').addClass('btn-default');
 
-			$("#"+name+"BrightnessSlider").roundSlider({value : response.lights[name].brightness });
+			$("#"+name+"BrightnessSlider")[0].value = response.lights[name].brightness;
+			$("#"+name+"BrightnessSliderValue").html(response.lights[name].brightness);
 
 			if(	Array.isArray(response.lights[name].color) == false || response.lights[name].status == 0 ) {
 				if(response.lights[name].status){
@@ -130,6 +134,15 @@ function updateInterfaceWithStatusObject(response){
         }
     }
 		
+	if(response.heaters){
+		Object.keys(response.heaters).forEach(function(name, index){
+			$("div.row.heater div." + name + " span.roomName").text(response.heaters[name].name);
+			$("div.row.heater div." + name + " span.current").text(response.heaters[name].currentTemperature);
+			$("div.row.heater div." + name + " span.desired").text(response.heaters[name].desiredTemperature);
+			$("div.row.heater div." + name + " span.power").text(response.heaters[name].power ? response.heaters[name].power : "Off");
+			
+		})
+	}
 
 }
 
@@ -152,11 +165,17 @@ $(document).ready(function(){
 
 	setInterval(requestPlotData, 30000);
 	requestPlotData();    
+
+	window.addEventListener('focus', function() {
+    	getStatus();
+	});
+
 });
 
 
     function initializeSocket() {
-        var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
+    	// var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
+    	var socket = io.connect('http://127.0.0.1:3999');
 
         socket.on('statusUpdate', function (data) {
             updateInterfaceWithStatusObject(data);

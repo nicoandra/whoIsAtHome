@@ -47,10 +47,27 @@
               <button type="button" class="btn btn-default btnfire" onclick="sendCommandString('all lights fire')">Fire</button>
               <button type="button" class="btn btn-default btnromantic" onclick="sendCommandString('romantic mode')">Romantic</button>
               <button type="button" class="btn btn-default" onclick="sendCommandString(['kitchen countertop pinks', 'kitchen lamp ocean', 'office lamp ocean', 'office boards pinks'])">SpankWire</button>
-              <button type="button" class="btn btn-default " onclick="listen();">V</button>              
+              <button type="button" class="btn btn-default " onclick="listen();">V</button>             
+
+
             </div>   
 
             <div class="col-sm-6">
+
+          <input id="allLightsBrightnessSlider" type="range" min="0" max="100" onchange="
+              myValue = this.value;
+              console.log(myValue);
+              $('#kitchenLampBrightnessSliderValue').html(myValue);
+              sendBrightnessChangeCommand('kitchenLampBrightness', this);
+
+              $('#officeLampBrightnessSliderValue').html(myValue);
+              sendBrightnessChangeCommand('officeLampBrightness', this);
+
+              $('#officeBoardsBrightnessSliderValue').html(myValue);
+              sendBrightnessChangeCommand('officeBoardsBrightness', this);
+
+              " value="100"/>
+              
               <div id="allLightsBrightnessSlider"></div>
               <script type="text/javascript">
                 /*$("#allLightsBrightnessSlider").roundSlider({
