@@ -64,7 +64,7 @@ function cityPlotter(){
 
 					var info = JSON.parse(body);
 
-					console.log(info.query.results.channel.item.condition.temp);
+					// console.log(info.query.results.channel.item.condition.temp);
 					var currentTemperature = parseFloat(info.query.results.channel.item.condition.temp);
 
 					latestTemperatures = values[key].slice(Math.max(values[key].length - 2, 1));
