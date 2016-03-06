@@ -23,8 +23,8 @@ Sends a command and executes the callback, if specified.
 **/
 function sendCommandString(commands, cb){
 
-	var socket = io.connect('http://192.168.1.112:3999');
-	// var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
+	// var socket = io.connect('http://192.168.1.112:3999');
+	var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
 
 	// commands = "office boards off";
 
@@ -174,8 +174,8 @@ $(document).ready(function(){
 
 
     function initializeSocket() {
-    	// var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
-    	var socket = io.connect('http://127.0.0.1:3999');
+    	var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
+    	// var socket = io.connect('http://127.0.0.1:3999');
 
         socket.on('statusUpdate', function (data) {
             updateInterfaceWithStatusObject(data);
