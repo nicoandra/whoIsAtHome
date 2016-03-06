@@ -49,13 +49,24 @@ function Heater(name, pinNumber) {
 		diff = this.currentTemp - this.desiredTemp;
 		// console.log(this.name, this.currentTemp, this.desiredTemp, diff);
 
-		if(diff > .5){
+		if(diff >= .5){
 			this.power = 0;
 			return ;
 		}
 
 		if(diff < -1){
 			this.power = 100;
+			return ;
+		}
+
+		if(diff < -.5){
+			this.power = 70;
+			return ;
+		}
+
+
+		if(diff < .5){
+			this.power = 30;
 			return ;
 		}
 
