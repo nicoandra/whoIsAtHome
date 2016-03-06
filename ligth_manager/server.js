@@ -94,7 +94,7 @@ function setHeaterTemperature(heaterName, desiredTemperature){
 	});
 }
 
-setInterval(pollHeaterStatus, 60000); // Poll heater status every minute
+setInterval(pollHeaterStatus, 2000); // Poll heater status every 2 seconds
 
 
 /**

@@ -1,17 +1,13 @@
 
 
-var socketConfig = {host : '', port : ''};
+var socketConfig = {host : location.hostname, port : location.port };
 
 function sendBrightnessChangeCommand(lampName, b){
 	lampName = lampName.replace(/([A-Z])/g , function(match, l, offset){
 		return " "+l.toLowerCase();
 	});
-	sendCommandString(lampName + " " + b.value);
-
-	
+	sendCommandString(lampName + " " + b.value);	
 }
-
-
 
 function changeRgbWheels(){
 
@@ -23,18 +19,26 @@ Sends a command and executes the callback, if specified.
 **/
 function sendCommandString(commands, cb){
 
-	// var socket = io.connect('http://192.168.1.112:3999');
-	var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
+	try {
+		var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
 
-	// commands = "office boards off";
+		if(!Array.isArray(commands)){
+			arr = new Array;
+			arr.push(commands);
+			commands = arr;
+		}
 
-	if(!Array.isArray(commands)){
-		arr = new Array;
-		arr.push(commands);
-		commands = arr;
+		socket.emit('sendCommand', commands);
+	} catch(e){
+		$.get('/commands/', { command :  "eehh getStatus"}, function(res, status, statusName){
+			if(status != 'success'){
+				console.log("Call didn't work...", res,status, statusName);
+				return ;
+			}
+			res = jQuery.parseJSON(res);
+			updateInterfaceWithStatusObject(res);
+		});
 	}
-
-	socket.emit('sendCommand', commands);
 }
 
 
@@ -173,25 +177,25 @@ $(document).ready(function(){
 });
 
 
-    function initializeSocket() {
-    	var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
-    	// var socket = io.connect('http://127.0.0.1:3999');
+function initializeSocket() {
+	var socket = io.connect('http://'+socketConfig.host+':'+socketConfig.port);
+	// var socket = io.connect('http://127.0.0.1:3999');
 
-        socket.on('statusUpdate', function (data) {
-            updateInterfaceWithStatusObject(data);
-        });
-    }
+    socket.on('statusUpdate', function (data) {
+        updateInterfaceWithStatusObject(data);
+    });
+}
 
-	function listen(){
-		var recognition = new webkitSpeechRecognition();
-		recognition.lang = "en";
-		recognition.onresult = function(event) { 
-			recognition.stop();
-			console.log(event.results[0]);
-			command = event.results[0][0].transcript;
-			sendCommandString(command);
-		}
-		recognition.start();
+function listen(){
+	var recognition = new webkitSpeechRecognition();
+	recognition.lang = "en";
+	recognition.onresult = function(event) { 
+		recognition.stop();
+		console.log(event.results[0]);
+		command = event.results[0][0].transcript;
+		sendCommandString(command);
 	}
+	recognition.start();
+}
 
 
