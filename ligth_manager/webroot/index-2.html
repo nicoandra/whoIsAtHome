@@ -192,6 +192,18 @@
                 <b><span class="roomName"></span></b><br />
                 Current: <span class="current">?</span>&circ;<br />
                 Desired: <span class="desired">?</span>&circ;<br />
+                <select onchange="javascript: sendCommandString('temperature kitchen ' + this.value )";>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="16">16</option>
+                  <option value="17">17</option>
+                  <option value="18">18</option>
+                  <option value="19">19</option>
+                  <option value="20">20</option>
+                  <option value="21">21</option>
+                  <option value="22">22</option>
+                  <option value="23">23</option>
+                </select>
                 Power: <span class="power"></span><br />
               </div>
 
@@ -209,10 +221,10 @@
                   <option value="20">20</option>
                   <option value="21">21</option>
                   <option value="22">22</option>
+                  <option value="23">23</option>
                 </select>
-                
                 Power: <span class="power"></span><br />
-              </div>              
+              </div>          
 
           </div>
         </div>

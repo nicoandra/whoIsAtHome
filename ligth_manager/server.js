@@ -67,7 +67,7 @@ function pollHeaterStatus(){
 			if(!error && response.statusCode == 200){
 				var info = JSON.parse(body);
 				currTemp = parseFloat(info.currentTemperature);
-				cityPlotter.addValue(heaterStatus[key].name, currTemp);
+				// cityPlotter.addValue(heaterStatus[key].name, currTemp);
 				heaterStatus[key].desiredTemperature = info.desiredTemperature;
 				heaterStatus[key].currentTemperature = info.currentTemperature;
 				heaterStatus[key].power = info.power;
@@ -75,7 +75,15 @@ function pollHeaterStatus(){
 		});
 	});
 }
+
+function appendCurrentTempToTrend(){
+	Object.keys(heaterStatus).forEach(function(key){
+		cityPlotter.addValue(heaterStatus[key].name, heaterStatus[key].currentTemperature);
+	});
+}
+
 pollHeaterStatus();
+appendCurrentTempToTrend();
 
 function setHeaterTemperature(heaterName, desiredTemperature){
 	if(!heaterStatus[heaterName]){
@@ -94,7 +102,8 @@ function setHeaterTemperature(heaterName, desiredTemperature){
 	});
 }
 
-setInterval(pollHeaterStatus, 2000); // Poll heater status every 2 seconds
+setInterval(pollHeaterStatus, 5000); // Poll heater status every minute for the trend
+setInterval(appendCurrentTempToTrend, 60000); // Append temperatures every minute for the trend
 
 
 /**
@@ -1333,46 +1342,71 @@ var rgbToMilightColor = function(r, g, b){
 }	
 
 
-/*
 var peopleAtHome = {
-	nico : { devices : ['192.168.1.141'] , status : 0 , lastCheck : 0 }
+	nico : { 
+		devices : [
+			{ip: '192.168.1.141', status: 0, lastCheck: 0}
+		], 
+		status : 0,
+		lastCheck : 0 
+	}
 }
 
+if (false) {
+	var ping = require ("net-ping");
 
+	var pingDevices = function(){
+		var pingSession = ping.createSession();
+		Object.keys(peopleAtHome).forEach(function(personName){
 
-
-var ping = require ("net-ping");
-
-var pingDevices = function(){
-	var pingSession = ping.createSession();
-	Object.keys(peopleAtHome).forEach(function(personName){
-		if(peopleAtHome[personName].lastCheck > Date.now() - 60000 ){
-			console.log('Already checked ', personName);
-			return ;
-		}
-
-		peopleAtHome[personName].devices.forEach(function(deviceAddress, index){
-			if(index != 0 && peopleAtHome[personName].status == 1){
-				// Already found online on this run... 
-				return;
+			if(peopleAtHome[personName].lastCheck > Date.now() - 5000 ){
+				console.log('Already checked ', personName);
+				return ;
 			}
 
-			pingSession.pingHost (deviceAddress, function (error, target) {
-				if (error){
-					peopleAtHome[personName].status = 0;
-				} else {
-					peopleAtHome[personName].status = 1
+			peopleAtHome[personName].devices.forEach(function(deviceSettings, index){
+
+				deviceAddress = deviceSettings.ip;
+				lastCheck = deviceSettings.lastCheck;
+
+				if (lastCheck > Date.now() - 5000 ) {
+					return ;
 				}
+
+				console.log(">> Hitting",deviceAddress);
+				
+				pingSession.pingHost (deviceAddress, function (error, target) {
+					if (error){
+						console.log("HE'S NOT HERE");
+						peopleAtHome[personName]['devices'][index].status = 0;
+					} else {
+						console.log("HE'S HERE MAN!!");
+						peopleAtHome[personName]['devices'][index].status = 1;
+					}
+				});
+
 			});
 		});
+		console.log(peopleAtHome);
+	}
 
-		peopleAtHome[personName].lastCheck = Date.now();
+	setInterval(pingDevices, 1000);
 
-	});
-	console.log(peopleAtHome);
+	function updatePeopleStatusBasedOnDevices(){
+		Object.keys(peopleAtHome).forEach(function(personName){	
+			personStatus = 0;
+
+			peopleAtHome[personName].devices.forEach(function(deviceSettings, index){
+				if (deviceSettings.status == 1) {
+					personStatus = 1;
+					return ;
+				}
+			}.bind(personStatus));
+
+			peopleAtHome[personName].status = personStatus;
+
+		});
+	}
+
+	setInterval(updatePeopleStatusBasedOnDevices, 1000);
 }
-
-// setInterval(pingDevices, 1000);
-
-
-*/

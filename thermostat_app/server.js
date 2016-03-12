@@ -59,7 +59,7 @@ function Heater(name, pinNumber) {
 			return ;
 		}
 
-		if(diff < -.5){
+		if(diff < -.1){
 			this.power = 70;
 			return ;
 		}
