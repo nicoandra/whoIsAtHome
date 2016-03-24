@@ -149,35 +149,6 @@
       </div><!-- row -->
 
 
-      <script type="text/javascript">
-
-          blockToPaste = $("#row1").clone().html();
-
-          $("#row1").append(
-            blockToPaste
-              .replace(/Lamp/g,'Countertop')
-              .replace(/lamp/g,'countertop')
-          );
-
-          $("#row1").append(
-            blockToPaste
-              .replace(/kitchenLamp/g,'officeLamp')
-              .replace(/kitchen/g,'office')
-              .replace(/Kitchen/g,'Office')
-          );
-
-          $("#row1").append(
-            blockToPaste
-              .replace(/kitchenLamp/g,'officeBoards')
-              .replace(/kitchen/g,'office')
-              .replace(/Kitchen/g,'Office')
-              .replace(/lamp/g,'boards')
-              .replace(/Lamp/g,'Boards')
-          );    
-      </script>
-
-
-
       <div class="panel panel-default system">
         <div class="panel-heading">
           <h3 class="panel-title">Temperatures</h3>
@@ -188,43 +159,42 @@
 
           <div class="row heater">
 
-              <div class="col-xs-3 kitchen">
-                <b><span class="roomName"></span></b><br />
-                Current: <span class="current">?</span>&circ;<br />
-                Desired: <span class="desired">?</span>&circ;<br />
-                <select onchange="javascript: sendCommandString('temperature kitchen ' + this.value )";>
-                  <option value="14">14</option>
-                  <option value="15">15</option>
-                  <option value="16">16</option>
-                  <option value="17">17</option>
-                  <option value="18">18</option>
-                  <option value="19">19</option>
-                  <option value="20">20</option>
-                  <option value="21">21</option>
-                  <option value="22">22</option>
-                  <option value="23">23</option>
-                </select>
-                Power: <span class="power"></span><br />
-              </div>
-
               <div class="col-xs-3 living">
                 <b><span class="roomName"></span></b><br />
                 Current: <span class="current">?</span>&circ;<br />
                 Desired: <span class="desired">?</span>&circ;<br />
                 <select onchange="javascript: sendCommandString('temperature living ' + this.value )";>
                   <option value="14">14</option>
+                  <option value="14.5">14.5</option>
                   <option value="15">15</option>
+                  <option value="15.5">15.5</option>
                   <option value="16">16</option>
+                  <option value="16.5">16.5</option>
                   <option value="17">17</option>
+                  <option value="17.5">17.5</option>
                   <option value="18">18</option>
+                  <option value="18.5">18.5</option>
                   <option value="19">19</option>
+                  <option value="19.5">19.5</option>
                   <option value="20">20</option>
+                  <option value="20.5">20.5</option>
                   <option value="21">21</option>
+                  <option value="21.5">21.5</option>
                   <option value="22">22</option>
+                  <option value="22.5">22.5</option>
                   <option value="23">23</option>
+                  <option value="23.5">23.5</option>
+                  <option value="24">24</option>
+                  <option value="24.5">24.5</option>
+                  <option value="25">25</option>
+                  <option value="25.5">25.5</option>
+                  <option value="26">26</option>
+                  <option value="26.5">26.5</option>
+                  <option value="27">27</option>
+                  <option value="27.5">27.5</option>
                 </select>
                 Power: <span class="power"></span><br />
-              </div>          
+              </div>     
 
           </div>
         </div>
@@ -247,5 +217,38 @@
       
 
     </div><!-- container -->
+
+    <script type="text/javascript">
+        blockToPaste = $("#row1").clone().html();
+
+        $("#row1").append(
+          blockToPaste
+            .replace(/Lamp/g,'Countertop')
+            .replace(/lamp/g,'countertop')
+        );
+
+        $("#row1").append(
+          blockToPaste
+            .replace(/kitchenLamp/g,'officeLamp')
+            .replace(/kitchen/g,'office')
+            .replace(/Kitchen/g,'Office')
+        );
+
+        $("#row1").append(
+          blockToPaste
+            .replace(/kitchenLamp/g,'officeBoards')
+            .replace(/kitchen/g,'office')
+            .replace(/Kitchen/g,'Office')
+            .replace(/lamp/g,'boards')
+            .replace(/Lamp/g,'Boards')
+        );    
+
+        blockToPaste = $(".row.heater").clone().html();
+        
+        $(".row.heater").append(
+            blockToPaste.replace(/living/g,'kitchen')
+        );
+    </script>
+
 </body>
 </html>

@@ -124,3 +124,7 @@
 	background-color: orange;
 }
 
+
+.row.heater select {
+	color: black;
+}

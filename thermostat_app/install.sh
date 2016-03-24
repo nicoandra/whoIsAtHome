@@ -24,3 +24,4 @@ sudo make install
 
 cp thermo-service /etc/init.d/thermo
 chmod +x /etc/init.d/thermo;
+

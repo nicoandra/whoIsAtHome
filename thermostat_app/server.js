@@ -121,7 +121,11 @@ app.get('/get/:room/', function(req, res){
 
 app.get('/set/:room/', function(req, res){
 	room = req.params.room;
-	desiredTemperature = parseInt(req.query.temperature);
+	try {
+		desiredTemperature = parseFloat(req.query.temperature).toFixed(1);
+	} catch (e){
+		desiredTemperature = 99999;
+	}
 
 	if(desiredTemperature < 8 || desiredTemperature > 35){
 		res.json({response: "Temperature out of boundaries", status:"KO"});
