@@ -19,3 +19,8 @@ git clone https://github.com/sarfata/pi-blaster.git .
 ./configure
 make  
 sudo make install 
+
+
+
+cp thermo-service /etc/init.d/thermo
+chmod +x /etc/init.d/thermo;
