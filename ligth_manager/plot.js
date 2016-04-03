@@ -57,6 +57,7 @@ function cityPlotter(){
 
 	var getValues = function(){
 		Object.keys(cities).forEach(function(key){
+
 			url = 'http://api.openweathermap.org/data/2.5/weather?APPID='+openWeatherMapAppId+'&q='+cities[key].name+'&units=metric';
 			url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22"+cities[key].name+"%22)%20AND%20u%3D'c'&format=json&diagnostics=true&callback=";
 			request(url, function(error, response, body){
@@ -64,8 +65,12 @@ function cityPlotter(){
 
 					var info = JSON.parse(body);
 
-					// console.log(info.query.results.channel.item.condition.temp);
-					var currentTemperature = parseFloat(info.query.results.channel.item.condition.temp);
+					try {
+						// console.log(info.query.results.channel.item.condition.temp);
+						var currentTemperature = parseFloat(info.query.results.channel.item.condition.temp);
+					} catch (exception){
+						console.log(exception , url, body);
+					}
 
 					latestTemperatures = values[key].slice(Math.max(values[key].length - 2, 1));
 

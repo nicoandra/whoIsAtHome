@@ -13,7 +13,7 @@ var env = process.env.NODE_ENV || 'development'
 
 var request = require('request');
 
-
+var isNicoAtHome = false;
 
 var delayBetweenCommands = 80;
 
@@ -1207,6 +1207,7 @@ function HttpResponses() {
 
             	},
             	heaters : heaterStatus,
+            	peopleAtHome: {nico : isNicoAtHome }
             };
         }
         res.send(JSON.stringify(response));
@@ -1273,7 +1274,23 @@ sendResponse = function(){
 
 app.use('/static', express.static(__dirname + '/webroot'));
 
-app.get('/commands/', function(req, res){ new HttpResponses().receiveCommands(req, res); });
+app.get('/commands/', function(req, res){
+	new HttpResponses().receiveCommands(req, res);
+
+	console.log(req.ip);
+
+	/*switch(req.ip){
+		case '192.168.1.111':
+		case '::ffff:192.168.1.111':
+		case '192.168.1.112':
+		case '::ffff:192.168.1.112':
+		case '192.168.1.141':
+		case '::ffff:192.168.1.141':
+		// case '127.0.0.1': 
+			isNicoAtHome = true; break;
+		default: isNicoAtHome = false; break;	
+	}	*/
+});
 
 app.get('/plot/', function(req, res){
 	cityPlotter.servePlot(req, res);
@@ -1284,6 +1301,22 @@ app.get('/plot/json', function(req, res){
 });
 
 app.use('/', function(req, res, next){
+	// isNicoAtHome
+
+	console.log(req.ip);
+
+	switch(req.ip){
+		case '192.168.1.111':
+		case '::ffff:192.168.1.111':
+		case '192.168.1.112':
+		case '::ffff:192.168.1.112':
+		case '192.168.1.141':
+		case '::ffff:192.168.1.141':
+		// case '127.0.0.1': 
+			isNicoAtHome = true; break;
+		default: isNicoAtHome = false; break;	
+	}
+
 	new HttpResponses().renderIndexPage(req, res);
 });
 

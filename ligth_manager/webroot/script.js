@@ -148,6 +148,16 @@ function updateInterfaceWithStatusObject(response){
 		})
 	}
 
+	if(response.peopleAtHome){
+		if(response.peopleAtHome.nico){
+			$('span#isAtHome').show();
+			$('span#isNotAtHome').hide();
+		} else {
+			$('span#isAtHome').hide();
+			$('span#isNotAtHome').show();
+		}
+	}
+
 }
 
 $(document).ready(function(){
