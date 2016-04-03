@@ -1280,6 +1280,8 @@ app.get('/commands/', function(req, res){
 	console.log(req.ip);
 
 	/*switch(req.ip){
+		case '192.168.1.1':
+		case '::ffff:192.168.1.1':
 		case '192.168.1.111':
 		case '::ffff:192.168.1.111':
 		case '192.168.1.112':
@@ -1306,6 +1308,8 @@ app.use('/', function(req, res, next){
 	console.log(req.ip);
 
 	switch(req.ip){
+		case '192.168.1.1':
+		case '::ffff:192.168.1.1':
 		case '192.168.1.111':
 		case '::ffff:192.168.1.111':
 		case '192.168.1.112':
