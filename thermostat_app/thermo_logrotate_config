@@ -1,0 +1,10 @@
+/root/.forever/*.log {
+	rotate 3
+	size=1024k
+	compress
+	delaycompress
+	copytruncate
+	missingok
+	notifempty
+	create 644 root root
+}
