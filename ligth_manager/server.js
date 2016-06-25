@@ -11,6 +11,9 @@ var env = process.env.NODE_ENV || 'development'
     , cfg = require(__dirname + '/config/config.'+env+'.js');
 
 
+var redis = require("redis"),
+    client = redis.createClient('redis://192.168.0.106');
+
 var request = require('request');
 
 var isNicoAtHome = false;
@@ -67,7 +70,7 @@ function pollHeaterStatus(){
 			if(!error && response.statusCode == 200){
 				var info = JSON.parse(body);
 				currTemp = parseFloat(info.currentTemperature);
-				// cityPlotter.addValue(heaterStatus[key].name, currTemp);
+				cityPlotter.addValue(heaterStatus[key].name, currTemp);
 				heaterStatus[key].desiredTemperature = info.desiredTemperature;
 				heaterStatus[key].currentTemperature = info.currentTemperature;
 				heaterStatus[key].power = info.power;
@@ -177,7 +180,6 @@ function ReceiverSocket(params){
     	        buffer1, 0, buffer1.length, self.port,
             	self.host,
             	function(err){
-
 
             		setTimeout(function(){
 
@@ -509,9 +511,9 @@ function Light(name, socket){
 		
 		if(this.color == 'pinks'){
 			if(step === 1){
-				this.fade('lilac', 'pink', 12);
+				this.fade('lilac', 'pink', 24);
 			} else if(step === 2){
-				this.fade('pink', 'lilac', 12);
+				this.fade('pink', 'lilac', 24);
 			}
 
 			step = step == 2 ? 0 : step;
@@ -581,6 +583,33 @@ function LightPrograms(){
 			this.getZonesByProgramName('all lamps brightness 15');
 			this.getZonesByProgramName('all lamps brightness 20');
 			
+			return true;
+		}
+
+
+
+		if(programName.match('nico is out')){
+
+			for(i = 0; i < 100; i = i + 1) {
+				this.getZonesByProgramName('office lamp brightness ' + i);	
+				this.getZonesByProgramName('office lamp white');	
+			}
+
+			this.getZonesByProgramName('kitchen lamp off');
+			
+			for(i = 0; i < 50 ; i = i + 1) {
+				this.getZonesByProgramName('kitchen countertop brightness ' + i);	
+				this.getZonesByProgramName('kitchen countertop white');
+			}
+			
+			return true;
+		}
+
+
+		if(programName.match('nico is in')){
+
+			this.getZonesByProgramName('all lights off');	
+		
 			return true;
 		}
 
