@@ -11,12 +11,15 @@ var env = process.env.NODE_ENV || 'development'
     , cfg = require(__dirname + '/config/config.'+env+'.js');
 
 
-var redis = require("redis"),
-    client = redis.createClient('redis://192.168.0.106');
+/* var redis = require("redis"),
+    client = redis.createClient('redis://192.168.0.106'); */
 
 var request = require('request');
 
 var isNicoAtHome = false;
+
+
+
 
 var delayBetweenCommands = 80;
 
@@ -590,18 +593,20 @@ function LightPrograms(){
 
 		if(programName.match('nico is out')){
 
-			for(i = 0; i < 100; i = i + 1) {
+			this.getZonesByProgramName('kitchen lamp off');
+			this.getZonesByProgramName('office lamp off');
+			this.getZonesByProgramName('kitchen countertop off');
+
+			for(i = 0; i < 100; i = i + 10) {
 				this.getZonesByProgramName('office lamp brightness ' + i);	
-				this.getZonesByProgramName('office lamp white');	
+				this.getZonesByProgramName('office lamp white');
+
+				if(i < 51){
+					this.getZonesByProgramName('kitchen countertop brightness ' + i);
+					this.getZonesByProgramName('kitchen countertop white');
+				}
 			}
 
-			this.getZonesByProgramName('kitchen lamp off');
-			
-			for(i = 0; i < 50 ; i = i + 1) {
-				this.getZonesByProgramName('kitchen countertop brightness ' + i);	
-				this.getZonesByProgramName('kitchen countertop white');
-			}
-			
 			return true;
 		}
 
@@ -634,8 +639,6 @@ function LightPrograms(){
 				console.log(name, desiredTemperature);
 			})
 			
-			/*
-			()*/
 			console.log("roomName is", roomName, heaterStatus[exp[2]], "cambiando ", affectedHeaters);
 
 		}
@@ -1154,6 +1157,19 @@ function LightPrograms(){
 
 		console.log("Running program", programName);
 
+        names = peopleStatusTracker.getPossibleNames();
+        params = peopleStatusTracker.getPossibleParameters();
+
+        regExp = "^(" + names.join("|") + ") (" + params.join("|") + ")$";
+
+        exp = programName.match(regExp);
+        if(exp){
+        	console.log(exp);
+        	
+        	peopleStatusTracker.setStatus(exp[1],  exp[2]);
+        }
+        
+        //* Verification for Configuration commands */
 		exp = programName.match('config set delayBetweenCommands ([0-9]+)');
 		if(exp){
 			console.log(exp)
@@ -1161,13 +1177,21 @@ function LightPrograms(){
 			return ;
 		}
 
+		exp = programName.match('config set delayBetweenCommands ([0-9]+)');
+		if(exp){
+			console.log(exp)
+			delayBetweenCommands = exp[1];
+			return ;
+		}
+
+
+		//* Ligth commands by zone name (kitchen, office, etc)*/
 		affectedZones = this.getZonesByProgramName(programName);
         if(affectedZones === true){
             return ;
         }
 
-        console.log(affectedZones);
-
+        // console.log("Affected Zones", affectedZones);
         if(affectedZones.hasOwnProperty('methodToExecute')){
             return global[affectedZones.methodToExecute]();
         }
@@ -1218,6 +1242,36 @@ module.exports = LightPrograms;
 function HttpResponses() {
     this.receiveCommands = function(req, res) {
         commandString = req.query.command;
+
+
+        /*
+		if(commandString == "nico out"){
+
+			peopleStatusTracker.setStatus("nico", "out");
+			res.send(JSON.stringify(["NICO OUT"]));
+			return ;
+		}
+
+		if(commandString == "nico in"){
+			peopleStatusTracker.setStatus("nico", "in");
+			res.send(JSON.stringify(["NICO in"]));
+			return ;
+		}
+
+
+		if(commandString == "gesto out"){
+			peopleStatusTracker.setStatus("gesto", "out");
+			res.send(JSON.stringify(["gesto OUT"]));
+			return ;
+		}
+
+		if(commandString == "gesto in"){
+			peopleStatusTracker.setStatus("gesto", "in");
+			res.send(JSON.stringify(["gesto in"]));
+			return ;
+		}
+		*/
+
         var programs = new LightPrograms();
 
         console.log("http", req.ip, commandString);
@@ -1236,7 +1290,7 @@ function HttpResponses() {
 
             	},
             	heaters : heaterStatus,
-            	peopleAtHome: {nico : isNicoAtHome }
+            	peopleAtHome: peopleStatusTracker
             };
         }
         res.send(JSON.stringify(response));
@@ -1408,71 +1462,84 @@ var rgbToMilightColor = function(r, g, b){
 }	
 
 
-var peopleAtHome = {
-	nico : { 
-		devices : [
-			{ip: '192.168.1.141', status: 0, lastCheck: 0}
-		], 
-		status : 0,
-		lastCheck : 0 
-	}
-}
+peopleAtHome = function(){
+	this.people = [
+		// @@TODO@@ this.getPossibleNames needs to be refactored to return values from here.
+		{ name : "nico", status : "out" },
+		{ name : "gesto" , status : "out" }
+	]
+	
+	this.homeStatus = "alone";
+	this.aggregatedStatus = {};
 
-if (false) {
-	var ping = require ("net-ping");
 
-	var pingDevices = function(){
-		var pingSession = ping.createSession();
-		Object.keys(peopleAtHome).forEach(function(personName){
+	this.setStatus = function(who, status, cb){
 
-			if(peopleAtHome[personName].lastCheck > Date.now() - 5000 ){
-				console.log('Already checked ', personName);
-				return ;
+		this.aggregatedStatus = {};
+
+		this.people.forEach(function(person, position){
+			
+			
+			console.log("PERSON: ", person, "WHO:", who, 'status:', status);
+			this.aggregatedStatus[person.status] = 1;
+			console.log("Aggregated Status", this.aggregatedStatus)
+
+			if(person.name != who){
+				return false;
 			}
+			person.status = status;
 
-			peopleAtHome[personName].devices.forEach(function(deviceSettings, index){
+			switch(status){
+				case "in":
+					this.homeStatus = "day";
+					break;
+				case "sleeping":
+				case "out":
+					break;
 
-				deviceAddress = deviceSettings.ip;
-				lastCheck = deviceSettings.lastCheck;
+			}
+			
+		}.bind(this));
 
-				if (lastCheck > Date.now() - 5000 ) {
-					return ;
-				}
+/*
+		if(Object.keys(this.aggregatedStatus).length = 1){
+			this.homeStatus = Object.keys(this.aggregatedStatus)[0];
+			
+		} else {
+			// Home status depends on time and day
+			this.homeStatus = "it depends";
+		}
 
-				console.log(">> Hitting",deviceAddress);
-				
-				pingSession.pingHost (deviceAddress, function (error, target) {
-					if (error){
-						console.log("HE'S NOT HERE");
-						peopleAtHome[personName]['devices'][index].status = 0;
-					} else {
-						console.log("HE'S HERE MAN!!");
-						peopleAtHome[personName]['devices'][index].status = 1;
-					}
-				});
-
-			});
-		});
-		console.log(peopleAtHome);
+		console.log("Home Status is ", this.homeStatus);
+*/
 	}
 
-	setInterval(pingDevices, 1000);
 
-	function updatePeopleStatusBasedOnDevices(){
-		Object.keys(peopleAtHome).forEach(function(personName){	
-			personStatus = 0;
-
-			peopleAtHome[personName].devices.forEach(function(deviceSettings, index){
-				if (deviceSettings.status == 1) {
-					personStatus = 1;
-					return ;
-				}
-			}.bind(personStatus));
-
-			peopleAtHome[personName].status = personStatus;
-
-		});
+	this.debug = function(){
+		console.log("AASDASD", this.people);
+		console.log("Agregated Home Status is ", this.aggregatedStatus);
 	}
 
-	setInterval(updatePeopleStatusBasedOnDevices, 1000);
+	this.start = function(){
+		setInterval(function(){
+			this.debug();
+		}.bind(this), 5000);
+	}
+
+	this.getPossibleNames = function(){
+		// @@TODO@@ this.getPossibleNames needs to be refactored to return values from here.
+		return ["gesto", "nico"];
+	}
+
+
+	this.getPossibleParameters = function(){
+		return ["in", "out", "sleeping" ];
+	}
+
+
 }
+
+
+var peopleStatusTracker = new peopleAtHome();
+peopleStatusTracker.start();
+
