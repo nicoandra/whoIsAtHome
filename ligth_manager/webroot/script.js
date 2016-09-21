@@ -48,6 +48,8 @@ function requestPlotData(){
 
 function generatePlot(res, status, statusName){
 
+	console.log(res);
+
 	if(status != 'success'){
 		console.log("Call didn't work...", res,status, statusName);
 		return ;
@@ -79,10 +81,12 @@ function generatePlot(res, status, statusName){
 		);
 
 		res[cityName].forEach(function(temp){
-			plotObject.series[index].data.push(temp);
+			plotObject.series[index].data.push(parseFloat(temp));
 		})
 
 	});
+
+	console.log(plotObject);
 
 	$('#plotContainer').highcharts(plotObject);
 }
@@ -201,7 +205,7 @@ function listen(){
 	recognition.lang = "en";
 	recognition.onresult = function(event) { 
 		recognition.stop();
-		console.log(event.results[0]);
+		// console.log(event.results[0]);
 		command = event.results[0][0].transcript;
 		sendCommandString(command);
 	}

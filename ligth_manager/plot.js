@@ -51,7 +51,6 @@ function cityPlotter(){
 			setTimeout( function(){ getValues() }, 3000);
 		}
 		setInterval(getValues, refreshPeriod);
-
 	}
 
 
