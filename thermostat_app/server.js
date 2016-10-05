@@ -26,6 +26,7 @@ var sensor = {
 
 			if(this.sensors[a].name=='kitchen'){
 				heaters.kitchen.currentTemp = temperature
+			}
 
 			if(this.sensors[a].name=='living'){
 				heaters.living.currentTemp = temperature
