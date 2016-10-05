@@ -1520,7 +1520,7 @@ peopleAtHome = function(){
 
 	this.debug = function(){
 		console.log("AASDASD", this.people);
-		console.log("Agregated Home Status is ", this.aggregatedStatus);
+		console.log("Aggregated Home Status is ", this.aggregatedStatus);
 	}
 
 	this.start = function(){

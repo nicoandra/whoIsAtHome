@@ -136,6 +136,9 @@ function updateInterfaceWithStatusObject(response){
 			$("div.panel.system dl.dl-horizontal dd#delayBetweenCommands").text(response.system.delayBetweenCommands);
 		}
 
+		if(response.system.uptime){
+			$("div.panel.system dl.dl-horizontal dd#uptime").text(response.system.uptime.human);
+		}
 
         if(socketConfig.host == '') {
             socketConfig = response.system.socketInfo;
