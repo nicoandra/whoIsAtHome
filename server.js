@@ -1,5 +1,5 @@
 
-var ping = require('ping');
+//var ping = require('ping');
 // require('./devices.js');
 
 scenarios = {
@@ -55,55 +55,58 @@ setInterval(function(){
 */
 
 
-var pingHost = function(host){
-	var isAlive = false;
-	return ping.sys.probe(host, function(isAlive){
-		return isAlive;	
-	});
-	return isAlive;
-}
+if (false) {
 
-
-
-UserObject = function(name){
-	this.name = name;
-	this.status = 'Offline';
-	this.newStatus = 'Offline';
-	this.devices = [];
-
-	this.addDevice = function(device){
-		this.devices.push(devices);
+	var pingHost = function(host){
+		var isAlive = false;
+		return ping.sys.probe(host, function(isAlive){
+			return isAlive;	
+		});
+		return isAlive;
 	}
-}
 
 
-DeviceObject = function(name, ipAddress){
-	this.name = name;
-	this.status = 'Offline';
-	this.newStatus = 'Offline';
-	this.ipAddress = ipAddress;
-}
 
-var users = [
-	new UserObject("nico")
-]
+	UserObject = function(name){
+		this.name = name;
+		this.status = 'Offline';
+		this.newStatus = 'Offline';
+		this.devices = [];
 
-users[0].addDevice(new DeviceObject("Phone", "192.168.1.141"));
-users[0].addDevice(new DeviceObject("Helmet", "192.168.1.142"));
-
-console.log(users);
+		this.addDevice = function(device){
+			this.devices.push(devices);
+		}
+	}
 
 
-users.forEach(function(user, userId){
-	users[userId].newStatus = "Offline";
+	DeviceObject = function(name, ipAddress){
+		this.name = name;
+		this.status = 'Offline';
+		this.newStatus = 'Offline';
+		this.ipAddress = ipAddress;
+	}
 
-	users[userId].devices.forEach(function(device, deviceId){
-		console.log("Testing U:" + users[userId].name + " D: " + devices[deviceId].name);
-		console.log(pingHost(devices[deviceId].ipAddress));
+	var users = [
+		new UserObject("nico")
+	]
+
+	users[0].addDevice(new DeviceObject("Phone", "192.168.1.141"));
+	users[0].addDevice(new DeviceObject("Helmet", "192.168.1.142"));
+
+	console.log(users);
+
+
+	users.forEach(function(user, userId){
+		users[userId].newStatus = "Offline";
+
+		users[userId].devices.forEach(function(device, deviceId){
+			console.log("Testing U:" + users[userId].name + " D: " + devices[deviceId].name);
+			console.log(pingHost(devices[deviceId].ipAddress));
+		});
+
+
+
 	});
 
-
-
-});
-
+}
 

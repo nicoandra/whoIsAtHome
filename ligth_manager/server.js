@@ -6,6 +6,8 @@ var led = require('limitless-gem/index.js');
 var CityPlotter = require(__dirname + '/plot.js');
 var cityPlotter = new CityPlotter();
 
+var moment = require('moment');
+
 
 var env = process.env.NODE_ENV || 'development'
     , cfg = require(__dirname + '/config/config.'+env+'.js');
@@ -1277,7 +1279,6 @@ function HttpResponses() {
         console.log("http", req.ip, commandString);
         response = programs.runProgram(commandString);
         if(!response){
-
 			memoryUsage = process.memoryUsage();
 
             response = { 
@@ -1286,7 +1287,8 @@ function HttpResponses() {
             		queueSize : [receiver1.getQueueSize(),receiver2.getQueueSize(),receiver3.getQueueSize()],
             		delayBetweenCommands : delayBetweenCommands,
             		memory : memoryUsage,
-                    socketInfo : { host : cfg.httpHost , port : cfg.httpPort }
+                    socketInfo : { host : cfg.httpHost , port : cfg.httpPort },
+                    uptime : { 'human' : moment.duration(process.uptime(), 'seconds').humanize(), 'seconds' : process.uptime()  }
 
             	},
             	heaters : heaterStatus,
@@ -1348,7 +1350,8 @@ sendResponse = function(){
 		system : {
 			queueSize : [receiver1.getQueueSize(),receiver2.getQueueSize(),receiver3.getQueueSize()],
 			delayBetweenCommands : delayBetweenCommands,
-			memory : process.memoryUsage()
+			memory : process.memoryUsage(),
+			uptime : { 'human' : moment.duration(process.uptime(), 'seconds').humanize(), 'seconds' : process.uptime()  }
 		},
 //		heaters : heaterStatus,
 	});
