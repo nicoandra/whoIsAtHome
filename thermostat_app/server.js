@@ -14,29 +14,31 @@ var sensor = {
 			pin: 4
 		}
 	],
+
 	read: function() {
 		for (var a in this.sensors) {
 			var b = sensorLib.readSpec(this.sensors[a].type, this.sensors[a].pin);
 
-			// console.log(this.sensors[a].name + ": " + b.temperature.toFixed(1) + "C, " + b.humidity.toFixed(1) + "%"); 
+			temperature = b.temperature.toFixed(2) 
+			humidity =  b.humidity.toFixed(2) 
+
+			console.log(this.sensors[a].name + ": " + temperature + "C, " + humidity + "%"); 
 
 			if(this.sensors[a].name=='kitchen'){
-				heaters.kitchen.currentTemp = b.temperature.toFixed(1);
-			}
+				heaters.kitchen.currentTemp = temperature
 
 			if(this.sensors[a].name=='living'){
-				heaters.living.currentTemp = b.temperature.toFixed(1);
+				heaters.living.currentTemp = temperature
 			}
-		}
+		};
+	},
+
+	start: function(){
 		setTimeout(function() {
-			sensor.read();
-		}, 2000);
+			this.read();
+		}.bind(this), 10000);
 	}
 };
-
-
-
-
 
 function Heater(name, pinNumber) {
 	this.name = name;
@@ -60,13 +62,12 @@ function Heater(name, pinNumber) {
 		}
 
 		if(diff < -.1){
-			this.power = 70;
+			this.power = 40;
 			return ;
 		}
 
-
 		if(diff < .5){
-			this.power = 30;
+			this.power = 70;
 			return ;
 		}
 
@@ -75,10 +76,11 @@ function Heater(name, pinNumber) {
 
 
 	this.writeValue = function(){
+		// PWM Pulse width modulation
 		steps = 100;
 		for(i=0; i<steps ;i++){
 			bit = (i < this.power);
-			// console.log('Power ', this.power, ' Loop ', i, ' Value ', value, 'CurrentBit ', bit);
+
 			setTimeout(function(bit){
 				console.log('Setting power', this.pinNumber, this.power, bit);
 				rpio.write(this.pinNumber, bit ? 1 : 0);
@@ -105,7 +107,8 @@ var heaters = {
 heaters.kitchen.start();
 heaters.living.start();
 
-sensor.read();
+
+sensor.start();
 
 
 
@@ -122,7 +125,7 @@ app.get('/get/:room/', function(req, res){
 app.get('/set/:room/', function(req, res){
 	room = req.params.room;
 	try {
-		desiredTemperature = parseFloat(req.query.temperature).toFixed(1);
+		desiredTemperature = parseFloat(req.query.temperature).toFixed(3);
 	} catch (e){
 		desiredTemperature = 99999;
 	}
@@ -133,7 +136,22 @@ app.get('/set/:room/', function(req, res){
 	}
 
 	heaters[room].desiredTemp = desiredTemperature;
-	res.json({response: 'OK', name : room, currentTemperature: heaters[room].currentTemp, desiredTemperature : heaters[room].desiredTemp, power : heaters[room].power });
+
+	// Update value for this request
+	// sensor.read();
+	// heaters[room].calculate();
+	// heaters[room].writeValue();
+
+	res.json(
+		{
+			response: 'OK', 
+			name : room, 
+			currentTemperature: heaters[room].currentTemp, 
+			desiredTemperature : heaters[room].desiredTemp, 
+			power : heaters[room].power,
+			uptime : process.uptime() 
+		}
+	);
 	console.log('Setting temperature for', req.params.room, 'to', heaters[room].desiredTemp);
 });
 
