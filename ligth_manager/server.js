@@ -1482,7 +1482,6 @@ peopleAtHome = function(){
 
 		this.people.forEach(function(person, position){
 			
-			
 			console.log("PERSON: ", person, "WHO:", who, 'status:', status);
 			this.aggregatedStatus[person.status] = 1;
 			console.log("Aggregated Status", this.aggregatedStatus)
