@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.13.3",
+    "node-dht-sensor": "0.0.26",
     "onoff": "^1.0.3",
-    "express": "^4.13.3"
+    "rpio": "^0.9.12"
   }
 }
