@@ -1,5 +1,13 @@
-var rpio = require('rpio'),
-sensorLib = require('node-dht-sensor');	// https://github.com/momenso/node-dht-sensor
+var rpio = require('rpio');
+rpio.init({mapping: 'gpio'}); 
+kitchenPin = 18;
+livingPin = 23;
+
+rpio.open(kitchenPin, rpio.OUTPUT, rpio.LOW);
+rpio.open(livingPin, rpio.OUTPUT, rpio.LOW);
+
+
+var sensorLib = require('node-dht-sensor');	// https://github.com/momenso/node-dht-sensor
 
 
 
@@ -17,7 +25,7 @@ var sensor = {
 
 	read: function() {
 		for (var a in this.sensors) {
-			var b = sensorLib.readSpec(this.sensors[a].type, this.sensors[a].pin);
+			var b = sensorLib.read(this.sensors[a].type, this.sensors[a].pin);
 
 			temperature = b.temperature.toFixed(2) 
 			humidity =  b.humidity.toFixed(2) 
@@ -37,7 +45,7 @@ var sensor = {
 	start: function(){
 		setTimeout(function() {
 			this.read();
-		}.bind(this), 10000);
+		}.bind(this), 1000);
 	}
 };
 
@@ -90,7 +98,7 @@ function Heater(name, pinNumber) {
 	}
 
 	this.start = function(){
-		rpio.setFunction(this.pinNumber, rpio.OUTPUT);
+		rpio.open(this.pinNumber, rpio.OUTPUT, rpio.LOW);
 		setInterval(this.calculate.bind(this), 10000);
 		setInterval(this.writeValue.bind(this), 5000);
 		this.calculate();
@@ -110,7 +118,6 @@ heaters.living.start();
 
 
 sensor.start();
-
 
 
 var express = require('express'),
@@ -137,11 +144,6 @@ app.get('/set/:room/', function(req, res){
 	}
 
 	heaters[room].desiredTemp = desiredTemperature;
-
-	// Update value for this request
-	// sensor.read();
-	// heaters[room].calculate();
-	// heaters[room].writeValue();
 
 	res.json(
 		{
