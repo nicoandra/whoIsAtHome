@@ -1,6 +1,25 @@
+
+HOST=`hostname`;
+
+if [ "HOST" != "thermo1" ]; then
+	
+	echo "To be executed in the Raspberry Thermo only";
+	ssh-copy-id pi@192.168.1.125
+
+	TARGET_DIR="/home/pi/code/whoIsAtHome";
+	ssh pi@192.168.1.125 'if [ ! -d "$TARGET_DIR" ]; then mkdir "$TARGET_DIR" -p; git clone git@github.com:nicoandra/whoIsAtHome.git "$TARGET_DIR" ; else cd "$TARGET_DIR"; git pull;	fi; cd "$TARGET_DIR"; cd thermostat_app; install.sh'
+	exit 1;
+fi;
+
+
+echo "In Raspberry";
+exit 1
+
 sudo aptitude install autoconf;
 
-mkdir tools
+
+cd;
+mkdir tools -p
 cd tools;
 
 mkdir gpio-admin;
@@ -24,4 +43,5 @@ sudo make install
 
 cp thermo-service /etc/init.d/thermo
 chmod +x /etc/init.d/thermo;
+
 
