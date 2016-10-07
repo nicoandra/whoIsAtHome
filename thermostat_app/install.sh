@@ -1,7 +1,7 @@
 
 HOST=`hostname`;
 
-if [ "HOST" != "thermo1" ]; then
+if [ "$HOST" != "thermo1" ]; then
 	
 	echo "To be executed in the Raspberry Thermo only";
 	ssh-copy-id pi@192.168.1.125
