@@ -8,19 +8,12 @@ var cityPlotter = new CityPlotter();
 
 var moment = require('moment');
 
-
 var env = process.env.NODE_ENV || 'development'
     , cfg = require(__dirname + '/config/config.'+env+'.js');
-
-
-/* var redis = require("redis"),
-    client = redis.createClient('redis://192.168.0.106'); */
 
 var request = require('request');
 
 var isNicoAtHome = false;
-
-
 
 
 var delayBetweenCommands = 80;
@@ -45,30 +38,92 @@ var colorCodes = {
 	lavendar : [0x40, 0xf0]
 };
 
-//var receiver1 = new ReceiverSocket('ct5130.myfoscam.org' , 8899);
-// var receiver1 = new ReceiverSocket('192.168.1.106' , 8899);
 var receiver1 = new ReceiverSocket(cfg.milight1);
-var receiver2 = new ReceiverSocket(cfg.milight1);
-var receiver3 = new ReceiverSocket(cfg.milight1);
 
 var lights = {
     officeLamp : new Light('officeLamp', new LightSocket('officeLampObject', 1, receiver1)),
 	kitchenLamp : new Light('kitchenLamp', new LightSocket('officeLampObject', 2, receiver1)),
+	officeBoards : new Light('officeBoards', new LightSocket('boards', 3, receiver1)),
 	kitchenCountertop : new Light('KitchenCountertop', new LightSocket('officeLampObject', 4, receiver1)),
-    officeBoards : new Light('officeBoards', new LightSocket('boards', 3, receiver1)),
-
 };
 
 var heaterStatus = {
-    // office : {name: 'Office', status: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/office' },
     kitchen : {name : 'Kitchen', power: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/kitchen' },
     living : {name: 'Living', power: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/living' },
-    // bedroom : { status: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/office' },
-    // guestroom : { status: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/office' },
 }
 
-function pollHeaterStatus(){
 
+function Heater(name, ip){
+	this.name = name;
+	this.ip = ip;
+	this.currentTemperature = 999;
+	this.humidity = 999;
+	this.desiredTemp = 14;
+	this.power = 0;
+	this.uptime = 0;
+
+	this.buildUrl = function(method){
+		return "http://" + this.ip + '/' + method +'/' + this.name;
+	}
+
+	this.setTemperature = function(desiredTemperature, callback){
+
+		self.desiredTemperature = desiredTemperature;
+
+		options = {
+			url: this.buildUrl('set'),
+			qs : {temperature : desiredTemperature }
+		}
+
+		self = this;
+		request(options, function(error, response, body){
+			if(!error && response.statusCode == 200){
+				var info = JSON.parse(body);
+				callback(false, info);
+			} else {
+				callback(error, false)
+			}
+		});
+	}
+
+	this.pollData = function(callback){
+		if(!self){
+			self = this;
+		}
+
+		options = {
+			url: self.buildUrl('get')
+		}
+
+		request(options, function(error, response, body){
+			if(!error && response.statusCode == 200){
+				var info = JSON.parse(body);
+				callback(false, info);
+				self.currentTemperature = parseFloat(info.currentTemperature);
+				self.humidity = parseFloat(info.humidity);
+				self.uptime = parseFloat(info.uptime);
+			} else {
+				callback(error, false)
+			}
+		}.bind(self));
+	}
+
+
+	this.getTemperature = function(){
+		return this.currentTemperature;
+	}
+
+	this.getHumidity = function(){
+		return this.humidity;
+	}
+
+	//  Go!!
+	setInterval(this.pollData.bind({self : this}), 300);	// Poll temperature every 5 minutes
+	this.pollData.bind({self : this})
+}
+
+
+function pollHeaterStatus(){
 	Object.keys(heaterStatus).forEach(function(key){
 		url = heaterStatus[key].url;
 		request(url, function(error, response, body){
@@ -110,7 +165,7 @@ function setHeaterTemperature(heaterName, desiredTemperature){
 	});
 }
 
-setInterval(pollHeaterStatus, 5000); // Poll heater status every minute for the trend
+setInterval(pollHeaterStatus, 60000); // Poll heater status every minute for the trend
 setInterval(appendCurrentTempToTrend, 60000); // Append temperatures every minute for the trend
 
 
@@ -136,8 +191,6 @@ function CommandLineInterpreter(){
 module.exports = CommandLineInterpreter;
 var cliInterpreter = new CommandLineInterpreter();
 cliInterpreter.start();
-
-
 
 function ReceiverSocket(params){
 	this.client = dgram.createSocket('udp4');
@@ -303,11 +356,12 @@ function LightSocket(name, group, receiver){
     }
 }
 
-function Light(name, socket){
+function Light(name, socket, type){
     this.name = name;
     this.socket = socket;
     this.status = 0;
     this.color = 'white';
+	this.type = type;
     this.brightnessValue = 100;
     this.fadeInProgress = 0;
 
@@ -336,47 +390,47 @@ function Light(name, socket){
 	}
 
 	self = this;
-	setInterval(this.sendQueue.bind(self), 100);
+	setInterval(this.sendQueue.bind(self), 50);
 
     this.on = function(){
         this.socket.on();
         this.status = 1;
-        this.commandQueue = [];
+		this.clearQueue();
     }
 
     this.off = function(){
         this.socket.off();
         this.status = 0;
         this.color = '';
-        this.commandQueue = [];
+		this.clearQueue();
     }
 
     this.white = function(){
         this.socket.white();
         this.status = 1;
         this.color = 'white';
-        this.commandQueue = [];
+		this.clearQueue();
     }
 
     this.disco = function(){
         this.socket.disco();
         this.status = 1;
         this.color = 'disco';
-        this.commandQueue = [];
+		this.clearQueue();
     }
 
     this.discoFaster = function(){
         this.socket.discoFaster();
         this.status = 1;
         this.color = 'disco';
-        this.commandQueue = [];
+		this.clearQueue();
     }
 
     this.discoSlower = function(){
         this.socket.discoSlower();
         this.status = 1;
         this.color = 'disco';
-        this.commandQueue = [];
+		this.clearQueue();
     }
 
     this.setColor = function(colorName){
@@ -386,7 +440,7 @@ function Light(name, socket){
         this.socket.setColor(colorName);
         this.status = 1;
         this.color = colorName;
-        this.commandQueue = [];
+		this.clearQueue();
     }
 
 	this.brightnessMax = function(){
@@ -403,6 +457,16 @@ function Light(name, socket){
 	this.brightness = function(value){
 		this.socket.brightness(value);
 		this.brightnessValue = value;
+	}
+
+	this.clearQueue = function() {
+		// The queue needs to be cleared when a previous command might have sent a lot of instructions in the queue
+		// but a new command needs to be sent. For example, a fade from Blue to Green will send multiple color changes.
+		// If you turn of the light while the change is happening, the light will keep changing colors and
+		// It will turn off itself at the end of the fading sequence.
+		// By clearing the queue you ensure nothing else is sent to it after the Off command.
+		this.commandQueue = [];
+		return ;
 	}
 
 	this.fade = function(colorFrom, colorTo, maxSteps){
@@ -430,7 +494,6 @@ function Light(name, socket){
 
 			this.queueColor([0x40, colorToSet]);
 		}
-
 	}
 
 	this.ocean = function(step){
@@ -563,15 +626,13 @@ function Light(name, socket){
 				}
 			}.bind(self).bind(step), 2500);
 		}
-	}	
-
-
+	}
 }
-
 
 function LightPrograms(){
 
 	this.getZonesByProgramName = function(programName){
+
         var exp;
         var action = '';
         var actionArguments = [];
@@ -1193,28 +1254,27 @@ function LightPrograms(){
             return ;
         }
 
-        // console.log("Affected Zones", affectedZones);
         if(affectedZones.hasOwnProperty('methodToExecute')){
             return global[affectedZones.methodToExecute]();
         }
 
         return ;
 		/*
-			all [on / white / color / off / disco]
+		Light commands:
+
+		 all [on / white / color / off / disco]
+		 office [all|lamp|boards|light] [on|white|#color|off|disco|#number brightess]
+		 kitchen [all|lamp|countertop|light] [on|white|#color|off|disco|#number brightess]
+		 front door [on / white / color / off / disco]
+		 back door [on / white / color / off / disco]
+		 corridor [on|white|#color|off|disco|#number brightess]
+		 living [all|lamp|light] [on|white|#color|off|disco|#number brightness]
+
+		Heater commands
+
 			all [number] degrees
-
-			office [all|lamp|boards|light] [on|white|#color|off|disco|#number brightess]
 			office [#number] degrees
-			
-			kitchen [all|lamp|countertop|light] [on|white|#color|off|disco|#number brightess]
 			kitchen [#number] degrees
-
-			front door [on / white / color / off / disco]
-			back door [on / white / color / off / disco]
-
-			corridor [on|white|#color|off|disco|#number brightess]
-
-			living [all|lamp|light] [on|white|#color|off|disco|#number brightess]
 			living [#number] degrees
 		*/
 	}
@@ -1245,46 +1305,19 @@ function HttpResponses() {
     this.receiveCommands = function(req, res) {
         commandString = req.query.command;
 
-
-        /*
-		if(commandString == "nico out"){
-
-			peopleStatusTracker.setStatus("nico", "out");
-			res.send(JSON.stringify(["NICO OUT"]));
-			return ;
-		}
-
-		if(commandString == "nico in"){
-			peopleStatusTracker.setStatus("nico", "in");
-			res.send(JSON.stringify(["NICO in"]));
-			return ;
-		}
-
-
-		if(commandString == "gesto out"){
-			peopleStatusTracker.setStatus("gesto", "out");
-			res.send(JSON.stringify(["gesto OUT"]));
-			return ;
-		}
-
-		if(commandString == "gesto in"){
-			peopleStatusTracker.setStatus("gesto", "in");
-			res.send(JSON.stringify(["gesto in"]));
-			return ;
-		}
-		*/
-
         var programs = new LightPrograms();
 
         console.log("http", req.ip, commandString);
         response = programs.runProgram(commandString);
+
+
         if(!response){
 			memoryUsage = process.memoryUsage();
 
             response = { 
             	lights : programs.getLightsStatus(), 
             	system : {
-            		queueSize : [receiver1.getQueueSize(),receiver2.getQueueSize(),receiver3.getQueueSize()],
+            		queueSize : [receiver1.getQueueSize()],
             		delayBetweenCommands : delayBetweenCommands,
             		memory : memoryUsage,
                     socketInfo : { host : cfg.httpHost , port : cfg.httpPort },
@@ -1338,7 +1371,6 @@ io.sockets.on('connection', function(socket){
 
 		sendResponse();
 
-
 	});
 
 });
@@ -1348,7 +1380,7 @@ sendResponse = function(){
 	io.emit('statusUpdate', {
 		lights : programs.getLightsStatus(), 
 		system : {
-			queueSize : [receiver1.getQueueSize(),receiver2.getQueueSize(),receiver3.getQueueSize()],
+			queueSize : [receiver1.getQueueSize()],
 			delayBetweenCommands : delayBetweenCommands,
 			memory : process.memoryUsage(),
 			uptime : { 'human' : moment.duration(process.uptime(), 'seconds').humanize(), 'seconds' : process.uptime()  }
@@ -1358,26 +1390,26 @@ sendResponse = function(){
 }
 
 
+
+
+function buildResponseObject(){
+	var programs = new LightPrograms();
+	return {
+		lights : programs.getLightsStatus(),
+		system : {
+		queueSize : [receiver1.getQueueSize()],
+			delayBetweenCommands : delayBetweenCommands,
+			memory : process.memoryUsage(),
+			uptime : { 'human' : moment.duration(process.uptime(), 'seconds').humanize(), 'seconds' : process.uptime()  }
+		},
+	};
+}
+
+
 app.use('/static', express.static(__dirname + '/webroot'));
 
 app.get('/commands/', function(req, res){
 	new HttpResponses().receiveCommands(req, res);
-
-	console.log(req.ip);
-
-	/*switch(req.ip){
-		case '192.168.1.1':
-		case '::ffff:192.168.1.1':
-		case '192.168.1.111':
-		case '::ffff:192.168.1.111':
-		case '192.168.1.112':
-		case '::ffff:192.168.1.112':
-		case '192.168.1.141':
-		case '::ffff:192.168.1.141':
-		// case '127.0.0.1': 
-			isNicoAtHome = true; break;
-		default: isNicoAtHome = false; break;	
-	}	*/
 });
 
 app.get('/plot/', function(req, res){
@@ -1387,6 +1419,10 @@ app.get('/plot/', function(req, res){
 app.get('/plot/json', function(req, res){
 	cityPlotter.json(req, res);
 });
+
+app.get("/heaters", function(req, res){
+
+})
 
 app.use('/', function(req, res, next){
 	// isNicoAtHome
@@ -1416,13 +1452,14 @@ app.post('/heater/', function(req, res){
 	
 });
 
-
 httpServer.listen(port, function(){
 	console.log('http interface listening on port '+port);	
 });
 
 
 /** END OF HTTP SERVER **/
+
+
 var rgbToMilightColor = function(r, g, b){
     r = r / 255;
     g = g / 255;

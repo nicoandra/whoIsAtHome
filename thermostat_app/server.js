@@ -18,11 +18,11 @@ var sensor = {
 	sensors: [ {
 			name: "kitchen",
 			type: 22,
-			pin: 17
+			pin: kitchenPin
 		}, {
 			name: "living",
 			type: 22,
-			pin: 4
+			pin: livingPin
 		}
 	],
 
@@ -35,12 +35,8 @@ var sensor = {
 
 			console.log(this.sensors[a].name + ": " + temperature + "C, " + humidity + "%"); 
 
-			if(this.sensors[a].name=='kitchen'){
-				heaters.kitchen.currentTemp = temperature
-			}
-
-			if(this.sensors[a].name=='living'){
-				heaters.living.currentTemp = temperature
+			if(this.sensors[a].name=='kitchen' || this.sensors[a].name=='living'){
+				heaters[this.sensors[a].name].kitchen.currentTemp = temperature
 			}
 		};
 	},
@@ -48,7 +44,7 @@ var sensor = {
 	start: function(){
 		setTimeout(function() {
 			this.read();
-		}.bind(this), 1000);
+		}.bind(this), 2000);
 	}
 };
 
@@ -74,7 +70,7 @@ function Heater(name, pinNumber) {
 		}
 
 		if(diff < -.1){
-			this.power = 40;
+			this.power = 30;
 			return ;
 		}
 
@@ -102,7 +98,7 @@ function Heater(name, pinNumber) {
 
 	this.start = function(){
 		rpio.open(this.pinNumber, rpio.OUTPUT, rpio.LOW);
-		setInterval(this.calculate.bind(this), 10000);
+		setInterval(this.calculate.bind(this), 	5000);
 		setInterval(this.writeValue.bind(this), 5000);
 		this.calculate();
 		this.writeValue();
@@ -148,16 +144,15 @@ app.get('/set/:room/', function(req, res){
 
 	heaters[room].desiredTemp = desiredTemperature;
 
-	res.json(
-		{
-			response: 'OK', 
-			name : room, 
-			currentTemperature: heaters[room].currentTemp, 
-			desiredTemperature : heaters[room].desiredTemp, 
-			power : heaters[room].power,
-			uptime : process.uptime() 
-		}
-	);
+	res.json({
+		response: 'OK',
+		name : room,
+		currentTemperature: heaters[room].currentTemp,
+		desiredTemperature : heaters[room].desiredTemp,
+		power : heaters[room].power,
+		uptime : process.uptime()
+	});
+
 	console.log('Setting temperature for', req.params.room, 'to', heaters[room].desiredTemp);
 });
 
