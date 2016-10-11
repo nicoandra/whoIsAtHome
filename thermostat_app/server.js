@@ -1,5 +1,8 @@
 var rpio = require('rpio');
 rpio.init({mapping: 'gpio'}); 
+
+
+
 kitchenPin = 18;
 livingPin = 23;
 
