@@ -1,3 +1,4 @@
 node_modules/**
 ligth_manager/node_modules/**
+light_manager/node_modules/**
 thermostat_app/node_modules/**
