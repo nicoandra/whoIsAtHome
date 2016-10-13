@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+</head>
+<body>
+    <%= body %>
+
+    <ul>
+        <% Object.keys(lights).forEach(function(roomName){ %> <%= lights[roomName].name %> <% }) %>
+    </ul>
+</body>
+</html>
