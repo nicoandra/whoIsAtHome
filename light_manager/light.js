@@ -6,9 +6,9 @@ function Light(name, displayName, socket){
     this.socket = socket;
 
     // Status tracking
-    this.actualStatus = false;  // Shows the actual status
-    this.autoStatus = false;    //
-    this.manualStatus = false;    //
+    this.actualStatus = {};  // Shows the actual status
+    this.autoStatus = {};    //
+    this.manualStatus = {};    //
 
     this.status = 0;
     this.color = 'white';
@@ -17,17 +17,17 @@ function Light(name, displayName, socket){
 
 
     this.setManualStatus = function(status){
+        console.log("In SetManualStatus received", status)
         if(status.onOff != undefined){
+            console.log("In ManualStatus setting onOff to", status.onOff)
             this.actualStatus.onOff = status.onOff;
-            this.setOnOff(status.onOff);
+            this.sendOnOff(status.onOff);
         }
 
         if(status.brightness != undefined){
-            this.actualStatus.brightness= status.brightness;
+            this.actualStatus.brightness = status.brightness;
             this.setBrightness(status.brightness);
         }
-
-
     }
 
 
@@ -37,17 +37,18 @@ function Light(name, displayName, socket){
         return {
             'name' : this.name,
             'displayName' : this.displayName,
+            'actualStatus' : this.actualStatus,
             'status' : this.actualStatus,
             'autoStatus' : this.autoStatus,
             'manualStatus' : this.manualStatus,
-            'brightness' : this.brightness,
+            'brightness' : this.brightness
         }
     }
 
     // Internal, queue management attributes and methods
     this.commandQueue = [];
 
-    this.setOnOff = function(value){
+    this.sendOnOff = function(value){
         if(value == true){
             this.queueOn();
         }

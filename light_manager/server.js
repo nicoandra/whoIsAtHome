@@ -1,7 +1,6 @@
 var dgram = require('dgram');
 var debug = require('debug');
-
-var led = require('limitless-gem/index.js');
+var bodyParser = require('body-parser'); 	// To parse POST requests
 
 var CityPlotter = require(__dirname + '/plot.js');
 var cityPlotter = new CityPlotter();
@@ -296,8 +295,6 @@ sendResponse = function(){
 }
 
 
-
-
 function buildResponseObject(){
 	var programs = new LightPrograms();
 	return {
@@ -313,6 +310,11 @@ function buildResponseObject(){
 
 
 app.use('/static', express.static(__dirname + '/webroot'));
+
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+	extended: true
+}));
 
 app.get('/commands/', function(req, res){
 	new HttpResponses().receiveCommands(req, res);
@@ -332,6 +334,17 @@ app.get("/heaters", function(req, res){
 
 app.get("/angular", function(req,res){
 	res.render('index', { title : "The First Rendered Page", body : "Great <b>HTML</b> body", lights : lights })
+})
+
+app.get("/angular/getLightStatus", function(req, res){
+	res.send(lightManager.getStatus())
+})
+
+
+app.post("/angular/runProgram", function(req, res){
+	console.log(req.body);
+	lightManager.setStatus(req.body)
+	res.send(lightManager.getStatus())
 })
 
 app.use('/', function(req, res, next){

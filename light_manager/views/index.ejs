@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <title><%= title %></title>
     <script type="text/javascript" src="/static/angular.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap.css">
+
+    <style>
+        span.selectedOption {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body ng-app="LightManagerApp">
     <%= body %>
@@ -16,7 +23,11 @@
         <h2>{{greeting}}</h2>
 
         <ul>
-            <li ng-repeat="light in lights">{{ light.name }}</li>
+            <li ng-repeat="light in lights">
+                {{ light.name }}
+                <span ng-class="{selectedOption : light.actualStatus.onOff} " ng-click="sendLightCommand(this, { onOff : true } )" data-lightonoff="true">ON</span>
+                 <span ng-class="{selectedOption : !light.actualStatus.onOff} "ng-click="sendLightCommand(this, { onOff : false })" data-lightonoff="false">OFF</span>
+            </li>
         </ul>
     </div>
 </body>
@@ -25,9 +36,31 @@
     angular.module("LightManagerApp", [])
         .controller("LightManagerController", function($scope, $http){
 
-
-
             $scope.greeting = "All Lights Are Here";
+
+
+            $scope.updateInterface = function(){
+                $http.get("/angular/getLightStatus").success(function(response){
+                    $scope.lights = response;
+                });
+            }
+
+
+            $scope.sendLightCommand = function(element, status){
+
+                status.lightName = element.light.name;
+
+                $http.post(
+                    "/angular/runProgram",
+                    status
+                ).success(
+                    function(response){
+                        $scope.lights = response;
+                    }
+                )
+            }
+
+            $scope.updateInterface()
         });
 
 </script>

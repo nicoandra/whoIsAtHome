@@ -61,6 +61,16 @@ function LightManager(){
         return crypto.createHash("md5").update(string.toLowerCase().trim()).digest("hex");
     }
 
+    this.setStatus = function(lightName, status){
+        if(typeof lightName != "string"){
+            status = lightName;
+            lightName = status.lightName;
+            delete status.lightName;
+        }
+
+        this.lights[lightName].setManualStatus(status);
+
+    }
 
     this.getStatus = function(){
         // console.log(this.lights);
@@ -71,7 +81,6 @@ function LightManager(){
             result[lightName] = this.lights[lightName].getStatus()
         }.bind(this))
         return result;
-
     }
 }
 
