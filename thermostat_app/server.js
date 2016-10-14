@@ -12,8 +12,6 @@ rpio.open(livingPin, rpio.OUTPUT, rpio.LOW);
 
 var sensorLib = require('node-dht-sensor');	// https://github.com/momenso/node-dht-sensor
 
-
-
 var sensor = {
 	sensors: [ {
 			name: "kitchen",

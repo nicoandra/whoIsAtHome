@@ -140,7 +140,7 @@ function LightPrograms(){
 
         colorMatch = action.match('([0-9]{1,3}) ([0-9]{1,3}) ([0-9]{1,3})');
         if(colorMatch){
-            colorToSet = rgbToMilightColor(colorMatch[1], colorMatch[2], colorMatch[3]);
+            colorToSet = this.rgbToMilightColor(colorMatch[1], colorMatch[2], colorMatch[3]);
             action = 'setColor';
             actionArguments.push(colorToSet);
         }
@@ -648,5 +648,49 @@ function LightPrograms(){
         });
         return status;
     }
+
+
+    this.rgbToMilightColor = function(r, g, b){
+        r = r / 255;
+        g = g / 255;
+        b = b / 255;
+
+        max = Math.max(r, g, b);
+        min = Math.min(r, g, b);
+        l = (max + min) / 2;
+        d = max - min;
+        h = '';
+
+        if (d == 0) {
+            h = s = 0;
+        } else {
+            s = d / (1 - Math.abs(2 * l - 1));
+
+            switch (max) {
+                case r:
+
+                    rem = ((g - b) / d) / 6;
+                    rem = (rem - Math.floor(rem)) * 6;
+
+                    h = 60 * rem;
+                    if (b > g) {
+                        h += 360;
+                    }
+                    break;
+                case g:
+                    h = 60 * ((b - r) / d + 2);
+                    break;
+                case b:
+                    h = 60 * ((r - g) / d + 4);
+                    break;
+            }
+        }
+        // return [h, s, l];
+
+        color = (256 + 176 - Math.round(h / 360.0 * 255.0)) % 256;
+        return [0x40 , color + 0xfa];
+    }
+
+
 }
 module.exports = LightPrograms;
