@@ -15,7 +15,6 @@ var request = require('request');
 
 var isNicoAtHome = false;
 
-
 var delayBetweenCommands = 80;
 
 var colorCodes = {

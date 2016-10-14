@@ -3,12 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title><%= title %></title>
+    <script type="text/javascript" src="/static/angular.min.js"></script>
 </head>
-<body>
+<body ng-app="LightManagerApp">
     <%= body %>
 
     <ul>
         <% Object.keys(lights).forEach(function(roomName){ %> <%= lights[roomName].name %> <% }) %>
     </ul>
+
+    <div ng-controller="LightManagerController">
+        <h2>{{greeting}}</h2>
+
+        <ul>
+            <li ng-repeat="light in lights">{{ light.name }}</li>
+        </ul>
+    </div>
 </body>
+
+<script type="text/javascript">
+    angular.module("LightManagerApp", [])
+        .controller("LightManagerController", function($scope, $http){
+
+
+
+            $scope.greeting = "All Lights Are Here";
+        });
+
+</script>
 </html>
