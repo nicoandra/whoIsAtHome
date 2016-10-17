@@ -3,8 +3,6 @@ var env = process.env.NODE_ENV || 'development'
 
 
 var EventEmitter = require('events').EventEmitter
-var messageBus = new EventEmitter()
-messageBus.setMaxListeners(100)
 
 var dgram = require('dgram');
 var debug = require('debug');
@@ -355,12 +353,15 @@ app.get("/angular/lights/getStatus", function(req, res){
 	res.send(lightManager.getStatus())
 })
 
+
+var messageBus = new EventEmitter()
+messageBus.setMaxListeners(100)
 app.get("/angular/socketSimulator", function(req,res){
 
 	messageBus.on('message', function(data){
 		console.log(req.ip, "Data which triggered the event", data)
 		try {
-			res.send(lightManager.getInterfaceOptions())
+			res.send(true)
 		} catch(exception){}
 	})
 })

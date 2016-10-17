@@ -220,7 +220,7 @@
             $scope.socketSimulator = function(){
                 $http.get("/angular/socketSimulator", { timeout: 60000 })
                     .success(function(response){
-                        $scope.updateInterfaceWithResponse(response)
+                        $scope.buildInterface();
                         $scope.socketSimulator()
                     })
                     .error(function(){
