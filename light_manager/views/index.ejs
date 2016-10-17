@@ -13,6 +13,11 @@
     <script src="bower_components/tinycolor/dist/tinycolor-min.js"></script>
     <script src="bower_components/angular-color-picker/dist/angularjs-color-picker.min.js"></script>
 
+    <link rel="stylesheet" href="/static/angular-ui-switch/angular-ui-switch.min.css"/>
+
+
+    <script src="/static/angular-ui-switch/angular-ui-switch.min.js"></script>
+
     <style>
         span.selectedOption {
             font-weight: bold;
@@ -32,45 +37,85 @@
         <ul>
             <li ng-repeat="light in lights">
                 {{ light.displayName }}
-                <span ng-class="{selectedOption : light.actualStatus.onOff} " ng-click="sendLightCommand(this, { onOff : true } )" data-lightonoff="true">ON</span>
-                 <span ng-class="{selectedOption : !light.actualStatus.onOff} "ng-click="sendLightCommand(this, { onOff : false })" data-lightonoff="false">OFF</span>
+
+
+                <span ng-repeat="interfaceOption in light.interface">
+                    <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
+                    <switch
+                        ng-if="interfaceOption.type == 'switch'"
+                        id="{{ light.name }}OnOffSwitch"
+                        name="{{ light.name }}OnOffSwitch"
+                        on="{{ interfaceOption.options[0].displayName }}" off="{{ interfaceOption.options[1].displayName }}"
+                        ng-model="light.actualStatus.onOff"
+                        class="green"
+                        ng-change="sendLightCommand(this, interfaceOption.options[light.actualStatus.onOff == true ? 0 : 1 ].status )">
+                    </switch>
+                </span>
+
             </li>
         </ul>
     </div>
 
     <color-picker ng-model="myColor" options="{round : true, alpha: false }"></color-picker>
 
+    <form>
+
+      <br>{{ enabled }}
+    </form>
+
 </body>
 
 <script type="text/javascript">
-    angular.module("LightManagerApp", ['color.picker'])
+    angular.module("LightManagerApp", ['color.picker', 'uiSwitch'])
         .controller("LightManagerController", function($scope, $http){
 
             $scope.greeting = "All Lights Are Here";
 
+            $scope.updateInterfaceWithResponse = function(response){
+                $scope.lights = response;
+            }
 
-            $scope.updateInterface = function(){
-                $http.get("/angular/getLightStatus").success(function(response){
-                    $scope.lights = response;
+            $scope.buildInterface = function(){
+                $http.get("/angular/getInterfaceOptions").success(function(response){
+                    $scope.updateInterfaceWithResponse(response)
                 });
             }
 
+            $scope.updateInterface = function(){
+                $http.get("/angular/getLightStatus").success(function(response){
+                    $scope.updateInterfaceWithResponse(response)
+                });
+            }
 
             $scope.sendLightCommand = function(element, status){
-
                 status.lightName = element.light.name;
 
                 $http.post(
                     "/angular/runProgram",
                     status
                 ).success(
-                    function(response){
-                        $scope.lights = response;
+                     $scope.buildInterface
+                )
+            }
+
+            $scope.heyWhatsUp = function(a,b,c){
+                console.log(a,b,c, this);
+            }
+
+            $scope.socketSimulator = function(){
+                $http.get("/angular/socketSimulator", { timeout: 60000 })
+                    .success(function(response){
+                        $scope.updateInterfaceWithResponse(response)
+                        $scope.socketSimulator()
+                    })
+                    .error(function(){
+                        $scope.socketSimulator()
                     }
                 )
             }
 
-            $scope.updateInterface()
+            $scope.buildInterface();
+            $scope.socketSimulator();
         });
 
 </script>

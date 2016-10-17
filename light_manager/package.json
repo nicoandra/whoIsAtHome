@@ -9,6 +9,8 @@
   "author": "Nicolás Andrade",
   "license": "ISC",
   "dependencies": {
+    "angular-ui-switch": "^0.1.1",
+    "angularjs-color-picker": "^2.5.0",
     "async": "^1.4.2",
     "body-parser": "^1.15.2",
     "debug": "^2.2.0",

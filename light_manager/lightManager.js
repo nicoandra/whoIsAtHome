@@ -16,7 +16,7 @@ function LightManager(){
         }
 
         lightSocket = new LightSocket("name", groupNumber, this.receiverSockets[socketNumber]);
-        light = new Light(name, displayName, lightSocket).hasRgb(hasRgb)-hasDimmer(hasDimmer);
+        light = new Light(name, displayName, lightSocket).hasRgb(hasRgb).hasDimmer(hasDimmer);
         this.lights[name] = light;
     }
 
@@ -79,6 +79,19 @@ function LightManager(){
 
         Object.keys(this.lights).forEach(function(lightName, index){
             result[lightName] = this.lights[lightName].getStatus()
+        }.bind(this))
+        return result;
+    }
+
+
+    this.getInterfaceOptions = function(){
+        result = new Object();
+
+        Object.keys(this.lights).forEach(function(lightName, index){
+
+            result[lightName] = this.lights[lightName].getStatus();
+            result[lightName].interface = this.lights[lightName].getInterfaceOptions();
+
         }.bind(this))
         return result;
     }

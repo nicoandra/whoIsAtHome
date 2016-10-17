@@ -1,15 +1,24 @@
+var env = process.env.NODE_ENV || 'development'
+	, cfg = require(__dirname + '/config/config.'+env+'.js');
+
+
+var EventEmitter = require('events').EventEmitter
+var messageBus = new EventEmitter()
+messageBus.setMaxListeners(100)
+
 var dgram = require('dgram');
 var debug = require('debug');
-var bodyParser = require('body-parser'); 	// To parse POST requests
+const path = require('path');
+
 
 var CityPlotter = require(__dirname + '/plot.js');
 var cityPlotter = new CityPlotter();
 
 var moment = require('moment');
 
-var env = process.env.NODE_ENV || 'development'
-    , cfg = require(__dirname + '/config/config.'+env+'.js');
 
+
+var bodyParser = require('body-parser'); 	// To parse POST requests
 var request = require('request');
 
 var isNicoAtHome = false;
@@ -57,20 +66,17 @@ var heaterStatus = {
 LightManager = require("./lightManager.js");
 lightManager = new LightManager();
 
-lightManager.addLight("officeLamp", "Office Lamp", /*ReceiverId */ 0,  /* GroupId */ 1, /* hasRgb */ true, /* hasDimmer */, true);
-lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* GroupId */ 2, /* hasRgb */ true, /* hasDimmer */, true);
-lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */, true);
-lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */, true);
+lightManager.addLight("officeLamp", "Office Lamp", /*ReceiverId */ 0,  /* GroupId */ 1, /* hasRgb */ true, /* hasDimmer */ true);
+lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* GroupId */ 2, /* hasRgb */ true, /* hasDimmer */ true);
+lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */ true);
+lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */ true);
 
 lightManager.addProgram("kitchen countertop on", "kitchen countertop on", "kitchenCountertop", {onOff : true } );
 lightManager.addProgram("kitchen countertop off", "kitchen countertop off", "kitchenCountertop", {onOff : false} );
 
-lightManager.runProgram("kitchen countertop on");
+// lightManager.runProgram("kitchen countertop on");
 
 // console.log(lightManager.getStatus());
-
-
-
 
 function Heater(name, ip){
 	this.name = name;
@@ -311,6 +317,7 @@ function buildResponseObject(){
 
 app.use('/static', express.static(__dirname + '/webroot'));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
+app.use('/static/angular-ui-switch', express.static(path.join(__dirname, 'node_modules', 'angular-ui-switch' )));
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -337,14 +344,31 @@ app.get("/angular", function(req,res){
 	res.render('index', { title : "The First Rendered Page", body : "Great <b>HTML</b> body", lights : lights })
 })
 
+
+app.get("/angular/getInterfaceOptions", function(req, res){
+	res.send(lightManager.getInterfaceOptions())
+})
+
 app.get("/angular/getLightStatus", function(req, res){
 	res.send(lightManager.getStatus())
 })
 
+app.get("/angular/socketSimulator", function(req,res){
+
+	var addMessageListener = function(res){
+		messageBus.once('message', function(data){
+			res.send(lightManager.getInterfaceOptions())
+		})
+	}
+
+	addMessageListener(res);
+
+})
 
 app.post("/angular/runProgram", function(req, res){
-	console.log(req.body);
+	// console.log(req.body);
 	lightManager.setStatus(req.body)
+	messageBus.emit('message')
 	res.send(lightManager.getStatus())
 })
 

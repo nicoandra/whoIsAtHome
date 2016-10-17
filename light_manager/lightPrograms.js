@@ -636,20 +636,6 @@ function LightPrograms(){
          */
     }
 
-    this.getLightsStatus = function(){
-        var status = {};
-        Object.keys(lights).forEach(function(key){
-            status[key] = {
-                'status' : lights[key].status,
-                'color' : lights[key].color,
-                'brightness' : lights[key].brightnessValue,
-                'queueSize' : lights[key].commandQueue.length
-            };
-        });
-        return status;
-    }
-
-
     this.rgbToMilightColor = function(r, g, b){
         r = r / 255;
         g = g / 255;

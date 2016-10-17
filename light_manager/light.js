@@ -20,10 +20,12 @@ function Light(name, displayName, socket){
 
     this.hasRgb = function(hasRgb){
         this.abilities.hasRgb = (hasRgb === true)
+        return this;
     }
 
     this.hasDimmer = function(hasDimmer){
         this.abilities.hasDimmer = (hasDimmer === true)
+        return this;
     }
 
     this.setManualStatus = function(status){
@@ -55,31 +57,32 @@ function Light(name, displayName, socket){
 
     this.getInterfaceOptions = function(){
 
-        result = [
-            { 
-                displayName : "On / Off", 
-                type : "switch", 
-                options : [ 
+        var resultOptions =  [
+            {
+                displayName : "On / Off",
+                type : "switch",
+                options : [
                     { displayName : "On", status: { onOff : true } },
                     { displayName : "Off", status: { onOff : false } },
                 ]
-            },
+            }
         ]
 
         if(this.abilities.hasRgb){
-            result.push({
+            resultOptions.push({
                 displayName : "Color", 
                 type : "colorPicker"
             })
         }
 
-
         if(this.abilities.hasDimmer){
-            result.push({
+            resultOptions.push({
                 displayName : "Color", 
-                type : "colorPicker"
+                type : "slider"
             })
-        }        
+        }
+
+        return resultOptions;
        
     }
 
