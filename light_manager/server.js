@@ -4,7 +4,7 @@ var env = process.env.NODE_ENV || 'development'
 
 var EventEmitter = require('events').EventEmitter
 var messageBus = new EventEmitter()
-messageBus.setMaxListeners(1000000)
+messageBus.setMaxListeners(100)
 
 var dgram = require('dgram');
 var debug = require('debug');
@@ -356,65 +356,61 @@ app.get("/angular/lights/getStatus", function(req, res){
 })
 
 app.get("/angular/socketSimulator", function(req,res){
-	console.log("Hit SocketSimulator");
 
-	var addMessageListener = function(res){
-		messageBus.once('message', function(data){
-			console.log("Response sent in the SocketSimulator", data);
+	messageBus.on('message', function(data){
+		console.log(req.ip, "Data which triggered the event", data)
+		try {
 			res.send(lightManager.getInterfaceOptions())
-		})
-	}
-
-	addMessageListener(res);
+		} catch(exception){}
+	})
 })
 
 app.get("/angular/system/getNotifications", function(req,res){
-	res.send([{ date : new Date(), title:"Uptime", text: "Uptime is " + moment.duration(process.uptime(), 'seconds').humanize()}])
+	uptime = moment.duration(process.uptime(), 'seconds').asMinutes();
+	type = "success";
+	if(uptime < 10){
+		type = "danger";
+	}
+
+	toSend = [
+		{ date : new Date(), type: type, title:"Uptime", text: "Uptime is " + moment.duration(uptime, 'minutes').humanize()}
+	];
+
+	res.send(toSend)
 })
 
 app.post("/angular/runProgram", function(req, res){
 
-	console.log(req.body);
+	if(typeof req.body.lightName == "string") {
+		lightManager.setStatus(req.body, function () {
+			// Emit message only after the change has been applied
+			console.log("Change has been done");
+			messageBus.emit('message', req.body);
+		});
+	} else {
+		lightManager.setMultipleStatus(req.body.lightName, req.body, function () {
+			// Emit message only after the change has been applied
+			console.log("Change has been done");
+			messageBus.emit('message', req.body);
+		});
+	}
 
-	lightManager.setStatus(req.body, function(){
-		// Emit message only after the change has been applied
-		console.log("Change has been done");
-		messageBus.emit('message', "here it is the message");
-	});
-
+	setTimeout(function() {
+		messageBus.emit("message", req.body)
+	}, 1000);
 
 	res.send(
 		lightManager.getStatus()
 	);
-
 })
 
 app.use('/', function(req, res, next){
-	// isNicoAtHome
-
-	console.log(req.ip);
-
-	switch(req.ip){
-		case '192.168.1.1':
-		case '::ffff:192.168.1.1':
-		case '192.168.1.111':
-		case '::ffff:192.168.1.111':
-		case '192.168.1.112':
-		case '::ffff:192.168.1.112':
-		case '192.168.1.141':
-		case '::ffff:192.168.1.141':
-		// case '127.0.0.1': 
-			isNicoAtHome = true; break;
-		default: isNicoAtHome = false; break;	
-	}
-
 	new HttpResponses().renderIndexPage(req, res);
 });
 
 app.post('/heater/', function(req, res){
 	var room = req.query.room;
 	var temperature = req.query.temperature;
-	
 });
 
 httpServer.listen(port, function(){

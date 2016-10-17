@@ -18,6 +18,7 @@
   "dependencies": {
     "angular-color-picker": "angularjs-color-picker#^2.5.0",
     "bootstrap": "^3.3.7",
-    "jQuery": "^3.1.1"
+    "jQuery": "^3.1.1",
+    "angularjs-slider": "^5.7.0"
   }
 }

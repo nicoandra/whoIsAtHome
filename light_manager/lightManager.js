@@ -74,6 +74,16 @@ function LightManager(){
         this.lights[lightName].setManualStatus(status, callback);
     }
 
+    this.setMultipleStatus = function(lightNames, status, callback){
+        lightNames.forEach(function(lightName){
+
+            this.setStatus(lightName, status, function(){console.log("Setting status of", lightName)});
+        }.bind(this))
+
+        callback = (typeof callback === 'function') ? callback : function() {};
+        callback;
+    }
+
     this.getStatus = function(){
         // console.log(this.lights);
 
@@ -83,7 +93,6 @@ function LightManager(){
             result[lightName] = this.lights[lightName].getStatus()
         }.bind(this))
         return result;
-
     }
 
 

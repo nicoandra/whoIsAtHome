@@ -64,7 +64,7 @@
                                             on="{{ interfaceOption.options[0].displayName }}" off="{{ interfaceOption.options[1].displayName }}"
                                             ng-model="light.actualStatus.onOff"
                                             class="green"
-                                            ng-change="sendLightCommand(this, interfaceOption.options[light.actualStatus.onOff == true ? 0 : 1 ].status )">
+                                            ng-change="sendLightCommand(light.name, interfaceOption.options[light.actualStatus.onOff == true ? 0 : 1 ].status )">
                                         </switch>
                                      </div>
 
@@ -75,42 +75,82 @@
                                             ng-options="x for x in [10,20,30,40,50,60,70,80,90,100]"
                                             name="{{ light.name }}{{ interfaceOption.name }}Slider"
                                             id="{{ light.name }}{{ interfaceOption.name }}Slider"
-                                            ng-change="sendLightCommand(this , {brightness : light.actualStatus.brightness})">
+                                            ng-change="sendLightCommand(light.name , {brightness : light.actualStatus.brightness})">
                                         >
                                         </select>
                                     </div>
 
                                 </span>
                             </li>
-
-
-
-
                         </ul>
                     </div> <!-- End of id="lightsTab" -->
 
                     <div class="tab-pane fade" id="programsTab">
 
+                            <li class="row list-group-item">
+                                <div class="col-md-2 col-sm-2">
+                                    All lights
+                                 </div>
+
+                                <div class="col-md-3 col-sm-3">
+                                    <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
+                                    <switch
+                                        id="AllOnOffSwitch"
+                                        name="AllOnOffSwitch"
+                                        on="On" off="Off"
+                                        class="green"
+                                        ng-model="allLights.onOff"
+                                        ng-change="allLights({ onOff : allLights.onOff })">
+                                    </switch>
+                                 </div>
+
+                                    <div class="col-md-3 col-sm-3">
+                                        <select
+                                            ng-model="allLights.brightness"
+                                            ng-options="x for x in [10,20,30,40,50,60,70,80,90,100]"
+                                            name="allLightsBrigthnessSlider"
+                                            id="allLightsBrigthnessSlider"
+                                            ng-change="allLights({ brightness : allLights.brightness })">
+                                        >
+                                        </select>
+                                    </div>
+
+
+                            </li>
                     </div>
+
+
+
 
                     <div class="tab-pane fade" id="notificationsTab">
                         <h3 class="panel-title">Notifications</h3>
-                        <ul class="list-group">
-                            <li class="row list-group-item" ng-repeat="notification in notifications">
-                                {{ notification.date | date:'medium' }}
-                                {{ notification.title }}
-                                {{ notification.text }}
-                            </li>
-                        </ul>
+                        <div ng-repeat="notification in notifications">
+                            <div class="alert alert-{{ notification.type }}" role="alert" >
+                                <span class="h4">{{ notification.title }}</span>
+                                <span class="h6">{{ notification.date | date:'medium' }}</span>
+                                <p>{{ notification.text }}</p>
+                            </div>
+                        </div>
                     </div>
+
+
 
                     <div class="tab-pane fade" id="camerasTab">
                         <h3 class="panel-title">Cameras</h3>
                     </div>
 
+
+
+
+
                     <div class="tab-pane fade" id="heatersTab">
                         <h3 class="panel-title">Heaters</h3>
                     </div>
+
+
+
+
+
                 </div> <!-- end tab-content -->
             </div>
             <div class="panel-footer">
@@ -127,6 +167,12 @@
 <script type="text/javascript">
     angular.module("LightManagerApp", ['color.picker', 'uiSwitch', 'rzModule'])
         .controller("LightManagerController", function($scope, $http){
+
+            $scope.allLights = {
+                OnOff : true,
+                brightness : 100
+            }
+
 
             $scope.dimChange = function(a,b,c){ console.log(a,b,c) };
 
@@ -149,12 +195,19 @@
                 });
             }
 
-
+            $scope.allLights = function(statusObject){
+                console.log("going to send", statusObject);
+                statusToSend = statusObject;
+                $scope.sendLightCommand(Object.keys($scope.lights), statusToSend)
+            }
 
             $scope.sendLightCommand = function(element, status){
-                status.lightName = element.light.name;
-
-                console.log(status.lightName, status)
+                console.log(typeof element);
+                if(typeof element == "string" || typeof element == "object"){
+                    status.lightName = element;
+                } else {
+                    status.lightName = element.light.name;
+                }
 
                 $http.post(
                     "/angular/runProgram",
@@ -164,12 +217,8 @@
                 )
             }
 
-            $scope.heyWhatsUp = function(a,b,c){
-                console.log(a,b,c, this);
-            }
-
             $scope.socketSimulator = function(){
-                $http.get("/angular/socketSimulator", { timeout: 5000 })
+                $http.get("/angular/socketSimulator", { timeout: 60000 })
                     .success(function(response){
                         $scope.updateInterfaceWithResponse(response)
                         $scope.socketSimulator()
