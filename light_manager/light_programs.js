@@ -1,6 +1,10 @@
 
 function LightPrograms(){
 
+	this.lights = {};
+
+	
+
 	this.getZonesByProgramName = function(programName){
         var exp;
         var action = '';
@@ -8,9 +12,9 @@ function LightPrograms(){
         var affectedLights = [];
 
         if(programName.match('get lights status')){
-            lights.officeBoards.off();
-            lights.officeLamp.off();
-            lights.kitchenLamp.off();
+            this.lights.officeBoards.off();
+            this.lights.officeLamp.off();
+            this.lights.kitchenLamp.off();
             return {methodToExecute : 'getLightsStatus' };
         }
 
