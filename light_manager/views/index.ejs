@@ -6,6 +6,13 @@
     <script type="text/javascript" src="/static/angular.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/bootstrap.css">
 
+    <link rel="stylesheet" href="bower_components/angular-color-picker/dist/angularjs-color-picker.min.css" />
+    <!-- only include if you use bootstrap -->
+    <link rel="stylesheet" href="bower_components/angular-color-picker/dist/themes/angularjs-color-picker-bootstrap.min.css" />
+
+    <script src="bower_components/tinycolor/dist/tinycolor-min.js"></script>
+    <script src="bower_components/angular-color-picker/dist/angularjs-color-picker.min.js"></script>
+
     <style>
         span.selectedOption {
             font-weight: bold;
@@ -24,16 +31,19 @@
 
         <ul>
             <li ng-repeat="light in lights">
-                {{ light.name }}
+                {{ light.displayName }}
                 <span ng-class="{selectedOption : light.actualStatus.onOff} " ng-click="sendLightCommand(this, { onOff : true } )" data-lightonoff="true">ON</span>
                  <span ng-class="{selectedOption : !light.actualStatus.onOff} "ng-click="sendLightCommand(this, { onOff : false })" data-lightonoff="false">OFF</span>
             </li>
         </ul>
     </div>
+
+    <color-picker ng-model="myColor" options="{round : true, alpha: false }"></color-picker>
+
 </body>
 
 <script type="text/javascript">
-    angular.module("LightManagerApp", [])
+    angular.module("LightManagerApp", ['color.picker'])
         .controller("LightManagerController", function($scope, $http){
 
             $scope.greeting = "All Lights Are Here";
