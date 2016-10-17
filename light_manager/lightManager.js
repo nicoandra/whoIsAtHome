@@ -9,14 +9,14 @@ function LightManager(){
     this.receiverSockets = [];
     this.programs = {}
 
-    this.addLight = function(name, displayName, socketNumber, groupNumber){
+    this.addLight = function(name, displayName, socketNumber, groupNumber, hasRgb, hasDimmer){
 
         if(this.receiverSockets[socketNumber] == undefined){
             this.receiverSockets[socketNumber] = new ReceiverSocket(cfg.milight[socketNumber]);
         }
 
         lightSocket = new LightSocket("name", groupNumber, this.receiverSockets[socketNumber]);
-        light = new Light(name, displayName, lightSocket);
+        light = new Light(name, displayName, lightSocket).hasRgb(hasRgb)-hasDimmer(hasDimmer);
         this.lights[name] = light;
     }
 

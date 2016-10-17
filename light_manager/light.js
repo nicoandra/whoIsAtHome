@@ -15,6 +15,16 @@ function Light(name, displayName, socket){
     this.fadeInProgress = 0;
     this.currentProgram = '';
 
+    this.abilities = { hasRgb : false, hasDimmer : false};
+
+
+    this.hasRgb = function(hasRgb){
+        this.abilities.hasRgb = (hasRgb === true)
+    }
+
+    this.hasDimmer = function(hasDimmer){
+        this.abilities.hasDimmer = (hasDimmer === true)
+    }
 
     this.setManualStatus = function(status){
         console.log("In SetManualStatus received", status)
@@ -31,8 +41,6 @@ function Light(name, displayName, socket){
     }
 
 
-
-
     this.getStatus = function(){
         return {
             'name' : this.name,
@@ -43,6 +51,36 @@ function Light(name, displayName, socket){
             'manualStatus' : this.manualStatus,
             'brightness' : this.brightness
         }
+    }
+
+    this.getInterfaceOptions = function(){
+
+        result = [
+            { 
+                displayName : "On / Off", 
+                type : "switch", 
+                options : [ 
+                    { displayName : "On", status: { onOff : true } },
+                    { displayName : "Off", status: { onOff : false } },
+                ]
+            },
+        ]
+
+        if(this.abilities.hasRgb){
+            result.push({
+                displayName : "Color", 
+                type : "colorPicker"
+            })
+        }
+
+
+        if(this.abilities.hasDimmer){
+            result.push({
+                displayName : "Color", 
+                type : "colorPicker"
+            })
+        }        
+       
     }
 
     // Internal, queue management attributes and methods

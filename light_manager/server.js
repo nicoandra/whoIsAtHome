@@ -57,10 +57,10 @@ var heaterStatus = {
 LightManager = require("./lightManager.js");
 lightManager = new LightManager();
 
-lightManager.addLight("officeLamp", "Office Lamp", 0, 1);
-lightManager.addLight("kitchenLamp", "Kitchen Lamp", 0, 2);
-lightManager.addLight("officeBoards", "Office Boards", 0, 3);
-lightManager.addLight("kitchenCountertop", "Kitchen Countertop", 0, 4);
+lightManager.addLight("officeLamp", "Office Lamp", /*ReceiverId */ 0,  /* GroupId */ 1, /* hasRgb */ true, /* hasDimmer */, true);
+lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* GroupId */ 2, /* hasRgb */ true, /* hasDimmer */, true);
+lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */, true);
+lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */, true);
 
 lightManager.addProgram("kitchen countertop on", "kitchen countertop on", "kitchenCountertop", {onOff : true } );
 lightManager.addProgram("kitchen countertop off", "kitchen countertop off", "kitchenCountertop", {onOff : false} );
