@@ -61,15 +61,17 @@ function LightManager(){
         return crypto.createHash("md5").update(string.toLowerCase().trim()).digest("hex");
     }
 
-    this.setStatus = function(lightName, status){
+    this.setStatus = function(lightName, status, callback){
+
         if(typeof lightName != "string"){
+            callback = status;
             status = lightName;
             lightName = status.lightName;
             delete status.lightName;
         }
 
-        this.lights[lightName].setManualStatus(status);
-
+        callback = (typeof callback === 'function') ? callback : function() {};
+        this.lights[lightName].setManualStatus(status, callback);
     }
 
     this.getStatus = function(){

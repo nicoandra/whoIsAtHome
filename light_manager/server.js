@@ -4,7 +4,7 @@ var env = process.env.NODE_ENV || 'development'
 
 var EventEmitter = require('events').EventEmitter
 var messageBus = new EventEmitter()
-messageBus.setMaxListeners(100)
+messageBus.setMaxListeners(1000000)
 
 var dgram = require('dgram');
 var debug = require('debug');
@@ -341,7 +341,7 @@ app.get("/heaters", function(req, res){
 })
 
 app.get("/angular", function(req,res){
-	res.render('index', { title : "The First Rendered Page", body : "Great <b>HTML</b> body", lights : lights })
+	res.render('index', { title : "HomeOwn", lights : lights })
 })
 
 
@@ -354,22 +354,33 @@ app.get("/angular/getLightStatus", function(req, res){
 })
 
 app.get("/angular/socketSimulator", function(req,res){
+	console.log("Hit SocketSimulator");
 
 	var addMessageListener = function(res){
 		messageBus.once('message', function(data){
+			console.log("Response sent in the SocketSimulator", data);
 			res.send(lightManager.getInterfaceOptions())
 		})
 	}
 
 	addMessageListener(res);
-
 })
 
 app.post("/angular/runProgram", function(req, res){
-	// console.log(req.body);
-	lightManager.setStatus(req.body)
-	messageBus.emit('message')
-	res.send(lightManager.getStatus())
+
+	console.log(req.body);
+
+	lightManager.setStatus(req.body, function(){
+		// Emit message only after the change has been applied
+		console.log("Change has been done");
+		messageBus.emit('message', "here it is the message");
+	});
+
+
+	res.send(
+		lightManager.getStatus()
+	);
+
 })
 
 app.use('/', function(req, res, next){

@@ -1,0 +1,22 @@
+{
+  "name": "ligth_manager",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Nicolás Andrade"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/nicoandra/whoIsAtHome",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-color-picker": "angularjs-color-picker#^2.5.0",
+    "bootstrap": "^3.3.7"
+  }
+}

@@ -25,38 +25,39 @@
     </style>
 </head>
 <body ng-app="LightManagerApp">
-    <%= body %>
-
-    <ul>
-        <% Object.keys(lights).forEach(function(roomName){ %> <%= lights[roomName].name %> <% }) %>
-    </ul>
-
     <div ng-controller="LightManagerController">
-        <h2>{{greeting}}</h2>
 
-        <ul>
-            <li ng-repeat="light in lights">
-                {{ light.displayName }}
+        <div class="panel-group">
+            <div class="panel panel-collapse">
+                <div class="panel-heading">Lights</div>
+                <div class="panel-body">
+                    <ul>
+                        <li ng-repeat="light in lights">
+                            {{ light.displayName }}
 
 
-                <span ng-repeat="interfaceOption in light.interface">
-                    <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
-                    <switch
-                        ng-if="interfaceOption.type == 'switch'"
-                        id="{{ light.name }}OnOffSwitch"
-                        name="{{ light.name }}OnOffSwitch"
-                        on="{{ interfaceOption.options[0].displayName }}" off="{{ interfaceOption.options[1].displayName }}"
-                        ng-model="light.actualStatus.onOff"
-                        class="green"
-                        ng-change="sendLightCommand(this, interfaceOption.options[light.actualStatus.onOff == true ? 0 : 1 ].status )">
-                    </switch>
-                </span>
+                            <span ng-repeat="interfaceOption in light.interface">
+                                <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
+                                <switch
+                                    ng-if="interfaceOption.type == 'switch'"
+                                    id="{{ light.name }}OnOffSwitch"
+                                    name="{{ light.name }}OnOffSwitch"
+                                    on="{{ interfaceOption.options[0].displayName }}" off="{{ interfaceOption.options[1].displayName }}"
+                                    ng-model="light.actualStatus.onOff"
+                                    class="green"
+                                    ng-change="sendLightCommand(this, interfaceOption.options[light.actualStatus.onOff == true ? 0 : 1 ].status )">
+                                </switch>
+                            </span>
 
-            </li>
-        </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div><!-- Closing panel panel-default -->
+        </div><!-- Closing panel-group -->
     </div>
 
-    <color-picker ng-model="myColor" options="{round : true, alpha: false }"></color-picker>
+
+    <!-- <color-picker ng-model="myColor" options="{round : true, alpha: false }"></color-picker> -->
 
     <form>
 
@@ -68,8 +69,6 @@
 <script type="text/javascript">
     angular.module("LightManagerApp", ['color.picker', 'uiSwitch'])
         .controller("LightManagerController", function($scope, $http){
-
-            $scope.greeting = "All Lights Are Here";
 
             $scope.updateInterfaceWithResponse = function(response){
                 $scope.lights = response;
@@ -103,7 +102,7 @@
             }
 
             $scope.socketSimulator = function(){
-                $http.get("/angular/socketSimulator", { timeout: 60000 })
+                $http.get("/angular/socketSimulator", { timeout: 5000 })
                     .success(function(response){
                         $scope.updateInterfaceWithResponse(response)
                         $scope.socketSimulator()

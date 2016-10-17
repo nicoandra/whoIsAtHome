@@ -28,10 +28,10 @@ function Light(name, displayName, socket){
         return this;
     }
 
-    this.setManualStatus = function(status){
-        console.log("In SetManualStatus received", status)
+    this.setManualStatus = function(status, callback){
+        callback = (typeof callback === 'function') ? callback : function() {};
+
         if(status.onOff != undefined){
-            console.log("In ManualStatus setting onOff to", status.onOff)
             this.actualStatus.onOff = status.onOff;
             this.sendOnOff(status.onOff);
         }
@@ -40,6 +40,8 @@ function Light(name, displayName, socket){
             this.actualStatus.brightness = status.brightness;
             this.setBrightness(status.brightness);
         }
+
+        callback;
     }
 
 
