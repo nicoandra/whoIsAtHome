@@ -318,6 +318,8 @@ function buildResponseObject(){
 app.use('/static', express.static(__dirname + '/webroot'));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use('/static/angular-ui-switch', express.static(path.join(__dirname, 'node_modules', 'angular-ui-switch' )));
+app.use('/bower_components/bootstrap', express.static(path.join(__dirname, 'bower_components', 'bootstrap', 'dist')));
+app.use('/bower_components/jquery', express.static(path.join(__dirname, 'bower_components', 'jQuery', 'dist')));
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
