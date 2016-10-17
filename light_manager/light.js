@@ -52,8 +52,7 @@ function Light(name, displayName, socket){
             'actualStatus' : this.actualStatus,
             'status' : this.actualStatus,
             'autoStatus' : this.autoStatus,
-            'manualStatus' : this.manualStatus,
-            'brightness' : this.brightness
+            'manualStatus' : this.manualStatus
         }
     }
 
@@ -72,6 +71,7 @@ function Light(name, displayName, socket){
 
         if(this.abilities.hasRgb){
             resultOptions.push({
+                name : 'color',
                 displayName : "Color", 
                 type : "colorPicker"
             })
@@ -79,8 +79,12 @@ function Light(name, displayName, socket){
 
         if(this.abilities.hasDimmer){
             resultOptions.push({
-                displayName : "Color", 
-                type : "slider"
+                displayName : "Dim",
+                name : 'dim',
+                type : "slider",
+                status : function(){
+                    return this.value;
+                }
             })
         }
 

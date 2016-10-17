@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="/static/angular-ui-switch/angular-ui-switch.min.css"/>
     <script src="/static/angular-ui-switch/angular-ui-switch.min.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="/bower_components/angularjs-slider/dist/rzslider.css"/>
+    <script src="/bower_components/angularjs-slider/dist/rzslider.min.js"></script>
+
     <style>
         span.selectedOption {
             font-weight: bold;
@@ -25,45 +28,84 @@
     </style>
 </head>
 <body ng-app="LightManagerApp">
-    <div ng-controller="LightManagerController">
+    <div ng-controller="LightManagerController" class="container-fluid">
 
         <div class="panel panel-default">
 
             <div class="panel-heading">
                 <ul class="nav nav-pills">
-                    <li class="active"><a href="#lightsTab" data-toggle="tab">Lights</a></li>
-                    <li><a href="#heatersTab" data-toggle="tab">Heaters</a></li>
-                    <li><a href="#notificationsTab" data-toggle="tab">Notifications</a></li>
+                    <li class="active"><a href="#lightsTab" data-toggle="tab"><span class="glyphicon glyphicon-lamp"></span></a></li>
+                    <li><a href="#programsTab" data-toggle="tab"><span class="glyphicon glyphicon-picture"></span></a></li>
+                    <li><a href="#heatersTab" data-toggle="tab"><span class="glyphicon glyphicon-fire"></span></a></li>
+                    <li><a href="#camerasTab" data-toggle="tab"><span class="glyphicon glyphicon-eye-open"></span></a></li>
+                    <li><a href="#notificationsTab" data-toggle="tab"><span class="glyphicon glyphicon-alert"></span></a></li>
                     <li class="pull-right"><a ng-click="buildInterface()" class="glyphicon glyphicon-refresh"></a></li>
                 </ul>
              </div>
-
-
 
             <div class="panel-body">
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="lightsTab">
                         <ul class="list-group">
-                            <li class="list-group-item" ng-repeat="light in lights">
-                                {{ light.displayName }}
-                                <span ng-repeat="interfaceOption in light.interface">
-                                    <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
-                                    <switch
-                                        ng-if="interfaceOption.type == 'switch'"
-                                        id="{{ light.name }}OnOffSwitch"
-                                        name="{{ light.name }}OnOffSwitch"
-                                        on="{{ interfaceOption.options[0].displayName }}" off="{{ interfaceOption.options[1].displayName }}"
-                                        ng-model="light.actualStatus.onOff"
-                                        class="green"
-                                        ng-change="sendLightCommand(this, interfaceOption.options[light.actualStatus.onOff == true ? 0 : 1 ].status )">
-                                    </switch>
-                                </span>
 
+
+                            <li class="row list-group-item" ng-repeat="light in lights">
+                                <div class="col-md-2 col-sm-2">
+                                    {{ light.displayName }}
+                                 </div>
+                                <span ng-repeat="interfaceOption in light.interface">
+
+                                    <div class="col-md-3 col-sm-3">
+                                        <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
+                                        <switch
+                                            ng-if="interfaceOption.type == 'switch'"
+                                            id="{{ light.name }}OnOffSwitch"
+                                            name="{{ light.name }}OnOffSwitch"
+                                            on="{{ interfaceOption.options[0].displayName }}" off="{{ interfaceOption.options[1].displayName }}"
+                                            ng-model="light.actualStatus.onOff"
+                                            class="green"
+                                            ng-change="sendLightCommand(this, interfaceOption.options[light.actualStatus.onOff == true ? 0 : 1 ].status )">
+                                        </switch>
+                                     </div>
+
+                                    <div class="col-md-3 col-sm-3">
+                                        <select
+                                            ng-model="light.actualStatus.brightness"
+                                            ng-if="interfaceOption.type == 'slider'"
+                                            ng-options="x for x in [10,20,30,40,50,60,70,80,90,100]"
+                                            name="{{ light.name }}{{ interfaceOption.name }}Slider"
+                                            id="{{ light.name }}{{ interfaceOption.name }}Slider"
+                                            ng-change="sendLightCommand(this , {brightness : light.actualStatus.brightness})">
+                                        >
+                                        </select>
+                                    </div>
+
+                                </span>
                             </li>
+
+
+
+
                         </ul>
                     </div> <!-- End of id="lightsTab" -->
+
+                    <div class="tab-pane fade" id="programsTab">
+
+                    </div>
+
                     <div class="tab-pane fade" id="notificationsTab">
                         <h3 class="panel-title">Notifications</h3>
+                        <ul class="list-group">
+                            <li class="row list-group-item" ng-repeat="notification in notifications">
+                                {{ notification.date | date:'medium' }}
+                                {{ notification.title }}
+                                {{ notification.text }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tab-pane fade" id="camerasTab">
+                        <h3 class="panel-title">Cameras</h3>
                     </div>
 
                     <div class="tab-pane fade" id="heatersTab">
@@ -71,36 +113,48 @@
                     </div>
                 </div> <!-- end tab-content -->
             </div>
+            <div class="panel-footer">
+                Home Automation with NodeJS, Angular, LimitLess Leds and some other stuff
+            </div>
 
         </div><!-- Closing panel panel-default -->
-    </div>
+    </div><!-- End ng-controller LightManagerController -->
 
 
     <!-- <color-picker ng-model="myColor" options="{round : true, alpha: false }"></color-picker> -->
 </body>
 
 <script type="text/javascript">
-    angular.module("LightManagerApp", ['color.picker', 'uiSwitch'])
+    angular.module("LightManagerApp", ['color.picker', 'uiSwitch', 'rzModule'])
         .controller("LightManagerController", function($scope, $http){
+
+            $scope.dimChange = function(a,b,c){ console.log(a,b,c) };
 
             $scope.updateInterfaceWithResponse = function(response){
                 $scope.lights = response;
             }
 
             $scope.buildInterface = function(){
-                $http.get("/angular/getInterfaceOptions").success(function(response){
+                $http.get("/angular/lights/getInterfaceOptions").success(function(response){
                     $scope.updateInterfaceWithResponse(response)
+                    $scope.getNotifications();
                 });
             }
 
-            $scope.updateInterface = function(){
-                $http.get("/angular/getLightStatus").success(function(response){
-                    $scope.updateInterfaceWithResponse(response)
+
+            $scope.getNotifications = function(){
+                $http.get("/angular/system/getNotifications").success(function(response){
+                    console.log(response);
+                    $scope.notifications = response;
                 });
             }
+
+
 
             $scope.sendLightCommand = function(element, status){
                 status.lightName = element.light.name;
+
+                console.log(status.lightName, status)
 
                 $http.post(
                     "/angular/runProgram",

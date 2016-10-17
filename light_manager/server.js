@@ -347,11 +347,11 @@ app.get("/angular", function(req,res){
 })
 
 
-app.get("/angular/getInterfaceOptions", function(req, res){
+app.get("/angular/lights/getInterfaceOptions", function(req, res){
 	res.send(lightManager.getInterfaceOptions())
 })
 
-app.get("/angular/getLightStatus", function(req, res){
+app.get("/angular/lights/getStatus", function(req, res){
 	res.send(lightManager.getStatus())
 })
 
@@ -366,6 +366,10 @@ app.get("/angular/socketSimulator", function(req,res){
 	}
 
 	addMessageListener(res);
+})
+
+app.get("/angular/system/getNotifications", function(req,res){
+	res.send([{ date : new Date(), title:"Uptime", text: "Uptime is " + moment.duration(process.uptime(), 'seconds').humanize()}])
 })
 
 app.post("/angular/runProgram", function(req, res){

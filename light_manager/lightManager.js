@@ -83,6 +83,7 @@ function LightManager(){
             result[lightName] = this.lights[lightName].getStatus()
         }.bind(this))
         return result;
+
     }
 
 
