@@ -13,6 +13,8 @@ function ReceiverSocket(params){
         stuff = JSON.parse(JSON.stringify(stuff));
         stuff.push(this.CLOSE_BYTE);
         this.buffer.push(stuff);
+        this.buffer.push(stuff);
+        this.buffer.push(stuff);
     }
 
     this.sendQueuedStuff = function(){
