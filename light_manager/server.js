@@ -8,13 +8,10 @@ var dgram = require('dgram');
 var debug = require('debug');
 const path = require('path');
 
-
 var CityPlotter = require(__dirname + '/plot.js');
 var cityPlotter = new CityPlotter();
 
 var moment = require('moment');
-
-
 
 var bodyParser = require('body-parser'); 	// To parse POST requests
 var request = require('request');
@@ -38,8 +35,8 @@ var lights = {
 };
 
 var heaterStatus = {
-    kitchen : {name : 'Kitchen', power: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/kitchen' },
-    living : {name: 'Living', power: 0, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/living' },
+    kitchen : {name : 'Kitchen', power: 70, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/kitchen' },
+    living : {name: 'Living', power: 50, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/living' },
 }
 
 
@@ -407,10 +404,12 @@ app.get("/angular/system/getNotifications", function(req,res){
 	res.send(toSend)
 })
 
+
+app.get("/angular/heaters/getStatus", function(req, res){
+	res.send(heaterStatus)
+})
 app.post("/angular/runProgram", function(req, res){
-
 	console.log(req.body);
-
 	if(req.body.programKey){
 		try {
 			lightManager.runProgram(req.body.programKey);

@@ -46,7 +46,7 @@
                     <li><a href="#notificationsTab" data-toggle="tab"><span class="glyphicon glyphicon-alert"></span></a></li>
                     <li role="presentation" class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                            Dropdown <span class="caret"></span>
+                            <span class="glyphicon glyphicon-text-size"></span> <span class="caret"></span>
                         </a>
                             <ul class="dropdown-menu">
                                 <% for (var i=0; i < themes.length; i++){ %>
@@ -60,10 +60,13 @@
 
             <div class="panel-body">
                 <div class="tab-content">
+
+
                     <div class="tab-pane fade in active" id="lightsTab">
+                        <div class="panel-body">
+                            <h3 class="panel-title">Lights</h3>
+                        </div>
                         <ul class="list-group">
-
-
                             <li class="row list-group-item" ng-repeat="light in lights">
                                 <div class="col-md-2 col-sm-2">
                                     {{ light.displayName }}
@@ -102,66 +105,111 @@
 
                     <div class="tab-pane fade" id="programsTab">
 
-                        <li class="row list-group-item">
-                            <div class="col-md-2 col-sm-2">
-                                All lights
-                             </div>
+                        <div class="panel-body">
+                            <h3 class="panel-title">Light Programs</h3>
+                        </div>
 
-                            <div class="col-md-3 col-sm-3">
-                                <switch
-                                    id="AllOnOffSwitch"
-                                    name="AllOnOffSwitch"
-                                    on="On" off="Off"
-                                    class="green"
-                                    ng-model="allLights.onOff"
-                                    ng-change="allLights({ onOff : allLights.onOff })">
-                                </switch>
-                             </div>
+                        <ul class="list-group">
 
-                            <div class="col-md-3 col-sm-3">
-                                <select
-                                    ng-model="allLights.brightness"
-                                    ng-options="x for x in [10,20,30,40,50,60,70,80,90,100]"
-                                    name="allLightsBrigthnessSlider"
-                                    id="allLightsBrigthnessSlider"
-                                    ng-change="allLights({ brightness : allLights.brightness })">
-                                >
-                                </select>
-                            </div>
-                        </li>
-
-                        <ng-repeat ng-repeat="program in availablePrograms">
                             <li class="row list-group-item">
                                 <div class="col-md-2 col-sm-2">
-                                    <a href="" ng-click="sendLightProgramByKey(program.key)">{{ program.name }}</a>
+                                    All lights
+                                 </div>
+
+                                <div class="col-md-3 col-sm-3">
+                                    <switch
+                                        id="AllOnOffSwitch"
+                                        name="AllOnOffSwitch"
+                                        on="On" off="Off"
+                                        class="green"
+                                        ng-model="allLights.onOff"
+                                        ng-change="allLights({ onOff : allLights.onOff })">
+                                    </switch>
+                                 </div>
+
+                                <div class="col-md-3 col-sm-3">
+                                    <select
+                                        ng-model="allLights.brightness"
+                                        ng-options="x for x in [10,20,30,40,50,60,70,80,90,100]"
+                                        name="allLightsBrigthnessSlider"
+                                        id="allLightsBrigthnessSlider"
+                                        ng-change="allLights({ brightness : allLights.brightness })">
+                                    >
+                                    </select>
                                 </div>
                             </li>
-                        </ng-repeat>
+
+                            <ng-repeat ng-repeat="program in availablePrograms">
+                                <li class="row list-group-item">
+                                    <div class="col-md-2 col-sm-2">
+                                        <a href="" ng-click="sendLightProgramByKey(program.key)">{{ program.name }}</a>
+                                    </div>
+                                </li>
+                            </ng-repeat>
+                        </ul>
                     </div>
 
 
 
 
                     <div class="tab-pane fade" id="notificationsTab">
-                        <h3 class="panel-title">Notifications</h3>
-                        <div ng-repeat="notification in notifications">
-                            <div class="alert alert-{{ notification.type }}" role="alert" >
-                                <span class="h4">{{ notification.title }}</span>
-                                <span class="h6">{{ notification.date | date:'medium' }}</span>
-                                <p>{{ notification.text }}</p>
-                            </div>
+                        <div class="panel-body">
+                            <h3 class="panel-title">Notifications</h3>
                         </div>
+                        <ul class="list-group">
+                             <li ng-repeat="notification in notifications" class="row list-group-item">
+                                 <div class="alert alert-{{ notification.type }}" role="alert" >
+                                     <span class="h4">{{ notification.title }}</span>
+                                     <span class="h6">{{ notification.date | date:'medium' }}</span>
+                                     <p>{{ notification.text }}</p>
+                                 </div>
+                             </li>
+                        </ul>
                     </div>
 
 
-
                     <div class="tab-pane fade" id="camerasTab">
-                        <h3 class="panel-title">Cameras</h3>
+                        <div class="panel-body">
+                            <h3 class="panel-title">Cameras</h3>
+                        </div>
+                        <ul class="list-group">
+                            <li class="row list-group-item">
+                                <div class="col-md-2 col-sm-2">Camera 1</div>
+                            </li>
+                            <li class="row list-group-item">
+                                <div class="col-md-2 col-sm-2">Camera 1</div>
+                            </li>
+                            <li class="row list-group-item">
+                                <div class="col-md-2 col-sm-2">Camera 1</div>
+                            </li>
+                        </ul>
                     </div>
 
 
                     <div class="tab-pane fade" id="heatersTab">
-                        <h3 class="panel-title">Heaters</h3>
+                        <div class="panel-body">
+                            <h3 class="panel-title">Heaters</h3>
+                        </div>
+
+                        <ul class="list-group">
+                            <li class="row list-group-item"  ng-repeat="heater in heaters">
+
+                                <div class="col-md-2 col-sm-2">
+                                    {{ heater.name }}
+                                </div>
+                                <div class="col-md-2 col-sm-2">
+                                Temperature {{ heater.currentTemperature }}
+                                </div>
+                                <div class="col-md-2 col-sm-2">
+                                Humidity {{ heater.currentHumidity }} %
+                                </div>
+                                <div class="col-md-2 col-sm-2">
+                                Power <span ng-class="{ 'text-info': (heater.power == 0), 'text-success': (heater.power > 0 && heater.power < 50), 'text-warning': ( heater.power >= 50 && heater.power < 70), 'text-danger': ( heater.power >= 70) }">{{ heater.power }}%</span>
+                                </div>
+                            </li>
+                        </ul>
+
+
                     </div>
 
 
@@ -198,6 +246,7 @@
                 $http.get("/angular/lights/getInterfaceOptions").success(function(response){
                     $scope.updateInterfaceWithResponse(response)
                     $scope.getNotifications();
+                    $scope.getHeaters();
                 });
             }
 
@@ -263,12 +312,19 @@
             $scope.socketSimulator();
             $scope.getAvailablePrograms();
 
-
             $scope.changeTheme = function(theme){
                 $http.get("/switchInterface?theme="+ theme).success(function(){
                     window.location = window.location;
                 })
             }
+
+            $scope.getHeaters = function(){
+                $http.get("/angular/heaters/getStatus").success(function(response){
+                    $scope.heaters = response;
+                })
+            }
+            $scope.getHeaters();
+
 
         });
 
