@@ -39,6 +39,10 @@ function LightManager(){
 
     }
 
+    this.getAvailablePrograms = function(){
+        return this.programs;
+    }
+
     this.runProgram = function(command){
         hash = this.hash(command);
 

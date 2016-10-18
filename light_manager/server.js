@@ -23,25 +23,7 @@ var isNicoAtHome = false;
 
 var delayBetweenCommands = 80;
 
-var colorCodes = {
-	violet : [0x40, 0x00],
-	royalBlue : [0x40, 0x10],
-	blue : [0x40, 0x10],
-	lightBlue : [0x40, 0x20],
-	aqua : [0x40, 0x30],
-	royalMint : [0x40, 0x40],
-	seafoamGreen : [0x40, 0x50],
-	green : [0x40, 0x60],
-	limeGreen : [0x40, 0x70],
-	yellow : [0x40, 0x80],
-	yellowOrange : [0x40, 0x90],
-	orange : [0x40, 0xa0],
-	red : [0x40, 0xb0],
-	pink : [0x40, 0xc0],
-	fusia : [0x40, 0xd0],
-	lilac : [0x40, 0xe0],
-	lavendar : [0x40, 0xf0]
-};
+
 
 ReceiverSocket = require("./receiverSocket.js")
 var receiver1 = new ReceiverSocket(cfg.milight[0]);
@@ -69,8 +51,9 @@ lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* Group
 lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */ true);
 
-lightManager.addProgram("kitchen countertop on", "kitchen countertop on", "kitchenCountertop", {onOff : true } );
-lightManager.addProgram("kitchen countertop off", "kitchen countertop off", "kitchenCountertop", {onOff : false} );
+lightManager.addProgram("All white", "all white", ["kitchenCountertop","officeLamp","kitchenLamp"], {onOff : true, color: "white" } );
+lightManager.addProgram("All Blue", "all blue", ["kitchenCountertop","officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "blue" } );
+lightManager.addProgram("All Red", "all red", ["kitchenCountertop","officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "red" } );
 
 // lightManager.runProgram("kitchen countertop on");
 
@@ -353,6 +336,19 @@ app.get("/angular/lights/getStatus", function(req, res){
 	res.send(lightManager.getStatus())
 })
 
+app.get("/angular/lights/getAvailablePrograms", function(req, res){
+
+	availablePrograms = lightManager.getAvailablePrograms();
+	response = [];
+
+	Object.keys(availablePrograms).forEach(function(key, value){
+		value = availablePrograms[key];
+		value.key = key;
+		response.push(value)
+	})
+	res.send(response);
+
+})
 
 var messageBus = new EventEmitter()
 messageBus.setMaxListeners(100)

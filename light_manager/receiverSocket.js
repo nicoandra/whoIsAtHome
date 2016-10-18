@@ -18,7 +18,7 @@ function ReceiverSocket(params){
     this.sendQueuedStuff = function(){
         var queueSize = self.buffer.length;
 
-        if(queueSize  == 0){
+        if(queueSize == 0){
             setTimeout(self.sendQueuedStuff.bind(self), this.delayBetweenCommands);
             return false;
         }
@@ -44,20 +44,20 @@ function ReceiverSocket(params){
 
             // console.log('[>Buffer1] ', buffer1);
             this.client.send(
-                buffer1, 0, buffer1.length, self.port,
-                self.host,
+                buffer1, 0, buffer1.length, this.port,
+                this.host,
                 function(err){
 
                     setTimeout(function(){
 
                         this.client.send(
-                            buffer2, 0, buffer2.length, self.port,
+                            buffer2, 0, buffer2.length, this.port,
                             self.host,
                             function(err){
                                 // calls itelf again
-                                setTimeout(self.sendQueuedStuff.bind(self), 10);
-                            }
-                        )}.bind(this), 10);
+                                setTimeout(this.sendQueuedStuff.bind(this), 50);
+                            }.bind(this)
+                        )}.bind(this), 50);
                 }.bind(this)
             );
 
@@ -70,11 +70,11 @@ function ReceiverSocket(params){
 
             this.client.send(
                 buffer, 0, buffer.length, self.port,
-                self.host,
+                this.host,
                 function(err){
                     // calls itelf again
-                    setTimeout(self.sendQueuedStuff.bind(self), self.delayBetweenCommands);
-                }
+                    setTimeout(self.sendQueuedStuff.bind(this), this.delayBetweenCommands);
+                }.bind(this)
             );
         }
     }

@@ -17,6 +17,26 @@ function Light(name, displayName, socket){
 
     this.abilities = { hasRgb : false, hasDimmer : false};
 
+    this.colorCodes = {
+        violet : [0x40, 0x00],
+        royalBlue : [0x40, 0x10],
+        blue : [0x40, 0x10],
+        lightBlue : [0x40, 0x20],
+        aqua : [0x40, 0x30],
+        royalMint : [0x40, 0x40],
+        seafoamGreen : [0x40, 0x50],
+        green : [0x40, 0x60],
+        limeGreen : [0x40, 0x70],
+        yellow : [0x40, 0x80],
+        yellowOrange : [0x40, 0x90],
+        orange : [0x40, 0xa0],
+        red : [0x40, 0xb0],
+        pink : [0x40, 0xc0],
+        fusia : [0x40, 0xd0],
+        lilac : [0x40, 0xe0],
+        lavendar : [0x40, 0xf0]
+    };
+
 
     this.hasRgb = function(hasRgb){
         this.abilities.hasRgb = (hasRgb === true)
@@ -39,6 +59,16 @@ function Light(name, displayName, socket){
         if(status.brightness != undefined){
             this.actualStatus.brightness = status.brightness;
             this.setBrightness(status.brightness);
+        }
+
+        if(status.color != undefined){
+            /*this.actualStatus.brightness = status.brightness;
+            this.setBrightness(status.brightness);*/
+            if(status.color == "white"){
+                this.white();
+            } else {
+                this.setColor(status.color);
+            }
         }
 
         callback;
@@ -138,16 +168,14 @@ function Light(name, displayName, socket){
     this.off = function(){
         this.socket.off();
         this.actualStatus.onOff = false;
-        this.status = 0;
         this.color = '';
         this.clearQueue();
     }
 
     this.white = function(){
         this.socket.white();
-        this.status = 1;
         this.actualStatus.onOff = true;
-        this.color = 'white';
+        this.actualStatus.color = 'white';
         this.clearQueue();
     }
 
@@ -219,9 +247,9 @@ function Light(name, displayName, socket){
     }
 
     this.fade = function(colorFrom, colorTo, maxSteps){
-        colorFrom = Array.isArray(colorFrom) ? colorFrom : colorCodes[colorFrom];
+        colorFrom = Array.isArray(colorFrom) ? colorFrom : this.colorCodes[colorFrom];
         colorFrom = colorFrom[1];
-        colorTo = Array.isArray(colorTo) ? colorTo : colorCodes[colorTo];
+        colorTo = Array.isArray(colorTo) ? colorTo : this.colorCodes[colorTo];
         colorTo = colorTo[1];
 
         step = colorFrom < colorTo ? 1 : -1;
@@ -359,11 +387,11 @@ function Light(name, displayName, socket){
 
         if(this.color == 'greens'){
             if(step === 1){
-                this.fade(colorCodes.seafoamGreen, colorCodes.limeGreen, 8);
+                this.fade(this.colorCodes.seafoamGreen, this.colorCodes.limeGreen, 8);
             } else if(step === 2){
-                this.fade(colorCodes.limeGreen, colorCodes.green, 8);
+                this.fade(this.colorCodes.limeGreen, this.colorCodes.green, 8);
             } else if(step === 3){
-                this.fade(colorCodes.green, colorCodes.seafoamGreen, 8);
+                this.fade(this.colorCodes.green, this.colorCodes.seafoamGreen, 8);
             }
 
             step = step == 3 ? 0 : step;
