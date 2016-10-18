@@ -83,8 +83,11 @@ function LightSocket(name, group, receiver){
     }
 
     this.brightness = function(value){
-        value = Math.round(2+((value/100)*25));
+        value = Math.round( 2+ ( (value/100) *25 ));
+
         this.receiver.queueStuff(this.commandOn.concat(0x55, 0x4e, value));
+
+
     }
 
     this.queueStuff = function(stuff){

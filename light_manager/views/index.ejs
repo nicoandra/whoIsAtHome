@@ -174,13 +174,12 @@
                         </div>
                         <ul class="list-group">
                             <li class="row list-group-item">
-                                <div class="col-md-2 col-sm-2">Camera 1</div>
+                                <div class="col-md-6 col-sm-6">Camera 1</div>
+                                <div class="col-md-6 col-sm-6">Camera 2</div>
                             </li>
                             <li class="row list-group-item">
-                                <div class="col-md-2 col-sm-2">Camera 1</div>
-                            </li>
-                            <li class="row list-group-item">
-                                <div class="col-md-2 col-sm-2">Camera 1</div>
+                                <div class="col-md-6 col-sm-6">Camera 3</div>
+                                <div class="col-md-6 col-sm-6">Camera 4</div>
                             </li>
                         </ul>
                     </div>
@@ -192,21 +191,30 @@
                         </div>
 
                         <ul class="list-group">
-                            <li class="row list-group-item"  ng-repeat="heater in heaters">
+                            <ng-repeat ng-repeat="heater in heaters">
+                                <li class="row list-group-item" ng-class="{ 'list-group-item-danger' : (heater.downSize != 0) }" >
 
-                                <div class="col-md-2 col-sm-2">
-                                    {{ heater.name }}
-                                </div>
-                                <div class="col-md-2 col-sm-2">
-                                Temperature {{ heater.currentTemperature }}
-                                </div>
-                                <div class="col-md-2 col-sm-2">
-                                Humidity {{ heater.currentHumidity }} %
-                                </div>
-                                <div class="col-md-2 col-sm-2">
-                                Power <span ng-class="{ 'text-info': (heater.power == 0), 'text-success': (heater.power > 0 && heater.power < 50), 'text-warning': ( heater.power >= 50 && heater.power < 70), 'text-danger': ( heater.power >= 70) }">{{ heater.power }}%</span>
-                                </div>
-                            </li>
+                                    <div class="col-md-2 col-sm-2"  >
+                                        {{ heater.name }} {{ heater.downSize }}
+                                    </div>
+                                    <div class="col-md-2 col-sm-2">
+                                    Temperature {{ heater.temperature }}
+                                    </div>
+                                    <div class="col-md-2 col-sm-2">
+                                    Humidity {{ heater.currentHumidity }} %
+                                    </div>
+                                    <div class="col-md-2 col-sm-2">
+                                        Power <span ng-class="{ 'text-info': (heater.power == 0), 'text-success': (heater.power > 0 && heater.power < 50), 'text-warning': ( heater.power >= 50 && heater.power < 70), 'text-danger': ( heater.power >= 70) }">{{ heater.power }}%</span>
+                                    </div>
+                                    <div class="col-md-2 col-sm-2 pull-right">
+                                        <span class=" glyphicon glyphicon-ok" ng-if="heater.power > 0"></span>
+                                        <span ng-if="heater.downSize != 0">
+                                            <span class="glyphicon glyphicon-exclamation-sign" ></span>
+                                            Down since {{ heater.downSince }}
+                                        </span>
+                                    </div>
+                                </li>
+                            </ng-repeat>
                         </ul>
 
 

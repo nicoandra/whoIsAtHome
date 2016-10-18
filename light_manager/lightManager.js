@@ -1,5 +1,6 @@
 var env = process.env.NODE_ENV || 'development'
     , cfg = require(__dirname + '/config/config.'+env+'.js'),
+    Light = require("./light.js"),
     LightSocket = require("./lightSocket.js"),
     ReceiverSocket = require("./receiverSocket.js"),
     crypto = require('crypto');

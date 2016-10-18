@@ -1,53 +1,23 @@
 var env = process.env.NODE_ENV || 'development'
-	, cfg = require(__dirname + '/config/config.'+env+'.js');
-
+	, cfg = require(__dirname + '/config/config.'+env+'.js')
+	, dgram = require('dgram')
+	, debug = require('debug')
+	, moment = require('moment')
+	, bodyParser = require('body-parser'); 	// To parse POST requests;
 
 var EventEmitter = require('events').EventEmitter
 
-var dgram = require('dgram');
-var debug = require('debug');
 const path = require('path');
 
-var CityPlotter = require(__dirname + '/plot.js');
-var cityPlotter = new CityPlotter();
-
-var moment = require('moment');
-
-var bodyParser = require('body-parser'); 	// To parse POST requests
-var request = require('request');
-
-var isNicoAtHome = false;
-
-var delayBetweenCommands = 80;
-
-
-
-ReceiverSocket = require("./receiverSocket.js")
-var receiver1 = new ReceiverSocket(cfg.milight[0]);
-
-LightSocket = require("./lightSocket.js");
-Light = require("./light.js");
-var lights = {
-    officeLamp : new Light('officeLamp', new LightSocket('officeLampObject', 1, receiver1)),
-	kitchenLamp : new Light('kitchenLamp', new LightSocket('officeLampObject', 2, receiver1)),
-	officeBoards : new Light('officeBoards', new LightSocket('boards', 3, receiver1)),
-	kitchenCountertop : new Light('KitchenCountertop', new LightSocket('officeLampObject', 4, receiver1)),
-};
-
-var heaterStatus = {
-    kitchen : {name : 'Kitchen', power: 70, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/kitchen' },
-    living : {name: 'Living', power: 50, currentTemperature : 10, desiredTemperature : 10, url : 'http://192.168.1.125/get/living' },
-}
-
-
+/** Prepare the light setup */
 LightManager = require("./lightManager.js");
-lightManager = new LightManager();
-
+lightManager = new LightManager();	// With a LightManager, add lights
 lightManager.addLight("officeLamp", "Office Lamp", /*ReceiverId */ 0,  /* GroupId */ 1, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* GroupId */ 2, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */ true);
 
+// With a lightManager, add programs
 lightManager.addProgram("All white", "all white", ["kitchenCountertop","officeLamp","kitchenLamp"], {onOff : true, color: "white" } );
 lightManager.addProgram("All Blue", "all blue", ["kitchenCountertop","officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "blue" } );
 lightManager.addProgram("All Red", "all red", ["kitchenCountertop","officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "red" } );
@@ -58,128 +28,11 @@ lightManager.addProgram("BubbleGum", "bubblegum", [
 	{lightName: 'officeLamp', onOff : true, color: "blue" }
 ]);
 
-function Heater(name, ip){
-	this.name = name;
-	this.ip = ip;
-	this.currentTemperature = 999;
-	this.humidity = 999;
-	this.desiredTemp = 14;
-	this.power = 0;
-	this.uptime = 0;
-
-	this.buildUrl = function(method){
-		return "http://" + this.ip + '/' + method +'/' + this.name;
-	}
-
-	this.setTemperature = function(desiredTemperature, callback){
-
-		self.desiredTemperature = desiredTemperature;
-
-		options = {
-			url: this.buildUrl('set'),
-			qs : {temperature : desiredTemperature }
-		}
-
-		self = this;
-		request(options, function(error, response, body){
-			if(!error && response.statusCode == 200){
-				var info = JSON.parse(body);
-				callback(false, info);
-			} else {
-				callback(error, false)
-			}
-		});
-	}
-
-	this.pollData = function(callback){
-		if(!self){
-			self = this;
-		}
-
-		options = {
-			url: self.buildUrl('get')
-		}
-
-		request(options, function(error, response, body){
-			if(!error && response.statusCode == 200){
-				var info = JSON.parse(body);
-				callback(false, info);
-				self.currentTemperature = parseFloat(info.currentTemperature);
-				self.humidity = parseFloat(info.humidity);
-				self.uptime = parseFloat(info.uptime);
-			} else {
-				callback(error, false)
-			}
-		}.bind(self));
-	}
-
-
-	this.getTemperature = function(){
-		return this.currentTemperature;
-	}
-
-	this.getHumidity = function(){
-		return this.humidity;
-	}
-
-	//  Go!!
-	setInterval(this.pollData.bind({self : this}), 300);	// Poll temperature every 5 minutes
-	this.pollData.bind({self : this})
-}
-
-function pollHeaterStatus(){
-	Object.keys(heaterStatus).forEach(function(key){
-		url = heaterStatus[key].url;
-		request(url, function(error, response, body){
-			if(!error && response.statusCode == 200){
-				var info = JSON.parse(body);
-				currTemp = parseFloat(info.currentTemperature);
-				cityPlotter.addValue(heaterStatus[key].name, currTemp);
-				heaterStatus[key].desiredTemperature = info.desiredTemperature;
-				heaterStatus[key].currentTemperature = info.currentTemperature;
-				heaterStatus[key].power = info.power;
-			}
-		});
-	});
-}
-
-function appendCurrentTempToTrend(){
-	Object.keys(heaterStatus).forEach(function(key){
-		cityPlotter.addValue(heaterStatus[key].name, heaterStatus[key].currentTemperature);
-	});
-}
-
-pollHeaterStatus();
-appendCurrentTempToTrend();
-
-function setHeaterTemperature(heaterName, desiredTemperature){
-	if(!heaterStatus[heaterName]){
-		return ;
-	}
-
-	url = heaterStatus[heaterName].url;
-	url = url.replace('/get/', '/set/') + "?temperature=" + desiredTemperature;
-
-	request(url, function(error, response, body){
-		if(!error && response.statusCode == 200){
-			var info = JSON.parse(body);
-			currTemp = parseFloat(info.currentTemperature);
-
-		}
-	});
-}
-
-setInterval(pollHeaterStatus, 60000); // Poll heater status every minute for the trend
-setInterval(appendCurrentTempToTrend, 60000); // Append temperatures every minute for the trend
-
-
-
-
-LightStatus = require("./lightStatus.js")
-newWhiteStatus = new LightStatus();
-newWhiteStatus.color = "white";
-console.log(newWhiteStatus.getObject());
-
+/** Prepare heaters */
+HeaterManager = require('./heaterManager.js');
+heaterManager = new HeaterManager();
+heaterManager.addHeater('Kitchen', 'kitchen', '192.168.1.125');
+heaterManager.addHeater('Living', 'living', '192.168.1.125');
 
 CommandLineInterpreter = require("./cliInterpreter.js")
 var cliInterpreter = new CommandLineInterpreter();
@@ -187,57 +40,9 @@ cliInterpreter.start();
 
 
 LightPrograms = require("./lightPrograms.js")
+
+
 /** HTTP SERVER **/
-
-/** Command HTTP API **/
-
-function HttpResponses() {
-    this.receiveCommands = function(req, res) {
-        commandString = req.query.command;
-
-        var programs = new LightPrograms();
-
-        console.log("http", req.ip, commandString);
-        response = programs.runProgram(commandString);
-
-
-        if(!response){
-			memoryUsage = process.memoryUsage();
-
-            response = { 
-            	lights : programs.getLightsStatus(), 
-            	system : {
-            		queueSize : [receiver1.getQueueSize()],
-            		delayBetweenCommands : delayBetweenCommands,
-            		memory : memoryUsage,
-                    socketInfo : { host : cfg.httpHost , port : cfg.httpPort },
-                    uptime : { 'human' : moment.duration(process.uptime(), 'seconds').humanize(), 'seconds' : process.uptime()  }
-
-            	},
-            	heaters : heaterStatus,
-            	peopleAtHome: peopleStatusTracker
-            };
-        }
-        res.send(JSON.stringify(response));
-    }
-
-
-    this.getLightStatus = function(req, res) {
-        res.send(JSON.stringify(lightStatus));
-    }
-
-    this.getHeaterStatus = function(req, res) {
-        res.send(JSON.stringify(heaterStatus));
-    }
-
-    this.renderIndexPage = function (req, res) {
-    	res.sendFile(__dirname + '/webroot/index-2.html');
-    }
-    }
-module.exports = HttpResponses;
-
-
-
 var express = require('express'),
 app = express(),
 port = cfg.httpPort;
@@ -330,7 +135,7 @@ app.get("/angular", function(req,res){
 	themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
 	theme = req.cookies.theme ? req.cookies.theme : 'light';
 	theme = theme.toLowerCase().trim();
-	res.render('index', { title : "HomeOwn", lights : lights, 'theme' : theme , 'themes' : themes})
+	res.render('index', { title : "HomeOwn", lights : lightManager.getStatus(), 'theme' : theme , 'themes' : themes})
 })
 
 
@@ -406,8 +211,11 @@ app.get("/angular/system/getNotifications", function(req,res){
 
 
 app.get("/angular/heaters/getStatus", function(req, res){
-	res.send(heaterStatus)
+	response =  heaterManager.getStatus();
+	res.send(response)
 })
+
+
 app.post("/angular/runProgram", function(req, res){
 	console.log(req.body);
 	if(req.body.programKey){
@@ -442,12 +250,7 @@ app.post("/angular/runProgram", function(req, res){
 })
 
 app.use('/', function(req, res, next){
-	new HttpResponses().renderIndexPage(req, res);
-});
-
-app.post('/heater/', function(req, res){
-	var room = req.query.room;
-	var temperature = req.query.temperature;
+	res.redirect("/angular");
 });
 
 httpServer.listen(port, function(){
