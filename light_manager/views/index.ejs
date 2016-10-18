@@ -5,9 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= title %></title>
     <script type="text/javascript" src="/static/angular.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/css/bootstrap.css">
+
+    <% if(theme == "darkly" || theme == "cyborg" || theme == "reddish"){ %>
+        <link rel="stylesheet" type="text/css" href="/static/bootstrap.<%= theme %>.css">
+    <% } else { %>
+        <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/css/bootstrap.css">
+    <% } %>
 
     <script src="/bower_components/jquery/jquery.min.js"></script>
+
+
     <script src="/bower_components/bootstrap/js/bootstrap.js"></script>
 
     <link rel="stylesheet" href="/bower_components/angular-color-picker/dist/angularjs-color-picker.min.css" />
@@ -37,6 +44,16 @@
                     <li><a href="#heatersTab" data-toggle="tab"><span class="glyphicon glyphicon-fire"></span></a></li>
                     <li><a href="#camerasTab" data-toggle="tab"><span class="glyphicon glyphicon-eye-open"></span></a></li>
                     <li><a href="#notificationsTab" data-toggle="tab"><span class="glyphicon glyphicon-alert"></span></a></li>
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            Dropdown <span class="caret"></span>
+                        </a>
+                            <ul class="dropdown-menu">
+                                <% for (var i=0; i < themes.length; i++){ %>
+                                    <li ng-click="changeTheme('<%= themes[i] %>')"><a><%= themes[i] %></a></li>
+                                <% } %>
+                            </ul>
+                    </li>
                     <li class="pull-right"><a ng-click="buildInterface()" class="glyphicon glyphicon-refresh"></a></li>
                 </ul>
              </div>
@@ -53,7 +70,7 @@
                                  </div>
                                 <span ng-repeat="interfaceOption in light.interface">
 
-                                    <div class="col-md-3 col-sm-3">
+                                    <div class="col-md-3 col-sm-1">
                                         <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
                                         <switch
                                             ng-if="interfaceOption.type == 'switch'"
@@ -66,7 +83,7 @@
                                         </switch>
                                      </div>
 
-                                    <div class="col-md-3 col-sm-3">
+                                    <div class="col-md-3 col-sm-1">
                                         <select
                                             ng-model="light.actualStatus.brightness"
                                             ng-if="interfaceOption.type == 'slider'"
@@ -116,7 +133,7 @@
                         <ng-repeat ng-repeat="program in availablePrograms">
                             <li class="row list-group-item">
                                 <div class="col-md-2 col-sm-2">
-                                    <a href="" ng-click="sendLightCommand(program.lights, program.status)">{{ program.name }}</a>
+                                    <a href="" ng-click="sendLightProgramByKey(program.key)">{{ program.name }}</a>
                                 </div>
                             </li>
                         </ng-repeat>
@@ -198,6 +215,16 @@
                 $scope.sendLightCommand(Object.keys($scope.lights), statusToSend)
             }
 
+            $scope.sendLightProgramByKey = function(programKey){
+                $http.post(
+                    "/angular/runProgram",
+                    {programKey}
+                ).success(
+                     $scope.buildInterface
+                )
+
+            }
+
             $scope.sendLightCommand = function(element, status){
                 console.log("Las cosas son", element, status);
                 if(typeof element == "string" || typeof element == "object"){
@@ -235,6 +262,14 @@
             $scope.buildInterface();
             $scope.socketSimulator();
             $scope.getAvailablePrograms();
+
+
+            $scope.changeTheme = function(theme){
+                $http.get("/switchInterface?theme="+ theme).success(function(){
+                    window.location = window.location;
+                })
+            }
+
         });
 
 </script>

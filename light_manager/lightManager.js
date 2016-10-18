@@ -44,17 +44,28 @@ function LightManager(){
     }
 
     this.runProgram = function(command){
-        hash = this.hash(command);
+        // hash = this.hash(command);
+        hash = command;
 
-        if(this.programs[hash] == undefined){
-            console.log("Program name")
+        if(typeof this.programs[hash] != "object"){
+            throw new Error("Program not found");
             // Discard if the invoked command did not match any known program
             return false;
         }
 
-        this.programs[hash].lights.forEach(function(lightName, index){
-            console.log("Setting ", lightName, " with status ", this.programs[hash].status);
-            this.lights[lightName].setManualStatus(this.programs[hash].status);
+
+
+        this.programs[hash].lights.forEach(function(lightName, index) {
+
+            if (typeof lightName == "object") {
+                status = lightName;
+                lightName = lightName.lightName;
+            } else if (typeof lightName == "string") {
+                status = this.programs[hash].status;
+            }
+
+            console.log("Setting ", lightName, " with status ", status);
+            this.lights[lightName].setManualStatus(status);
             return true;
 
         }.bind(this))
@@ -78,10 +89,29 @@ function LightManager(){
         this.lights[lightName].setManualStatus(status, callback);
     }
 
+    /*
+    This method supports two formats:
+    1- Array of lightnames and a status: [light1, light2,light3], { statusObject }
+    2-An array of statuses to apply, each of them containing a light name: [{ lightName: light1, status1 }, { lightName: light2, status2} , ... ]
+     */
+
     this.setMultipleStatus = function(lightNames, status, callback){
         lightNames.forEach(function(lightName){
 
-            this.setStatus(lightName, status, function(){console.log("Setting status of", lightName)});
+            if(typeof lightName == 'string') {
+                // Handling first case
+                this.setStatus(lightName, status, function () {
+                    console.log("Setting status of", lightName)
+                });
+            }
+
+            if(typeof lightName == 'object') {
+                status = lightName;
+                lightName = status.lightName;
+                this.setStatus(lightName, status, function () {
+                    console.log("Setting status of", lightName)
+                });
+            }
         }.bind(this))
 
         callback = (typeof callback === 'function') ? callback : function() {};

@@ -54,10 +54,12 @@ lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */
 lightManager.addProgram("All white", "all white", ["kitchenCountertop","officeLamp","kitchenLamp"], {onOff : true, color: "white" } );
 lightManager.addProgram("All Blue", "all blue", ["kitchenCountertop","officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "blue" } );
 lightManager.addProgram("All Red", "all red", ["kitchenCountertop","officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "red" } );
-
-// lightManager.runProgram("kitchen countertop on");
-
-// console.log(lightManager.getStatus());
+lightManager.addProgram("BubbleGum", "bubblegum", [
+	{lightName: 'kitchenLamp', onOff : true, color: "pink" },
+	{lightName: 'kitchenCountertop', onOff : false },
+	{lightName: 'officeBoards', onOff : true, color: "pink" },
+	{lightName: 'officeLamp', onOff : true, color: "blue" }
+]);
 
 function Heater(name, ip){
 	this.name = name;
@@ -244,6 +246,9 @@ app = express(),
 port = cfg.httpPort;
 app.set('view engine', 'ejs');
 
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 var httpServer = require('http').Server(app);
 var io = require('socket.io')(httpServer);
 
@@ -296,11 +301,12 @@ function buildResponseObject(){
 }
 
 
-app.use('/static', express.static(__dirname + '/webroot'));
+app.use('/static', express.static(path.join(__dirname, 'webroot')));
 app.use('/bower_components', express.static(path.join(__dirname,'bower_components')));
 app.use('/static/angular-ui-switch', express.static(path.join(__dirname, 'bower_components', 'angular-ui-switch' )));
 app.use('/bower_components/bootstrap', express.static(path.join(__dirname, 'bower_components', 'bootstrap', 'dist')));
 app.use('/bower_components/jquery', express.static(path.join(__dirname, 'bower_components', 'jQuery', 'dist')));
+app.use('/fonts/', express.static(path.join(__dirname, 'webroot', 'fonts')));
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -324,7 +330,10 @@ app.get("/heaters", function(req, res){
 })
 
 app.get("/angular", function(req,res){
-	res.render('index', { title : "HomeOwn", lights : lights })
+	themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
+	theme = req.cookies.theme ? req.cookies.theme : 'light';
+	theme = theme.toLowerCase().trim();
+	res.render('index', { title : "HomeOwn", lights : lights, 'theme' : theme , 'themes' : themes})
 })
 
 
@@ -362,6 +371,28 @@ app.get("/angular/socketSimulator", function(req,res){
 	})
 })
 
+app.get("/switchInterface", function(req, res){
+
+	if(!req.query.theme){
+		theme = "darkly";
+	} else {
+		theme = req.query.theme.toLowerCase().trim();
+	}
+
+	switch(theme){
+		case 'darkly':
+		case 'light':
+		case 'reddish':
+		case 'cyborg':
+			res.cookie("theme", theme);
+			break;
+		default:
+			res.cookie("theme", 'light');
+	}
+	res.send("OK");
+})
+
+
 app.get("/angular/system/getNotifications", function(req,res){
 	uptime = moment.duration(process.uptime(), 'seconds').asMinutes();
 	type = "success";
@@ -378,7 +409,17 @@ app.get("/angular/system/getNotifications", function(req,res){
 
 app.post("/angular/runProgram", function(req, res){
 
-	if(typeof req.body.lightName == "string") {
+	console.log(req.body);
+
+	if(req.body.programKey){
+		try {
+			lightManager.runProgram(req.body.programKey);
+			console.log("Change has been done");
+			messageBus.emit('message', req.body);
+		} catch(exception){
+			console.log(exception)
+		}
+	} else if(typeof req.body.lightName == "string") {
 		lightManager.setStatus(req.body, function () {
 			// Emit message only after the change has been applied
 			console.log("Change has been done");
@@ -394,7 +435,7 @@ app.post("/angular/runProgram", function(req, res){
 
 	setTimeout(function() {
 		messageBus.emit("message", req.body)
-	}, 1000);
+	}, 500);
 
 	res.send(
 		lightManager.getStatus()
