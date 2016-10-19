@@ -304,6 +304,9 @@
                         $scope.socketSimulator()
                     })
                     .error(function(){
+                        // @@TODO@@
+                        // If error is "CONN REFUSED, call again in 5 minutes"
+                        // If error is "TIMEOUT", call again immediately
                         $scope.socketSimulator()
                     }
                 )
