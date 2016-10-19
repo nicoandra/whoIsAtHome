@@ -19,13 +19,20 @@ lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */
 
 // With a lightManager, add programs
 lightManager.addProgram("All white", "all white", ["kitchenCountertop","officeLamp","kitchenLamp"], {onOff : true, color: "white" } );
-lightManager.addProgram("All Blue", "all blue", ["kitchenCountertop","officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "blue" } );
-lightManager.addProgram("All Red", "all red", ["kitchenCountertop","officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "red" } );
+lightManager.addProgram("All Blue", "all blue", ["officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "blue" } );
+lightManager.addProgram("All Red", "all red", ["officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "red" } );
 lightManager.addProgram("BubbleGum", "bubblegum", [
 	{lightName: 'kitchenLamp', onOff : true, color: "pink" },
 	{lightName: 'kitchenCountertop', onOff : false },
 	{lightName: 'officeBoards', onOff : true, color: "pink" },
 	{lightName: 'officeLamp', onOff : true, color: "blue" }
+]);
+
+lightManager.addProgram("Romantic", "romantic", [
+	{lightName: 'kitchenLamp', onOff : true, color: "white", brightness: 20 },
+	{lightName: 'kitchenCountertop', onOff : false },
+	{lightName: 'officeBoards', onOff : false },
+	{lightName: 'officeLamp', onOff : true, color: "white", brightness: 20 }
 ]);
 
 /** Prepare heaters */
@@ -171,6 +178,7 @@ app.get("/angular/socketSimulator", function(req,res){
 			res.send(true)
 		} catch(exception){}
 	})
+
 })
 
 app.get("/switchInterface", function(req, res){
@@ -240,9 +248,11 @@ app.post("/angular/runProgram", function(req, res){
 		});
 	}
 
-	setTimeout(function() {
-		messageBus.emit("message", req.body)
-	}, 500);
+	[100,500,1000].forEach(function(delay){
+		setTimeout(function() {
+			messageBus.emit("message", req.body)
+		}, delay);
+	})
 
 	res.send(
 		lightManager.getStatus()

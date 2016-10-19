@@ -33,7 +33,7 @@
     </style>
 </head>
 <body ng-app="LightManagerApp">
-    <div ng-controller="LightManagerController" class="container-fluid">
+    <div ng-controller="LightManagerController" class="container">
 
         <div class="panel panel-default">
 
@@ -68,12 +68,12 @@
                         </div>
                         <ul class="list-group">
                             <li class="row list-group-item" ng-repeat="light in lights">
-                                <div class="col-md-2 col-sm-2">
+                                <div class="col-md-2 col-xs-4">
                                     {{ light.displayName }}
                                  </div>
                                 <span ng-repeat="interfaceOption in light.interface">
 
-                                    <div class="col-md-3 col-sm-1">
+                                    <div class="col-md-3 col-xs-4">
                                         <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
                                         <switch
                                             ng-if="interfaceOption.type == 'switch'"
@@ -86,10 +86,9 @@
                                         </switch>
                                      </div>
 
-                                    <div class="col-md-3 col-sm-1">
+                                    <div class="col-md-3 col-xs-4" ng-if="interfaceOption.type == 'slider'">
                                         <select
                                             ng-model="light.actualStatus.brightness"
-                                            ng-if="interfaceOption.type == 'slider'"
                                             ng-options="x for x in [10,20,30,40,50,60,70,80,90,100]"
                                             name="{{ light.name }}{{ interfaceOption.name }}Slider"
                                             id="{{ light.name }}{{ interfaceOption.name }}Slider"
@@ -112,11 +111,11 @@
                         <ul class="list-group">
 
                             <li class="row list-group-item">
-                                <div class="col-md-2 col-sm-2">
+                                <div class="col-md-2 col-xs-4">
                                     All lights
                                  </div>
 
-                                <div class="col-md-3 col-sm-3">
+                                <div class="col-md-3 col-xs-4">
                                     <switch
                                         id="AllOnOffSwitch"
                                         name="AllOnOffSwitch"
@@ -127,7 +126,7 @@
                                     </switch>
                                  </div>
 
-                                <div class="col-md-3 col-sm-3">
+                                <div class="col-md-3 col-xs-4">
                                     <select
                                         ng-model="allLights.brightness"
                                         ng-options="x for x in [10,20,30,40,50,60,70,80,90,100]"
@@ -141,7 +140,7 @@
 
                             <ng-repeat ng-repeat="program in availablePrograms">
                                 <li class="row list-group-item">
-                                    <div class="col-md-2 col-sm-2">
+                                    <div class="col-md-2 col-xs-12">
                                         <a href="" ng-click="sendLightProgramByKey(program.key)">{{ program.name }}</a>
                                     </div>
                                 </li>
@@ -174,12 +173,12 @@
                         </div>
                         <ul class="list-group">
                             <li class="row list-group-item">
-                                <div class="col-md-6 col-sm-6">Camera 1</div>
-                                <div class="col-md-6 col-sm-6">Camera 2</div>
+                                <div class="col-md-6 col-xs-6">Camera 1</div>
+                                <div class="col-md-6 col-xs-6">Camera 2</div>
                             </li>
                             <li class="row list-group-item">
-                                <div class="col-md-6 col-sm-6">Camera 3</div>
-                                <div class="col-md-6 col-sm-6">Camera 4</div>
+                                <div class="col-md-6 col-xs-6">Camera 3</div>
+                                <div class="col-md-6 col-xs-6">Camera 4</div>
                             </li>
                         </ul>
                     </div>
@@ -194,19 +193,19 @@
                             <ng-repeat ng-repeat="heater in heaters">
                                 <li class="row list-group-item" ng-class="{ 'list-group-item-danger' : (heater.downSize != 0) }" >
 
-                                    <div class="col-md-2 col-sm-2"  >
+                                    <div class="col-md-2 col-xs-2"  >
                                         {{ heater.name }} {{ heater.downSize }}
                                     </div>
-                                    <div class="col-md-2 col-sm-2">
+                                    <div class="col-md-2 col-xs-2">
                                     Temperature {{ heater.temperature }}
                                     </div>
-                                    <div class="col-md-2 col-sm-2">
+                                    <div class="col-md-2 col-xs-2">
                                     Humidity {{ heater.currentHumidity }} %
                                     </div>
-                                    <div class="col-md-2 col-sm-2">
+                                    <div class="col-md-2 col-xs-2">
                                         Power <span ng-class="{ 'text-info': (heater.power == 0), 'text-success': (heater.power > 0 && heater.power < 50), 'text-warning': ( heater.power >= 50 && heater.power < 70), 'text-danger': ( heater.power >= 70) }">{{ heater.power }}%</span>
                                     </div>
-                                    <div class="col-md-2 col-sm-2 pull-right">
+                                    <div class="col-md-2 col-xs-2 pull-right">
                                         <span class=" glyphicon glyphicon-ok" ng-if="heater.power > 0"></span>
                                         <span ng-if="heater.downSize != 0">
                                             <span class="glyphicon glyphicon-exclamation-sign" ></span>

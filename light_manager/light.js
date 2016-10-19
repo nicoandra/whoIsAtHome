@@ -51,7 +51,7 @@ function Light(name, displayName, socket){
     this.setManualStatus = function(status, callback){
         callback = (typeof callback === 'function') ? callback : function() {};
 
-        if(status.onOff != undefined){
+        if(status.onOff != undefined && this.actualStatus.onOff != status.onOff){
             this.actualStatus.onOff = status.onOff;
             this.sendOnOff(status.onOff);
         }
@@ -59,6 +59,11 @@ function Light(name, displayName, socket){
         if(status.brightness != undefined){
             this.actualStatus.brightness = status.brightness;
             this.setBrightness(status.brightness);
+        }
+
+        if(status.onOff != undefined && this.actualStatus.onOff != status.onOff){
+            this.actualStatus.onOff = status.onOff;
+            this.sendOnOff(status.onOff);
         }
 
         if(status.color != undefined){
@@ -69,6 +74,11 @@ function Light(name, displayName, socket){
             } else {
                 this.setColor(status.color);
             }
+        }
+
+        if(status.onOff != undefined && this.actualStatus.onOff != status.onOff){
+            this.actualStatus.onOff = status.onOff;
+            this.sendOnOff(status.onOff);
         }
 
         callback;
