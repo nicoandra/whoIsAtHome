@@ -57,40 +57,75 @@
 
                     <div class="tab-pane fade in active" id="lightsTab">
                         <div class="panel-body">
-                            <h3 class="panel-title">Lights</h3>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4" >
+                                    <span class="h3" class="panel-title">Lights</span>
+                                </div>
+
+                                <div class="col-md-2 col-xs-2" >
+                                    <a href="#" ng-click="allLights({ color : 'white' } )">White</a>
+                                </div>
+
+                            
+                                <div class="col-md-2 col-xs-2" >
+                                    <a href="#" ng-click="allLights({ onOff : true})">On</a>
+                                    <a href="#" ng-click="allLights({ onOff : false})">Off</a>
+                                </div>
+
+                                <div class="col-md-2 col-xs-2" >
+                                    <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
+                                    <select
+                                        ng-model="light.allLights.brightness"
+                                        ng-options="x for x in [10,20,30,40,50,60,70,80,90,100]"
+                                        name="allLightsBrigthnessSlider"
+                                        id="allLightsBrigthnessSlider"
+                                        ng-change="allLights({brightness : light.allLights.brightness })">
+                                    ></select>
+                                </div>
+
+
+                            </div>
                         </div>
+
                         <ul class="list-group">
                             <li class="row list-group-item" ng-repeat="light in lights">
-                                <div class="col-md-2 col-xs-4">
+                                <div class="col-md-3 col-xs-4" >
                                     {{ light.displayName }}
-                                 </div>
+                                </div>
+
+                                <div class="col-md-2 col-xs-2" >
+                                    <a href="#" ng-click="sendLightCommand(light.name, { color : 'white' } )">White</a>
+                                </div>
+
+                                <div class="col-md-2 col-xs-2" >
+                                    <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
+                                    <switch id="{{ light.name }}OnOffSwitch"
+                                        name="{{ light.name }}OnOffSwitch"
+                                        on="On" off="Off"
+                                        ng-model="light.actualStatus.onOff"
+                                        class="green"
+                                        ng-change="sendLightCommand(light.name, { onOff: light.actualStatus.onOff } )">
+                                    </switch>
+                                </div>
+
+
+
+                                <div class="col-md-2 col-xs-2" >
+                                    <select
+                                        ng-model="light.actualStatus.brightness"
+                                        ng-options="x for x in [10,20,30,40,50,60,70,80,90,100]"
+                                        name="{{ light.name }}{{ interfaceOption.name }}Slider"
+                                        id="{{ light.name }}{{ interfaceOption.name }}Slider"
+                                        ng-change="sendLightCommand(light.name , {brightness : light.actualStatus.brightness})">
+                                    ></select>
+                                </div>
+
+                                <!--
                                 <span ng-repeat="interfaceOption in light.interface">
-
-                                    <div class="col-md-3 col-xs-4">
-                                        <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
-                                        <switch
-                                            ng-if="interfaceOption.type == 'switch'"
-                                            id="{{ light.name }}OnOffSwitch"
-                                            name="{{ light.name }}OnOffSwitch"
-                                            on="{{ interfaceOption.options[0].displayName }}" off="{{ interfaceOption.options[1].displayName }}"
-                                            ng-model="light.actualStatus.onOff"
-                                            class="green"
-                                            ng-change="sendLightCommand(light.name, interfaceOption.options[light.actualStatus.onOff == true ? 0 : 1 ].status )">
-                                        </switch>
-                                     </div>
-
                                     <div class="col-md-3 col-xs-4" ng-if="interfaceOption.type == 'slider'">
-                                        <select
-                                            ng-model="light.actualStatus.brightness"
-                                            ng-options="x for x in [10,20,30,40,50,60,70,80,90,100]"
-                                            name="{{ light.name }}{{ interfaceOption.name }}Slider"
-                                            id="{{ light.name }}{{ interfaceOption.name }}Slider"
-                                            ng-change="sendLightCommand(light.name , {brightness : light.actualStatus.brightness})">
-                                        >
-                                        </select>
                                     </div>
-
                                 </span>
+                                -->
                             </li>
                         </ul>
                     </div> <!-- End of id="lightsTab" -->

@@ -17,6 +17,7 @@ lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* Group
 lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */ true);
 
+
 // With a lightManager, add programs
 lightManager.addProgram("All white", "all white", ["kitchenCountertop","officeLamp","kitchenLamp"], {onOff : true, color: "white" } );
 lightManager.addProgram("All Blue", "all blue", ["officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "blue" } );
