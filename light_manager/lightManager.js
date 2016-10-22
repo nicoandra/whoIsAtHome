@@ -114,7 +114,7 @@ function LightManager(){
             callback = status;
             status = lightName;
             lightName = status.lightName;
-            // delete status.lightName;
+            //delete status.lightName;
         }
 
         callback = (typeof callback === 'function') ? callback : function() {};

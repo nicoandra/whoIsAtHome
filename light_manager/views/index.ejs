@@ -12,12 +12,11 @@
         <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/css/bootstrap.css">
     <% } %>
 
+    <link rel="stylesheet" type="text/css" href="/static/custom.css">
+
     <script src="/bower_components/jquery/jquery.min.js"></script>
 
     <script src="/bower_components/bootstrap/js/bootstrap.js"></script>
-
-    <link rel="stylesheet" href="/static/angular-ui-switch/angular-ui-switch.min.css"/>
-    <script src="/static/angular-ui-switch/angular-ui-switch.min.js"></script>
 
     <style>
         span.selectedOption {
@@ -47,7 +46,16 @@
                                 <% } %>
                             </ul>
                     </li>
-                    <li class="pull-right"><a ng-click="buildInterface()" class="glyphicon glyphicon-refresh"></a></li>
+                    <li class="pull-right">
+                        <a 
+                        ng-click="buildInterface()"
+                        class="glyphicon glyphicon-refresh refreshButton" 
+                        ng-class="{
+                            spinning : (requestStatus === true), 
+                            'glyphicon-thumbs-up' : (requestStatus == 200), 
+                            'glyphicon-thumbs-down' : (requestStatus !== true && requestStatus !== false && requestStatus != 200)  }
+                        "></a>
+                    </li>
                 </ul>
              </div>
 
@@ -188,7 +196,7 @@
 
                                         <ng-repeat ng-repeat="childProgram in program.childPrograms">
                                             <div class="col-md-2 col-xs-2">
-                                                <a href="#" class="btn btn-default" ng-class="{'btn-primary': childProgram.id == activeProgram}" ng-click="toggleLightProgramByKey(childProgram.id)">{{ childProgram.displayName }}</a>
+                                                <a href="#" class="btn btn-default" ng-class="{'btn-primary': childProgram.id == activeProgram}" ng-click="toggleLightProgramByKey(childProgram.id, this)">{{ childProgram.displayName }}</a>
                                             </div>
                                         </ng-repeat>
 
@@ -219,14 +227,11 @@
                             <h3 class="panel-title">Cameras</h3>
                         </div>
                         <ul class="list-group">
-                            <li class="row list-group-item">
-                                <div class="col-md-6 col-xs-6">Camera 1</div>
-                                <div class="col-md-6 col-xs-6">Camera 2</div>
+
+                            <li class="row list-group-item" ng-repeat="camera in cameras">
+                                <div class="col-md-6 col-xs-6">{{ camera.displayName }} <img src="/cameras/watch/{{ camera.cameraName }}" /></div>
                             </li>
-                            <li class="row list-group-item">
-                                <div class="col-md-6 col-xs-6">Camera 3</div>
-                                <div class="col-md-6 col-xs-6">Camera 4</div>
-                            </li>
+
                         </ul>
                     </div>
 
@@ -292,12 +297,28 @@
 </body>
 
 <script type="text/javascript">
-    angular.module("LightManagerApp", ['uiSwitch'])
-        .controller("LightManagerController", function($scope, $http){
+    angular.module("LightManagerApp", [])
+        .controller("LightManagerController", function($scope, $http, $timeout){
 
             $scope.allLights = {
                 onOff : true,
                 brightness : 100
+            }
+            $scope.requestStatus = false;
+
+
+            $scope.requestStarted = function(){
+                $scope.requestStatus = true;
+            }
+
+            $scope.requestEnded = function(httpStatus){
+                $scope.requestStatus = httpStatus;
+
+                $timeout(function(){
+                    if(parseInt($scope.requestStatus) != 0){
+                        $scope.requestStatus = false;    
+                    }
+                }, httpStatus > 0 ? 1000 : 5000)
             }
 
 
@@ -308,8 +329,6 @@
 
                 isAnyLightOn = Object.keys($scope.lights).reduce(function(prevVal,currVal,c,d){
                     currVal = $scope.lights[currVal]
-                    console.log("reduce",prevVal,currVal,c,d)
-
                     return prevVal || currVal.status.onOff;
                 }, false)
 
@@ -319,13 +338,17 @@
             }
 
             $scope.buildInterface = function(){
-                $http.get("/angular/lights/getInterfaceOptions").success(function(response){
+                $scope.requestStarted();
+                $http.get("/angular/lights/getInterfaceOptions").success(function(response,httpStatus){
                     $scope.updateInterfaceWithResponse(response)
                     $scope.getNotifications();
                     $scope.getHeaters();
+                    $scope.requestEnded(httpStatus);
+                }).error(function(response,httpStatus){
+                    console.log("SOMETHING HAPPENED")
+                    $scope.requestEnded(httpStatus);
                 });
             }
-
 
             $scope.getNotifications = function(){
                 $http.get("/angular/system/getNotifications").success(function(response){
@@ -346,7 +369,10 @@
             }
 
 
-            $scope.toggleLightProgramByKey = function(programKey){
+            $scope.toggleLightProgramByKey = function(programKey, element){
+
+                console.log(element);
+
                 if(programKey == $scope.activeProgram){
                     return $scope.allLights({ onOff : false});
                 }
@@ -355,16 +381,19 @@
 
 
             $scope.sendLightProgramByKey = function(programKey){
+                $scope.loadingRequest = true;
                 $http.post(
                     "/angular/runProgram",
                     {programKey}
-                ).success(
-                     $scope.buildInterface
-                )
+                ).success(function(){
+                    this.loadingRequest = false;
+                    this.buildInterface
+                }.bind($scope)).error(function(){
+                    this.loadingRequest = false;
+                }.bind($scope))
             }
 
             $scope.sendLightCommand = function(element, status){
-                console.log("Las cosas son", element, status);
                 if(typeof element == "string" || typeof element == "object"){
                     status.lightName = element;
                 } else {
@@ -386,9 +415,10 @@
                         $scope.socketSimulator()
                     })
                     .error(function(){
+                        $timeout($scope.socketSimulator, 1000)
                         // If error is "CONN REFUSED, call again in 5 minutes"
                         // If error is "TIMEOUT", call again in
-                        $scope.socketSimulator()
+                        // $scope.socketSimulator()
                     }
                 )
             }
@@ -399,9 +429,18 @@
                 })
             }
 
+            $scope.getCameras = function(){
+                $http.get("/cameras/getList").success(
+                    function(response){
+                        $scope.cameras = response;
+                    }
+                );
+            }
+
             $scope.buildInterface();
             $scope.socketSimulator();
             $scope.getAvailablePrograms();
+            $scope.getCameras();
 
             $scope.changeTheme = function(theme){
                 $http.get("/switchInterface?theme="+ theme).success(function(){

@@ -5,6 +5,9 @@ var env = process.env.NODE_ENV || 'development'
 	, moment = require('moment')
 	, bodyParser = require('body-parser'); 	// To parse POST requests;
 
+
+var request = require('request');
+
 var EventEmitter = require('events').EventEmitter
 const path = require('path');
 var LightProgram = require("./lightProgram.js")
@@ -206,7 +209,7 @@ app.get("/angular/heaters/getStatus", function(req, res){
 
 
 app.post("/angular/runProgram", function(req, res){
-	console.log(req.body);
+	// console.log(req.body);
 	if(req.body.programKey){
 		try {
 			lightManager.runProgram(req.body.programKey);
@@ -239,6 +242,37 @@ app.post("/angular/runProgram", function(req, res){
 		lightManager.getStatus()
 	);
 })
+
+
+app.get("/cameras/getList", function(req, res){
+	res.send([
+		{ displayName: "Door", cameraName : 2 },
+		{ displayName: "Kitchen", cameraName : 7 },
+	])
+})
+
+app.get("/cameras/watch/:cameraName", function(req, res){
+
+	cameraConfig = require("./config/restricted/cameras.js"),
+	cameraName = parseInt(req.params.cameraName);
+	availableMonitors = [2,3,6,7]
+
+	if(availableMonitors.indexOf(cameraName) != -1){
+
+		res.writeHead(200, { 
+			"Cache-control": "no-cache", 
+			"Content-Type":"multipart/x-mixed-replace;boundary=ZoneMinderFrame"
+		});
+
+		request.get("http://"+cameraConfig.host+"/cgi-bin/nph-zms?mode=jpeg&scale=100&maxfps=10&monitor="+cameraName+"&connkey=574247&rand=1477156808").pipe(res)
+		return ;
+	}
+	res.send(cameraName + "Invalid camera");
+	return;
+
+})
+
+
 
 app.use('/', function(req, res, next){
 	res.redirect("/angular");

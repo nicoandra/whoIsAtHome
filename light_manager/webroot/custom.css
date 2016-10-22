@@ -1,130 +1,34 @@
+.glyphicon.spinning {
+    animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
 
-@media only screen and (max-width: 500px) {
-	.row { margin: 0px; }
-	.btn {
-		padding: 5px;
-		border: 1px solid gray
-		margin: 1px;
-	}
-
-	.sqr {
-		width: 38px;
-		height: 39px;
-	}
-
-	.col-xs-3 {
-		padding: 3px;
-	}
-
-	.container {
-    	margin-right: auto;
-    	margin-left: auto;
-	    padding-left: 5px;
-    	padding-right: 5px;
-	}
-}
-
-@media only screen and (min-width: 500px) {
-	.sqr {
-		width: 50px;
-		height: 50px;
-	}
-}
-
-
-.sqr {
-	padding: 0px;
-	font-weight: 500;
-}
-
-.btnlightblue {
-	background-color: blue;
-	color: black;
-}
-
-.btnaqua {
-	background-color: aqua;
-	color: black;
-}
-
-
-.btnwhite {
-	background-color: white;
-	color: black;
-}
-          
-
-.btnoff {
-	background-color: black;
-	color: gray;	
-}
-
-.btnpinks {
-	background-color: pink;
-	color: black;	
-}
-
-.btngreens {
-	background-color: green;
-	color: yellow;	
-}
-
-.btnviolet {
-	background-color: purple;
-	color: gray;	
-}
-
-.btnblue {
-	background-color: blue;
-	color: gray;	
-}
-.btngreen {
-	background-color: green;
-	color: light-green;	
-}
-
-.btnred {
-	background-color: red;
-	color: black;	
-}
-
-.btnyellow {
-	background-color: yellow;
-	color: gray;	
-}
-
-.btnaqua {
-	background-color: aqua;
-	color: gray;	
-}
-
-.btnroyalblue {
-	background-color: blue;
-	color: gray;	
-}
-
-.btnlightblue {
-	background-color: blue;
-	color: white;	
-}
-
-.btndisco {
-	color: #990099;
-	background-color: #FF0033;	
-}
-
-.btnocean {
-	color: #00CCFF;
-	background-color: #33CCFF;
+   -moz-transition: .1s linear;
+   -o-transition: .1s linear;
+   transition: .1s linear;
 
 }
 
-.btnfire {
-	color: red;
-	background-color: orange;
+.refreshButton {
+	-webkit-transition: .1s linear;
+	/*to only change opacity*/
+	/*-webkit-transition: opacity 1s linear*/
+	-moz-transition: .1s linear;
+	-o-transition: .1s linear;
+	transition: .1s linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
 }
 
 
-.row.heater select {
-	color: black;
-}
+                        
+.refreshButton.spinning {     opacity: 1;  }
+.refreshButton.glyphicon-thumbs-up {     opacity: 1; }
+.refreshButton.glyphicon-thumbs-down {  opacity: 1; color: red; }
