@@ -143,16 +143,10 @@
                                     All lights
                                  </div>
 
-                                <div class="col-md-3 col-xs-4">
-                                    <switch
-                                        id="AllOnOffSwitch"
-                                        name="AllOnOffSwitch"
-                                        on="On" off="Off"
-                                        class="green"
-                                        ng-model="allLights.onOff"
-                                        ng-change="allLights({ onOff : allLights.onOff })">
-                                    </switch>
-                                 </div>
+                                <div class="col-md-2 col-xs-2" >
+                                    <a href="#" ng-click="allLights({ onOff : true})">On</a>
+                                    <a href="#" ng-click="allLights({ onOff : false})">Off</a>
+                                </div>
 
                                 <div class="col-md-3 col-xs-4">
                                     <select
@@ -166,13 +160,36 @@
                                 </div>
                             </li>
 
+
                             <ng-repeat ng-repeat="program in availablePrograms">
                                 <li class="row list-group-item">
-                                    <div class="col-md-2 col-xs-12">
-                                        <a href="" ng-click="sendLightProgramByKey(program.key)">{{ program.name }}</a>
-                                    </div>
+
+                                    <ng-if ng-if="program.statusToApply.length > 0">
+                                        <div class="col-md-6 col-xs-6" ng-class="{'bg-success': program.key == activeProgram}">
+                                            <a href="" ng-click="sendLightProgramByKey(program.key)">{{ program.displayName }}</a>
+                                        </div>
+                                    </ng-if>
+
+                                    <ng-if ng-if="program.childPrograms.length > 0">
+                                        <div class="col-md-2 col-xs-4">
+                                            {{ program.displayName }}
+                                        </div>
+
+                                        <ng-repeat ng-repeat="childProgram in program.childPrograms">
+                                            <div class="col-md-2 col-xs-2" ng-class="{'bg-success': childProgram.id == activeProgram}">
+                                                <a href="#" ng-click="sendLightProgramByKey(childProgram.id)">{{ childProgram.displayName }}</a>
+                                            </div>
+                                        </ng-repeat>
+
+                                    </ng-if>
+
+                                
+
                                 </li>
                             </ng-repeat>
+
+
+
                         </ul>
                     </div>
 
@@ -273,7 +290,8 @@
             $scope.dimChange = function(a,b,c){ console.log(a,b,c) };
 
             $scope.updateInterfaceWithResponse = function(response){
-                $scope.lights = response;
+                $scope.lights = response.lights;
+                $scope.activeProgram = response.programs.activeProgram;
             }
 
             $scope.buildInterface = function(){

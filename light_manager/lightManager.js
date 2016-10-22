@@ -9,6 +9,7 @@ function LightManager(){
     this.lights = {};
     this.receiverSockets = [];
     this.programs = {}
+    this.allKnownPrograms = {}
 
     this.addLight = function(name, displayName, socketNumber, groupNumber, hasRgb, hasDimmer){
 
@@ -21,6 +22,18 @@ function LightManager(){
         this.lights[name] = light;
     }
 
+
+    this.addProgramInstance = function(lightProgram){
+        this.programs[this.hash(lightProgram.id)] = lightProgram;
+        this.allKnownPrograms[this.hash(lightProgram.id)] = lightProgram;
+
+
+        if(lightProgram.childPrograms.length > 0){
+            lightProgram.childPrograms.forEach(function(childProgram){
+                this.allKnownPrograms[childProgram.id] = childProgram;
+            }.bind(this));
+        }
+    }
 
     this.addProgram = function(name, command, affectedLights, statusObject){
         // This method will store a program in memory
@@ -38,6 +51,8 @@ function LightManager(){
 
         this.programs[this.hash(programToAdd.command)] = programToAdd;
 
+        this.allKnownPrograms[this.hash(programToAdd.command)] = programToAdd;
+
     }
 
     this.getAvailablePrograms = function(){
@@ -48,19 +63,33 @@ function LightManager(){
         // hash = this.hash(command);
         hash = command;
 
-        if(typeof this.programs[hash] != "object"){
+        if(typeof this.allKnownPrograms[hash] != "object"){
             throw new Error("Program not found");
             // Discard if the invoked command did not match any known program
             return false;
         }
 
 
+        if(this.allKnownPrograms[hash].statusToApply && this.allKnownPrograms[hash].statusToApply.length > 0){
 
-        this.programs[hash].lights.forEach(function(lightName, index) {
+            // Here are the statuses to apply
+            console.log("GOING TO APPLY", this.allKnownPrograms[hash].statusToApply);
+            this.allKnownPrograms[hash].statusToApply.forEach(function(status){
+
+                console.log("One Status", status);
+                this.setStatus(status, function(){});
+
+            }.bind(this));
+            this.activeProgram = hash;
+            return;
+        }
+
+        this.allKnownPrograms[hash].lights.forEach(function(lightName, index) {
 
             if (typeof lightName == "object") {
                 status = lightName;
                 lightName = lightName.lightName;
+
             } else if (typeof lightName == "string") {
                 status = this.programs[hash].status;
             }
@@ -70,6 +99,7 @@ function LightManager(){
             return true;
 
         }.bind(this))
+        this.activeProgram = hash;
 
     }
 
@@ -80,15 +110,18 @@ function LightManager(){
     this.setStatus = function(lightName, status, callback){
 
         if(typeof lightName != "string"){
+            // Lightname is an object. Obtain the light name from it.
             callback = status;
             status = lightName;
             lightName = status.lightName;
-            delete status.lightName;
+            // delete status.lightName;
         }
 
         callback = (typeof callback === 'function') ? callback : function() {};
         this.lights[lightName].setManualStatus(status, callback);
     }
+
+
 
     /*
     This method supports two formats:
@@ -115,6 +148,7 @@ function LightManager(){
             }
         }.bind(this))
 
+        this.activeProgram = false;
         callback = (typeof callback === 'function') ? callback : function() {};
         callback;
     }
@@ -123,23 +157,33 @@ function LightManager(){
         // console.log(this.lights);
 
         result = new Object();
+        result.lights = new Object();
 
         Object.keys(this.lights).forEach(function(lightName, index){
-            result[lightName] = this.lights[lightName].getStatus()
+            result.lights[lightName] = this.lights[lightName].getStatus()
         }.bind(this))
+
+        result.programs = new Object();
+        result.programs.activeProgram = this.activeProgram;
+
         return result;
     }
 
 
     this.getInterfaceOptions = function(){
         result = new Object();
+        result.lights = new Object();
 
         Object.keys(this.lights).forEach(function(lightName, index){
 
-            result[lightName] = this.lights[lightName].getStatus();
-            result[lightName].interface = this.lights[lightName].getInterfaceOptions();
+            result.lights[lightName] = this.lights[lightName].getStatus();
+            result.lights[lightName].interface = this.lights[lightName].getInterfaceOptions();
 
         }.bind(this))
+
+        result.programs = new Object();
+        result.programs.activeProgram = this.activeProgram;
+
         return result;
     }
 }

@@ -6,8 +6,8 @@ var env = process.env.NODE_ENV || 'development'
 	, bodyParser = require('body-parser'); 	// To parse POST requests;
 
 var EventEmitter = require('events').EventEmitter
-
 const path = require('path');
+var LightProgram = require("./lightProgram.js")
 
 /** Prepare the light setup */
 LightManager = require("./lightManager.js");
@@ -17,6 +17,48 @@ lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* Group
 lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */ true);
 
+
+normalOptions = new LightProgram("Normal", "normal");
+normalLow = new LightProgram("Low", "normal-low");
+normalLow.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 40 });
+normalLow.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 40  });
+normalLow.addStatus({lightName: 'officeBoards', onOff : false });
+normalLow.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 40  });	
+
+
+normalMed = new LightProgram("Med", "normal-med");
+normalMed.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 70 });
+normalMed.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 70  });
+normalMed.addStatus({lightName: 'officeBoards', onOff : false });
+normalMed.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 70  });
+
+normalHigh = new LightProgram("High", "normal-high");
+normalHigh.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 });
+normalHigh.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 100  });
+normalHigh.addStatus({lightName: 'officeBoards', onOff : false });
+normalHigh.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100  });
+normalOptions.addChildProgram(normalLow);
+normalOptions.addChildProgram(normalMed);
+normalOptions.addChildProgram(normalHigh);
+lightManager.addProgramInstance(normalOptions);
+delete normalOptions;
+
+
+allRed = new LightProgram("All Red", "all red");
+["officeLamp","kitchenLamp", "officeBoards"].forEach(function(lightName){
+	allRed.addStatus({lightName: lightName, onOff : true, color: "red" , brightness: 100});	
+})
+lightManager.addProgramInstance(allRed);
+
+romantic = new LightProgram("Romantic", "romantic");
+romantic.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", brightness: 20 });
+romantic.addStatus({lightName: 'kitchenCountertop', onOff : false });
+romantic.addStatus({lightName: 'officeBoards', onOff : false });
+romantic.addStatus({lightName: 'officeLamp', onOff : true, color: "white", brightness: 20 });
+lightManager.addProgramInstance(romantic)
+
+
+/*
 
 // With a lightManager, add programs
 lightManager.addProgram("All white", "all white", ["kitchenCountertop","officeLamp","kitchenLamp"], {onOff : true, color: "white" } );
@@ -28,26 +70,13 @@ lightManager.addProgram("BubbleGum", "bubblegum", [
 	{lightName: 'officeBoards', onOff : true, color: "pink" },
 	{lightName: 'officeLamp', onOff : true, color: "blue" }
 ]);
-
-lightManager.addProgram("Romantic", "romantic", [
-	{lightName: 'kitchenLamp', onOff : true, color: "white", brightness: 20 },
-	{lightName: 'kitchenCountertop', onOff : false },
-	{lightName: 'officeBoards', onOff : false },
-	{lightName: 'officeLamp', onOff : true, color: "white", brightness: 20 }
-]);
+*/
 
 /** Prepare heaters */
 HeaterManager = require('./heaterManager.js');
 heaterManager = new HeaterManager();
 heaterManager.addHeater('Kitchen', 'kitchen', '192.168.1.125');
 heaterManager.addHeater('Living', 'living', '192.168.1.125');
-
-CommandLineInterpreter = require("./cliInterpreter.js")
-var cliInterpreter = new CommandLineInterpreter();
-cliInterpreter.start();
-
-
-LightPrograms = require("./lightPrograms.js")
 
 
 /** HTTP SERVER **/
@@ -60,55 +89,6 @@ var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
 var httpServer = require('http').Server(app);
-var io = require('socket.io')(httpServer);
-
-io.sockets.on('connection', function(socket){
-	console.log("[Socket] on");
-
-	socket.on('sendCommand', function (commands) {
-
-		var programs = new LightPrograms();
-
-		console.log("[Socket] Received ", commands);
-
-		commands.forEach(function(programName){
-			console.log("[rec socket] ", programName);
-			programs.runProgram(programName);
-		});
-
-		sendResponse();
-
-	});
-
-});
-
-sendResponse = function(){
-	var programs = new LightPrograms();
-	io.emit('statusUpdate', {
-		lights : programs.getLightsStatus(), 
-		system : {
-			queueSize : [receiver1.getQueueSize()],
-			delayBetweenCommands : delayBetweenCommands,
-			memory : process.memoryUsage(),
-			uptime : { 'human' : moment.duration(process.uptime(), 'seconds').humanize(), 'seconds' : process.uptime()  }
-		},
-//		heaters : heaterStatus,
-	});
-}
-
-
-function buildResponseObject(){
-	var programs = new LightPrograms();
-	return {
-		lights : programs.getLightsStatus(),
-		system : {
-		queueSize : [receiver1.getQueueSize()],
-			delayBetweenCommands : delayBetweenCommands,
-			memory : process.memoryUsage(),
-			uptime : { 'human' : moment.duration(process.uptime(), 'seconds').humanize(), 'seconds' : process.uptime()  }
-		},
-	};
-}
 
 
 app.use('/static', express.static(path.join(__dirname, 'webroot')));
@@ -174,7 +154,7 @@ messageBus.setMaxListeners(100)
 app.get("/angular/socketSimulator", function(req,res){
 
 	messageBus.on('message', function(data){
-		console.log(req.ip, "Data which triggered the event", data)
+		// console.log(req.ip, "Data which triggered the event", data)
 		try {
 			res.send(true)
 		} catch(exception){}
@@ -249,7 +229,7 @@ app.post("/angular/runProgram", function(req, res){
 		});
 	}
 
-	[100,500,1000].forEach(function(delay){
+	[100,200].forEach(function(delay){
 		setTimeout(function() {
 			messageBus.emit("message", req.body)
 		}, delay);
