@@ -54,7 +54,7 @@ function Heater(name, id, ip){
                 this.humidity = parseFloat(info.humidity);
                 this.uptime = parseFloat(info.uptime);
                 this.power = parseFloat(info.power);
-                this.downSince = 0;
+                this.downSince = false;
                 callback(false, info);
             } else {
                 if(this.downSince == 0){
@@ -68,11 +68,10 @@ function Heater(name, id, ip){
     this.getStatus = function(){
         // @@TODO@@ Make it so we poll the heater here, before sending a response
         // with a promise!
-
         response = new Object();
         response.id = this.id;
         response.name = this.name;
-        response.temperature =  + 15 + Math.round(Math.random()*10);
+        response.temperature =  this.getTemperature();
         response.humidity = this.getHumidity();
         response.power = this.getPower();
         response.uptime = this.uptime;

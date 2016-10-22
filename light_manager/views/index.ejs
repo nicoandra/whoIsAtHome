@@ -63,13 +63,13 @@
                                 </div>
 
                                 <div class="col-md-2 col-xs-2" >
-                                    <a href="#" ng-click="allLights({ color : 'white' } )">White</a>
+                                    <a href="#" class="btn btn-default" ng-click="allLights({ color : 'white' } )">White</a>
                                 </div>
 
                             
                                 <div class="col-md-2 col-xs-2" >
-                                    <a href="#" ng-click="allLights({ onOff : true})">On</a>
-                                    <a href="#" ng-click="allLights({ onOff : false})">Off</a>
+                                    <a href="#" class="btn btn-default glyphicon glyphicon-off " ng-click="allLights({ onOff : true})" ng-if="!allLights.onOff"></a>
+                                    <a href="#" class="btn btn-default btn-primary glyphicon glyphicon-off" ng-click="allLights({ onOff : false})" ng-if="allLights.onOff"></a>
                                 </div>
 
                                 <div class="col-md-2 col-xs-2" >
@@ -94,18 +94,26 @@
                                 </div>
 
                                 <div class="col-md-2 col-xs-2" >
-                                    <a href="#" ng-click="sendLightCommand(light.name, { color : 'white' } )">White</a>
+                                    <a href="#" class="btn btn-default" ng-click="sendLightCommand(light.name, { color : 'white' } )">White</a>
                                 </div>
 
                                 <div class="col-md-2 col-xs-2" >
                                     <!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
-                                    <switch id="{{ light.name }}OnOffSwitch"
-                                        name="{{ light.name }}OnOffSwitch"
-                                        on="On" off="Off"
-                                        ng-model="light.actualStatus.onOff"
-                                        class="green"
-                                        ng-change="sendLightCommand(light.name, { onOff: light.actualStatus.onOff } )">
-                                    </switch>
+                                    <a 
+                                        name="{{ light.name }}SwitchOn" 
+                                        id="{{ light.name }}SwitchOn" href="#" 
+                                        class="btn btn-default glyphicon glyphicon-off" 
+                                        ng-click="sendLightCommand(light.name, { onOff: true } )"
+                                        ng-if="!light.actualStatus.onOff"></a>
+
+                                    <a 
+                                        name="{{ light.name }}SwitchOff" 
+                                        id="{{ light.name }}SwitchOff" href="#" 
+                                        class="btn btn-default glyphicon glyphicon-off btn-primary" 
+                                        ng-click="sendLightCommand(light.name, { onOff: false } )"
+                                        ng-if="light.actualStatus.onOff"></a>
+
+
                                 </div>
 
 
@@ -133,19 +141,22 @@
                     <div class="tab-pane fade" id="programsTab">
 
                         <div class="panel-body">
-                            <h3 class="panel-title">Light Programs</h3>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4" >
+                                    <span class="h3" class="panel-title">Light Programs</span>
+                                </div>                        
+                            </div>
                         </div>
 
                         <ul class="list-group">
-
                             <li class="row list-group-item">
                                 <div class="col-md-2 col-xs-4">
                                     All lights
                                  </div>
 
                                 <div class="col-md-2 col-xs-2" >
-                                    <a href="#" ng-click="allLights({ onOff : true})">On</a>
-                                    <a href="#" ng-click="allLights({ onOff : false})">Off</a>
+                                    <a href="#" class="btn btn-default glyphicon glyphicon-off " ng-click="allLights({ onOff : true})" ng-if="!allLights.onOff"></a>
+                                    <a href="#" class="btn btn-default btn-primary glyphicon glyphicon-off" ng-click="allLights({ onOff : false})" ng-if="allLights.onOff"></a>
                                 </div>
 
                                 <div class="col-md-3 col-xs-4">
@@ -176,25 +187,16 @@
                                         </div>
 
                                         <ng-repeat ng-repeat="childProgram in program.childPrograms">
-                                            <div class="col-md-2 col-xs-2" ng-class="{'bg-success': childProgram.id == activeProgram}">
-                                                <a href="#" ng-click="sendLightProgramByKey(childProgram.id)">{{ childProgram.displayName }}</a>
+                                            <div class="col-md-2 col-xs-2">
+                                                <a href="#" class="btn btn-default" ng-class="{'btn-primary': childProgram.id == activeProgram}" ng-click="toggleLightProgramByKey(childProgram.id)">{{ childProgram.displayName }}</a>
                                             </div>
                                         </ng-repeat>
 
                                     </ng-if>
-
-                                
-
                                 </li>
                             </ng-repeat>
-
-
-
                         </ul>
                     </div>
-
-
-
 
                     <div class="tab-pane fade" id="notificationsTab">
                         <div class="panel-body">
@@ -230,33 +232,45 @@
 
 
                     <div class="tab-pane fade" id="heatersTab">
+
                         <div class="panel-body">
-                            <h3 class="panel-title">Heaters</h3>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4" >
+                                    <span class="h3" class="panel-title">Heaters</span>
+                                </div>                        
+                            </div>
                         </div>
 
                         <ul class="list-group">
                             <ng-repeat ng-repeat="heater in heaters">
-                                <li class="row list-group-item" ng-class="{ 'list-group-item-danger' : (heater.downSize != 0) }" >
+                                <li class="row list-group-item" >
 
                                     <div class="col-md-2 col-xs-2"  >
-                                        {{ heater.name }} {{ heater.downSize }}
+                                        {{ heater.name }}
                                     </div>
                                     <div class="col-md-2 col-xs-2">
-                                    Temperature {{ heater.temperature }}
+                                        <strong>{{ heater.temperature }}</strong>
                                     </div>
+                                    <div class="col-md-2 col-xs-2" ng-if="heater.currentHumidity">
+                                        Humidity {{ heater.currentHumidity }} %
+                                    </div>
+
                                     <div class="col-md-2 col-xs-2">
-                                    Humidity {{ heater.currentHumidity }} %
-                                    </div>
-                                    <div class="col-md-2 col-xs-2">
-                                        Power <span ng-class="{ 'text-info': (heater.power == 0), 'text-success': (heater.power > 0 && heater.power < 50), 'text-warning': ( heater.power >= 50 && heater.power < 70), 'text-danger': ( heater.power >= 70) }">{{ heater.power }}%</span>
-                                    </div>
-                                    <div class="col-md-2 col-xs-2 pull-right">
-                                        <span class=" glyphicon glyphicon-ok" ng-if="heater.power > 0"></span>
-                                        <span ng-if="heater.downSize != 0">
-                                            <span class="glyphicon glyphicon-exclamation-sign" ></span>
-                                            Down since {{ heater.downSince }}
+                                        <span ng-class="{ 'text-info': (heater.power == 0), 'text-success': (heater.power > 0 && heater.power < 50), 'text-warning': ( heater.power >= 50 && heater.power < 70), 'text-danger': ( heater.power >= 70) }">{{ heater.power }}%
                                         </span>
                                     </div>
+
+                                    <div class="col-md-2 col-xs-2 pull-right">
+                                        <span class="label label-success" ng-if="heater.power > 0">Running</span>
+                                        
+                                        <span ng-if="heater.downSince">
+                                            <span class="label label-danger">Down since {{ heater.downSince }}</span>
+                                        </span>
+                                            
+
+                                        
+                                    </div>
+
                                 </li>
                             </ng-repeat>
                         </ul>
@@ -282,7 +296,7 @@
         .controller("LightManagerController", function($scope, $http){
 
             $scope.allLights = {
-                OnOff : true,
+                onOff : true,
                 brightness : 100
             }
 
@@ -291,6 +305,16 @@
 
             $scope.updateInterfaceWithResponse = function(response){
                 $scope.lights = response.lights;
+
+                isAnyLightOn = Object.keys($scope.lights).reduce(function(prevVal,currVal,c,d){
+                    currVal = $scope.lights[currVal]
+                    console.log("reduce",prevVal,currVal,c,d)
+
+                    return prevVal || currVal.status.onOff;
+                }, false)
+
+                $scope.allLights.onOff = isAnyLightOn;
+
                 $scope.activeProgram = response.programs.activeProgram;
             }
 
@@ -313,8 +337,22 @@
             $scope.allLights = function(statusObject){
                 console.log("going to send", statusObject);
                 statusToSend = statusObject;
+
+                Object.keys(statusObject).forEach(function(key){
+                    $scope.allLights[key] = statusObject[key];
+                })
+                
                 $scope.sendLightCommand(Object.keys($scope.lights), statusToSend)
             }
+
+
+            $scope.toggleLightProgramByKey = function(programKey){
+                if(programKey == $scope.activeProgram){
+                    return $scope.allLights({ onOff : false});
+                }
+                $scope.sendLightProgramByKey(programKey);
+            }
+
 
             $scope.sendLightProgramByKey = function(programKey){
                 $http.post(
@@ -323,7 +361,6 @@
                 ).success(
                      $scope.buildInterface
                 )
-
             }
 
             $scope.sendLightCommand = function(element, status){

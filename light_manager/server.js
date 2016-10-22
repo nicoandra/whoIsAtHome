@@ -229,7 +229,7 @@ app.post("/angular/runProgram", function(req, res){
 		});
 	}
 
-	[100,200].forEach(function(delay){
+	[500, 1000].forEach(function(delay){
 		setTimeout(function() {
 			messageBus.emit("message", req.body)
 		}, delay);
