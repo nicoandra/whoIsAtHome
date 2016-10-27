@@ -204,17 +204,20 @@ app.get("/angular/system/getNotifications", function(req,res){
 
 app.get("/angular/heaters/getStatus", function(req, res){
 	response =  heaterManager.getStatus();
-	res.send(response)
+	res.send(response);
 })
 
 
 app.post("/angular/runProgram", function(req, res){
 	// console.log(req.body);
+
+	console.log(req.body);
+
+
 	if(req.body.programKey){
 		try {
 			lightManager.runProgram(req.body.programKey);
 			console.log("Change has been done");
-			messageBus.emit('message', req.body);
 		} catch(exception){
 			console.log(exception)
 		}
@@ -222,17 +225,15 @@ app.post("/angular/runProgram", function(req, res){
 		lightManager.setStatus(req.body, function () {
 			// Emit message only after the change has been applied
 			console.log("Change has been done");
-			messageBus.emit('message', req.body);
 		});
 	} else {
 		lightManager.setMultipleStatus(req.body.lightName, req.body, function () {
 			// Emit message only after the change has been applied
 			console.log("Change has been done");
-			messageBus.emit('message', req.body);
 		});
 	}
 
-	[500, 1000].forEach(function(delay){
+	[1, 500, 1000].forEach(function(delay){
 		setTimeout(function() {
 			messageBus.emit("message", req.body)
 		}, delay);
@@ -243,6 +244,21 @@ app.post("/angular/runProgram", function(req, res){
 	);
 })
 
+app.get("/lights/allOff", function(req,res){
+	lightManager.allLightsOff();
+})
+
+app.post("/lights/iterateBetweenChildPrograms", function(req,res){
+	programKey = req.body.programKey;
+	lightManager.iterateBetweenChildPrograms(programKey);
+
+	[1, 500, 1000].forEach(function(delay){
+		setTimeout(function() {
+			messageBus.emit("message", req.body)
+		}, delay);
+	})	
+	res.send("ITERATION");
+})
 
 app.get("/cameras/getList", function(req, res){
 	res.send([

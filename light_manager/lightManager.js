@@ -10,6 +10,44 @@ function LightManager(){
     this.receiverSockets = [];
     this.programs = {}
     this.allKnownPrograms = {}
+    this.activeProgram = false;
+
+    this.allLightsOff = function(){
+        Object.keys(this.lights).forEach(function(key){}.bind(this))
+    }
+
+    this.iterateBetweenChildPrograms = function(parentProgramKey){
+
+        console.log(Object.keys(this.programs));
+
+        if(!this.programs[parentProgramKey]){
+            console.log("Can not find such program... sorry");
+            return false;
+        }
+
+        parentProgram = this.programs[parentProgramKey];
+        if(parentProgram.childPrograms.length < 1){
+            console.log("The selected program does not have child programs. Fallback to parent");
+            this.runProgram(parentProgramKey);
+        }
+
+        
+
+        indexOfProgramToRun = parentProgram.childPrograms.map(function(childProgram, index){
+            console.log(childProgram.id , this.activeProgram, index);
+            return childProgram.id == this.activeProgram ? index : 0;
+        }.bind(this)).reduce(function(prev, current){
+            return prev + current;
+        });
+
+        indexOfProgramToRun++;
+        if(indexOfProgramToRun == parentProgram.childPrograms.length){
+            indexOfProgramToRun = 0;
+        }
+
+        this.runProgram(parentProgram.childPrograms[indexOfProgramToRun].id);
+        
+    }
 
     this.addLight = function(name, displayName, socketNumber, groupNumber, hasRgb, hasDimmer){
 

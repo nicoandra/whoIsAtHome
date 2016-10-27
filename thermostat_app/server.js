@@ -2,7 +2,6 @@ var rpio = require('rpio');
 rpio.init({mapping: 'gpio'}); 
 
 
-
 kitchenPin = 18;
 livingPin = 23;
 
@@ -16,11 +15,11 @@ var sensor = {
 	sensors: [ {
 			name: "kitchen",
 			type: 22,
-			pin: kitchenPin
+			pin: 4
 		}, {
 			name: "living",
 			type: 22,
-			pin: livingPin
+			pin: 17
 		}
 	],
 
@@ -34,7 +33,8 @@ var sensor = {
 			console.log(this.sensors[a].name + ": " + temperature + "C, " + humidity + "%"); 
 
 			if(this.sensors[a].name=='kitchen' || this.sensors[a].name=='living'){
-				heaters[this.sensors[a].name].kitchen.currentTemp = temperature
+				heaters[this.sensors[a].name].currentTemp = temperature
+				heaters[this.sensors[a].name].humidity = humidity
 			}
 		};
 	},
@@ -48,6 +48,7 @@ var sensor = {
 
 function Heater(name, pinNumber) {
 	this.name = name;
+	this.humidity = -1;
 	this.currentTemp = 19.8;
 	this.desiredTemp = 20;
 	this.power = 0;
@@ -122,7 +123,14 @@ app = express();
 app.get('/get/:room/', function(req, res){
 	room = req.params.room;
 
-	res.json({response: 'OK', name : room, currentTemperature: heaters[room].currentTemp, desiredTemperature : heaters[room].desiredTemp, power : heaters[room].power });
+	res.json({
+		response: 'OK', 
+		name : room,
+		currentTemperature: heaters[room].currentTemp,
+		desiredTemperature : heaters[room].desiredTemp, 
+		power : heaters[room].power,
+		currentHumidity: 
+	});
 	console.log('Getting stats for ', room);
 
 });
