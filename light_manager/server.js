@@ -61,20 +61,6 @@ romantic.addStatus({lightName: 'officeLamp', onOff : true, color: "white", brigh
 lightManager.addProgramInstance(romantic)
 
 
-/*
-
-// With a lightManager, add programs
-lightManager.addProgram("All white", "all white", ["kitchenCountertop","officeLamp","kitchenLamp"], {onOff : true, color: "white" } );
-lightManager.addProgram("All Blue", "all blue", ["officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "blue" } );
-lightManager.addProgram("All Red", "all red", ["officeLamp","kitchenLamp", "officeBoards"], {onOff : true, color: "red" } );
-lightManager.addProgram("BubbleGum", "bubblegum", [
-	{lightName: 'kitchenLamp', onOff : true, color: "pink" },
-	{lightName: 'kitchenCountertop', onOff : false },
-	{lightName: 'officeBoards', onOff : true, color: "pink" },
-	{lightName: 'officeLamp', onOff : true, color: "blue" }
-]);
-*/
-
 /** Prepare heaters */
 HeaterManager = require('./heaterManager.js');
 heaterManager = new HeaterManager();
@@ -271,6 +257,9 @@ app.get("/cameras/watch/:cameraName", function(req, res){
 	return;
 
 })
+
+
+app.get("/people/setAway")
 
 
 
