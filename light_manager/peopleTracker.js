@@ -108,8 +108,7 @@ function peopleTracker(){
 
         }.bind(this));
 
-        return nameFound
-
+        return nameFound;
     }
 
     this.getHomeStatus = function(){

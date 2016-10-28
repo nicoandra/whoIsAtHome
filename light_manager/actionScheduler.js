@@ -7,8 +7,18 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 	this.peopleTracker = peopleTracker;
 	this.lightManager = lightManager;
 	this.heaterManager = heaterManager;
-	this.timeWhenDayStarts 
+	this.wasNightOnLastCheck = false;
 
+
+	this.runActionBasedOnHomeStatus = function(){
+
+		homeStatus = this.peopleTracker.getHomeStatus().home;
+		if(homeStatus.isAlone){
+			this.homeStartedToBeAlone();
+			return;
+		}
+		this.someoneIsAtHome();
+	}
 
 	this.verifyStatus = function(){
 		homeStatus = this.peopleTracker.getHomeStatus().home;
@@ -21,16 +31,18 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 			// and trigger an action
 			console.log("Home status changed to ", homeStatus)
 
-			if(homeStatus.isAlone){
-				this.homeStartedToBeAlone();
-				return;
-			}
-
-			this.someoneIsAtHome();
+			this.runActionBasedOnHomeStatus();
 		}
-		// console.log(homeStatus)
+
+		this.verifyIfNightStartedOrEnded();
 	}
 
+	this.verifyIfNightStartedOrEnded = function(){
+		if(this.wasNightOnLastCheck != this.isNightTime()) {
+			this.runActionBasedOnHomeStatus();
+			this.wasNightOnLastCheck = this.isNightTime();
+		}
+	}
 
 	this.homeStartedToBeAlone = function(){
 		// Disable heaters, set temperature back to 17;
@@ -70,8 +82,10 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 
 	this.start = function(){
 		setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);
+		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
+
 	}
-	
+
 	this.start();
 }
 
