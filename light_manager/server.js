@@ -3,7 +3,8 @@ var env = process.env.NODE_ENV || 'development'
 	, dgram = require('dgram')
 	, debug = require('debug')
 	, moment = require('moment')
-	, bodyParser = require('body-parser'); 	// To parse POST requests;
+	, bodyParser = require('body-parser'),
+	peopleTracker = require('./peopleTracker.js'); 	// To parse POST requests;
 
 
 var request = require('request');
@@ -15,6 +16,17 @@ var LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
 LightManager = require("./lightManager.js");
 lightManager = new LightManager();	// With a LightManager, add lights
+
+/** Prepare heaters */
+HeaterManager = require('./heaterManager.js');
+heaterManager = new HeaterManager();
+
+
+ActionScheduler = require('./actionScheduler.js');
+actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager);
+
+
+
 lightManager.addLight("officeLamp", "Office Lamp", /*ReceiverId */ 0,  /* GroupId */ 1, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* GroupId */ 2, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */ true);
@@ -62,8 +74,6 @@ lightManager.addProgramInstance(romantic)
 
 
 /** Prepare heaters */
-HeaterManager = require('./heaterManager.js');
-heaterManager = new HeaterManager();
 heaterManager.addHeater('Kitchen', 'kitchen', '192.168.1.125');
 heaterManager.addHeater('Living', 'living', '192.168.1.125');
 
@@ -275,7 +285,27 @@ app.get("/cameras/watch/:cameraName", function(req, res){
 })
 
 
-app.get("/people/setAway")
+app.post("/people/setAsAway", function(req,res){
+	peopleTracker.setAsAway("nico");
+	res.send(peopleTracker.getHomeStatus());
+})
+
+
+app.post("/people/setAsAtHome", function(req,res){
+	peopleTracker.setAsAtHome("nico");
+	res.send(peopleTracker.getHomeStatus());
+})
+
+app.post("/people/setAsComingBack", function(req,res){
+	peopleTracker.setAsComingBack("nico", 20);
+	res.send(peopleTracker.getHomeStatus());
+})
+
+app.post("/people/setAsSleeping", function(req,res){
+	peopleTracker.setAsSleeping("nico");
+	res.send(peopleTracker.getHomeStatus());
+})
+
 
 
 

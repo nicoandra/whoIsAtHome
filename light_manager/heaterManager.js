@@ -16,6 +16,12 @@ function HeaterManager(){
         return response;
     }
 
+    this.setStatus = function(temperature, whichHeater){
+        // if(whichHeater){}
+        
+
+    }
+
 }
 
 module.exports = HeaterManager

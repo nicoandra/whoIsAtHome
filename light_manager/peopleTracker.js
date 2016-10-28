@@ -4,7 +4,10 @@
 
 function peopleTracker(){
 
-    this.isHomeAlone = true;
+    this.home = {
+        isAlone: true,
+        sinceWhen: new Date()
+    }
 
     this.people = {
         'nico' : { name : 'Nic', ips: ['192.68.1.112'], status : 'away', arrivesIn : false, lastTimeSeen : false }
@@ -32,7 +35,7 @@ function peopleTracker(){
         this.people[name].status = "comingBack";
         now = new Date();
         arrivalDate = new Date(now.getTime() + delayInMinutes * 60 * 1000)
-        this.people.name.arrivesIn = arrivalDate;
+        this.people[name].arrivesIn = arrivalDate;
     }
 
     this.wasUserOfflineLongTime = function(name){
@@ -51,6 +54,8 @@ function peopleTracker(){
         return false;
 
     }
+
+
 
     this.decideIfHomeIsAloneOrNot = function() {
 
@@ -72,10 +77,15 @@ function peopleTracker(){
             }
 
             homeIsAlone = homeIsAlone || !result;
-            this.peopleAtHome[name] = result
+            this.peopleAtHome[name] = this.people[name].status
         }, this)
 
-        this.isHomeAlone = homeIsAlone ? true : false;
+        if(this.home.isAlone != homeIsAlone){
+            this.home.sinceWhen = new Date();
+        }
+
+        this.home.isAlone = homeIsAlone ? true : false;
+
     }
 
 
@@ -100,6 +110,15 @@ function peopleTracker(){
 
         return nameFound
 
+    }
+
+    this.getHomeStatus = function(){
+        this.decideIfHomeIsAloneOrNot();
+        result = { 
+            people : this.peopleAtHome, 
+            home: this.home
+        };
+        return result;
     }
 
     // Test home alone state every 5 minutes

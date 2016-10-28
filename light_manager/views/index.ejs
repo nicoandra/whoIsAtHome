@@ -36,6 +36,7 @@
                     <li><a href="#heatersTab" data-toggle="tab"><span class="glyphicon glyphicon-fire"></span></a></li>
                     <li><a href="#camerasTab" data-toggle="tab"><span class="glyphicon glyphicon-eye-open"></span></a></li>
                     <li><a href="#notificationsTab" data-toggle="tab"><span class="glyphicon glyphicon-alert"></span></a></li>
+
                     <li role="presentation" class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                             <span class="glyphicon glyphicon-text-size"></span> <span class="caret"></span>
@@ -46,6 +47,24 @@
                                 <% } %>
                             </ul>
                     </li>
+
+
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span 
+                                class="glyphicon glyphicon-user" 
+                                ng-class="{'glyphicon-user' : !homeStatus.home.isHomeAlone , 'glyphicon-home' : homeStatus.home.isHomeAlone}"></span>
+                            <span class="caret"></span>
+                        </a>
+                            <ul class="dropdown-menu">
+                                <li ng-click="setPersonStatusAs('atHome')"><a>At home</a></li>
+                                <li ng-click="setPersonStatusAs('away')"><a>Away</a></li>
+                                <li ng-click="setPersonStatusAs('sleeping')"><a>Sleeping</a></li>
+                                <li ng-click="setPersonStatusAs('getBackIn', 10)"><a>Get back in 10</a></li>
+                            </ul>
+                    </li>
+
+
                     <li class="pull-right">
                         <a 
                         ng-click="buildInterface()"
@@ -296,6 +315,29 @@
 <script type="text/javascript">
     angular.module("LightManagerApp", [])
         .controller("LightManagerController", function($scope, $http, $timeout){
+
+
+            $scope.homeStatus = {
+                people: { nico : { status : 'away'}},
+
+            }
+
+
+            $scope.setPersonStatusAs = function(statusName, time){
+                switch(statusName){
+                    case "atHome": url = '/people/setAsAtHome'; break;
+                    case "away": url = '/people/setAsAway'; break;
+                    case "sleeping": url = '/people/setAsSleeping'; break;
+                    case "getBackIn": url = '/people/setAsComingBack'; break;
+                    default: return;
+                }
+
+
+                $http.post(url).success(function(response){
+                    $scope.homeStatus = response;
+                })
+
+            }
 
             $scope.allLights = {
                 onOff : true,
