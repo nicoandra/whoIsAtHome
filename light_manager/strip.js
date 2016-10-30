@@ -1,37 +1,43 @@
 const dgram = require('dgram');
-const server = dgram.createSocket('udp4');
-// const client = dgram.createSocket('udp4');
 
 
-server.on('error', (err) => {
-  console.log(`server error:\n${err.stack}`);
-  server.close();
-});
+function Strip(){
 
-server.on('message', (msg, rinfo) => {
-  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
-});
+	this.server = dgram.createSocket('udp4');
+	this.server.on('error', (err) => {
+	  console.log(`server error:\n${err.stack}`);
+	  this.server.close();
+	});
 
-// server.on('listening', () => {
-//   var address = server.address();
-//   console.log(`server listening ${address.address}:${address.port}`);
-// });
+	this.server.on('message', (msg, rinfo) => {
+	  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+	});
 
-//server.bind(process.argv[2]);
-// server listening 0.0.0.0:41234
+	// server.on('listening', () => {
+	//   var address = server.address();
+	//   console.log(`server listening ${address.address}:${address.port}`);
+	// });
 
-//send some data
+	//server.bind(process.argv[2]);
+	// server listening 0.0.0.0:41234
 
-var payload = [];
+	//send some data
 
-payload[0] = 0X01; // payload command:: set range to color
-payload[1] = parseInt(process.argv[2]); //start index >= 0
-payload[2] = parseInt(process.argv[3]); //end index < 30
-payload[3] = parseInt(process.argv[4]); //R channel
-payload[4] = parseInt(process.argv[5]); //G Channel
-payload[5] = parseInt(process.argv[6]); //B Channel
+	this.setColor = function(start, end, r, g, b){
+		var payload = [];
+		payload.push(0x01) // set range to color
+		payload.push(start);
+		payload.push(end);
+		payload.push(r)
+		payload.push(g)
+		payload.push(b);
 
-console.log(payload);
-server.send(new Buffer(payload), 0, 6, 5000, "192.168.1.134", function(err) {
-  server.close();
-});
+		this.server.send(new Buffer(payload), 0 ,6, 5000 /* port? */, "192.168.1.134", function(err){
+			console.log("StripError", err.stack);
+			this.server.close();
+		}.bind(this))
+	}
+
+}
+
+module.exports = Strip;

@@ -321,3 +321,8 @@ httpServer.listen(port, function(){
 /** END OF HTTP SERVER **/
 
 
+
+
+var Strip = require("./strip.js");
+strip = new Strip();
+strip.setColor(0,30, 50, 90, 50);
