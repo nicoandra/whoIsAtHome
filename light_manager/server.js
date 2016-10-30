@@ -306,9 +306,6 @@ app.post("/people/setAsSleeping", function(req,res){
 	res.send(peopleTracker.getHomeStatus());
 })
 
-
-
-
 app.use('/', function(req, res, next){
 	res.redirect("/angular");
 });
@@ -321,8 +318,32 @@ httpServer.listen(port, function(){
 /** END OF HTTP SERVER **/
 
 
-
+/*
 
 var Strip = require("./strip.js");
-strip = new Strip();
-strip.setColor(0,30, 50, 90, 50);
+var strip = new Strip();
+// strip.setColor(0,30, 50, 90, 50);
+
+objectToWrite = {}
+
+var color = 0;
+
+
+
+setInterval(function(){
+
+	number = Math.random() * 2;
+	r = Math.sin(number) * 255;
+	g = Math.cos(number) * 255;
+	b = Math.tan(number) * 255;
+
+
+	for(l = 0; l < 31; l++){
+		objectToWrite[l] = [r,g,b];
+	}
+
+	strip.writeObject(objectToWrite);
+
+}, 2000)
+
+*/

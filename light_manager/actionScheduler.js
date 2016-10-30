@@ -8,6 +8,8 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 	this.lightManager = lightManager;
 	this.heaterManager = heaterManager;
 	this.wasNightOnLastCheck = false;
+	this.nightStartsAt = 16;
+	this.nightEndsAt = 8;
 
 
 	this.runActionBasedOnHomeStatus = function(){
@@ -49,16 +51,18 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 		console.log('Called homeStartedToBeAlone');
 
 		if(this.isNightTime()){
+			console.log("It's night")
 			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 80  })
 			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 80  })
 			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 80  })
 		} else {
+			console.log("It's day")
 			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : false })
 			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : false })
 			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : false })
 
 		}
-		this.heaterManager.setStatus(17);
+		this.heaterManager.setTemperature(17);
 	}
 
 
@@ -70,7 +74,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 
 	this.isNightTime = function(){
 		hour = moment().hour();
-		if(hour > 18 && hour < 6){
+		if(hour >= this.nightStartsAt || hour < this.nightEndsAt){
 			return true;
 		}
 		return false
@@ -85,6 +89,9 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
 
 	}
+
+
+	
 
 	this.start();
 }

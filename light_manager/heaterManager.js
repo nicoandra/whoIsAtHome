@@ -16,10 +16,11 @@ function HeaterManager(){
         return response;
     }
 
-    this.setStatus = function(temperature, whichHeater){
-        // if(whichHeater){}
-        
-
+    this.setTemperature = function(temperature, whichHeater){
+        var temperature = temperature;
+        this.heaters.forEach(function(heater, key){
+            heater.setTemperature(temperature, function(){})
+        })
     }
 
 }
