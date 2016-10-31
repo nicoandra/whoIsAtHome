@@ -2,7 +2,9 @@
  * Created by n_andrade on 10/27/2016.
  */
 
-function peopleTracker(){
+var peopleTracker = function(lightManager){
+
+    var lightManager = lightManager;
 
     this.home = {
         isAlone: true,
@@ -23,6 +25,7 @@ function peopleTracker(){
     this.setAsSleeping = function(name){
         this.people[name].status = "sleeping";
         this.people[name].arrivesIn = false;
+        lightManager.allLightsOff();
     }
 
     this.setAsAtHome = function(name){
@@ -54,7 +57,6 @@ function peopleTracker(){
         return false;
 
     }
-
 
 
     this.decideIfHomeIsAloneOrNot = function() {
@@ -127,4 +129,4 @@ function peopleTracker(){
 
 }
 
-module.exports = new peopleTracker();
+module.exports = peopleTracker;

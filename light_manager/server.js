@@ -3,8 +3,8 @@ var env = process.env.NODE_ENV || 'development'
 	, dgram = require('dgram')
 	, debug = require('debug')
 	, moment = require('moment')
-	, bodyParser = require('body-parser'),
-	peopleTracker = require('./peopleTracker.js'); 	// To parse POST requests;
+	, bodyParser = require('body-parser')
+	, PeopleTracker = require('./peopleTracker.js');
 
 
 var request = require('request');
@@ -17,6 +17,8 @@ var LightProgram = require("./lightProgram.js")
 LightManager = require("./lightManager.js");
 lightManager = new LightManager();	// With a LightManager, add lights
 
+var peopleTracker = new PeopleTracker(lightManager)
+
 /** Prepare heaters */
 HeaterManager = require('./heaterManager.js');
 heaterManager = new HeaterManager();
@@ -24,8 +26,6 @@ heaterManager = new HeaterManager();
 
 ActionScheduler = require('./actionScheduler.js');
 actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager);
-
-
 
 lightManager.addLight("officeLamp", "Office Lamp", /*ReceiverId */ 0,  /* GroupId */ 1, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* GroupId */ 2, /* hasRgb */ true, /* hasDimmer */ true);
@@ -56,6 +56,8 @@ normalOptions.addChildProgram(normalLow);
 normalOptions.addChildProgram(normalMed);
 normalOptions.addChildProgram(normalHigh);
 lightManager.addProgramInstance(normalOptions);
+
+
 delete normalOptions;
 
 
@@ -148,11 +150,12 @@ app.get("/angular/lights/getAvailablePrograms", function(req, res){
 
 })
 
-var messageBus = new EventEmitter()
-messageBus.setMaxListeners(100)
+
+var changeEventEmitter = new EventEmitter()
+changeEventEmitter.setMaxListeners(100)
 app.get("/angular/socketSimulator", function(req,res){
 
-	messageBus.on('message', function(data){
+	changeEventEmitter.on('message', function(data){
 		// console.log(req.ip, "Data which triggered the event", data)
 		try {
 			res.send(true)
@@ -181,6 +184,7 @@ app.get("/switchInterface", function(req, res){
 	}
 	res.send("OK");
 })
+
 
 
 app.get("/angular/system/getNotifications", function(req,res){

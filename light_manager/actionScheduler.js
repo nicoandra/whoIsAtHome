@@ -44,6 +44,14 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 			this.runActionBasedOnHomeStatus();
 			this.wasNightOnLastCheck = this.isNightTime();
 		}
+
+		if(this.isNightTime()){
+			hour = moment().hour();
+			if(hour >= 1 && hour < this.nightStartsAt){
+				this.lightManager.allLightsOff();
+			}
+		}
+
 	}
 
 	this.homeStartedToBeAlone = function(){
@@ -91,7 +99,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 	}
 
 
-	
+
 
 	this.start();
 }

@@ -13,7 +13,10 @@ function LightManager(){
     this.activeProgram = false;
 
     this.allLightsOff = function(){
-        Object.keys(this.lights).forEach(function(key){}.bind(this))
+        console.log("Turning all lights off")
+        Object.keys(this.lights).forEach(function(key){
+            this.setStatus(key, {onOff : false});
+        }.bind(this))
     }
 
     this.iterateBetweenChildPrograms = function(parentProgramKey){
@@ -30,9 +33,7 @@ function LightManager(){
             console.log("The selected program does not have child programs. Fallback to parent");
             this.runProgram(parentProgramKey);
         }
-
-        
-
+       
         indexOfProgramToRun = parentProgram.childPrograms.map(function(childProgram, index){
             console.log(childProgram.id , this.activeProgram, index);
             return childProgram.id == this.activeProgram ? index : 0;
