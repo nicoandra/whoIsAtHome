@@ -41,9 +41,10 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 
 	this.verifyIfNightStartedOrEnded = function(){
 		if(this.wasNightOnLastCheck != this.isNightTime()) {
-			this.runActionBasedOnHomeStatus();
+			// this.runActionBasedOnHomeStatus();
 			this.wasNightOnLastCheck = this.isNightTime();
 		}
+		
 
 		if(this.isNightTime()){
 			hour = moment().hour();

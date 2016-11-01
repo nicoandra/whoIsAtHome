@@ -235,7 +235,7 @@ app.post("/angular/runProgram", function(req, res){
 
 	[1, 500, 1000].forEach(function(delay){
 		setTimeout(function() {
-			messageBus.emit("message", req.body)
+			changeEventEmitter.emit("message", req.body)
 		}, delay);
 	})
 
@@ -319,35 +319,22 @@ httpServer.listen(port, function(){
 });
 
 
+
+
+const Fire = require("./fire.js");
+var fire = new Fire();
+console.log(fire);
 /** END OF HTTP SERVER **/
 
 
-/*
-
 var Strip = require("./strip.js");
 var strip = new Strip();
-// strip.setColor(0,30, 50, 90, 50);
-
-objectToWrite = {}
-
-var color = 0;
-
-
 
 setInterval(function(){
 
-	number = Math.random() * 2;
-	r = Math.sin(number) * 255;
-	g = Math.cos(number) * 255;
-	b = Math.tan(number) * 255;
-
-
-	for(l = 0; l < 31; l++){
-		objectToWrite[l] = [r,g,b];
+	for(group = 0; group < 30; group = group + 5){
+		values = fire.getValues();
+		// values[0] = 0;
+		strip.setColor(group, group+5, values[0], values[1], values[2]);
 	}
-
-	strip.writeObject(objectToWrite);
-
-}, 2000)
-
-*/
+}, 400)

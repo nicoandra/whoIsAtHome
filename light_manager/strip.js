@@ -34,14 +34,21 @@ function Strip(){
 
 		callback = typeof callback == "function" ? callback : function(){}
 
-		this.server.send(new Buffer(payload), 0 ,6, 5000 /* port? */, "192.168.1.134", function(err,res){
-			if(err){
-				console.log("StripError", err.stack);
-				this.server.close();
-			}
 
-			callback();
-		}.bind(this))
+		try {
+			this.server.send(new Buffer(payload), 0 ,6, 5000 /* port? */, "192.168.1.134", function(err,res){
+				if(err){
+					console.log("StripError", err.stack);
+					this.server.close();
+				}
+
+				console.log("sent");	
+				callback();
+			}.bind(this));
+		} catch(err){
+			console.log("Strip would have failed. Caught.");				
+		}
+
 	}
 
 	this.writeObject = function(toWrite){
