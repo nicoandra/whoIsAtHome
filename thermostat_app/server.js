@@ -2,11 +2,16 @@ var rpio = require('rpio');
 rpio.init({mapping: 'gpio'}); 
 
 
+const ShiftRegister = require("./shiftRegister.js");
+var shiftRegister = new ShiftRegister(rpio);
+
 kitchenPin = 18;
 livingPin = 23;
 
 rpio.open(kitchenPin, rpio.OUTPUT, rpio.LOW);
 rpio.open(livingPin, rpio.OUTPUT, rpio.LOW);
+
+
 
 
 var sensorLib = require('node-dht-sensor');	// https://github.com/momenso/node-dht-sensor
@@ -46,13 +51,14 @@ var sensor = {
 	}
 };
 
-function Heater(name, pinNumber) {
+function Heater(name, pinNumber, positionInShiftRegister) {
 	this.name = name;
 	this.humidity = -1;
 	this.currentTemp = 19.8;
 	this.desiredTemp = 20;
 	this.power = 0;
 	this.pinNumber = pinNumber;
+	this.positionInShiftRegister = positionInShiftRegister;
 
 	this.calculate = function(){
 		diff = this.currentTemp - this.desiredTemp;
@@ -84,14 +90,14 @@ function Heater(name, pinNumber) {
 
 	this.writeValue = function(){
 		// PWM Pulse width modulation
-		steps = 100;
-		for(i=0; i<steps ;i++){
-			bit = (i < this.power);
+		steps = 10;
+		for(i=0; i<steps; i++){
+			bit = (i * 10 < this.power);
 
 			setTimeout(function(bit){
 				console.log('Setting power', this.pinNumber, this.power, bit);
-				rpio.write(this.pinNumber, bit ? 1 : 0);
-			}.bind(this, bit), i*50);
+				shiftRegister.setValueInArray(this.positionInShiftRegister, bit);
+			}.bind(this, bit), i*500);
 		}
 	}
 
@@ -129,7 +135,7 @@ app.get('/get/:room/', function(req, res){
 		currentTemperature: heaters[room].currentTemp,
 		desiredTemperature : heaters[room].desiredTemp, 
 		power : heaters[room].power,
-		currentHumidity: 
+		currentHumidity: heaters[room].humidity
 	});
 	console.log('Getting stats for ', room);
 
@@ -166,3 +172,29 @@ var PORT = 80;
 app.listen(PORT, function(){
 	console.log('Thermostat listening at port', PORT);
 })
+
+
+/*
+setInterval(
+	function(){
+		shiftRegister.writeBuffer(function(){})
+	},
+	500
+)
+
+*/
+
+shiftRegister.writeBuffer(function(){})
+
+for(i = 0; i<8;i++){
+	shiftRegister.setValueInArray(i, 1);
+}
+
+shiftRegister.writeBuffer(function(){})
+
+var cnt = 0;
+setInterval(function(){
+	shiftRegister.addPin(cnt++)
+	if(cnt > 1) cnt = 0
+
+}, 1000)
