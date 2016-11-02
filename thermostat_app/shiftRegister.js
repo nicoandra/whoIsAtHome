@@ -2,7 +2,7 @@ function ShiftRegister(rpio, length){
 
 	var delay = 0;
 
-	this.data = Array(length).fill(0);
+	this.data = new Array(8).fill(0)
 	// this.data = [0,0,0,0,0,0,0,0]
 	
 	this.pinValues = {
@@ -90,6 +90,8 @@ function ShiftRegister(rpio, length){
 
 		this.setPin("RCLK", 0);
 		this.data.forEach(function(value, key){
+			keyToRead = this.data.length - (key + 1)
+			value = this.data[keyToRead];
 			value = value == 1 ? rpio.HIGH : value;
 			value = value == 0 ? rpio.LOW : value;
 			this.sendBit(value);
