@@ -64,28 +64,10 @@ function Heater(name, pinNumber, positionInShiftRegister) {
 		diff = this.currentTemp - this.desiredTemp;
 		// console.log(this.name, this.currentTemp, this.desiredTemp, diff);
 
-		this.power = 30;
-		return ;
-
-		if(diff >= .5){
-			this.power = 0;
-			return ;
-		}
-
-		if(diff < -1){
-			this.power = 100;
-			return ;
-		}
-
-		if(diff < -.1){
-			this.power = 30;
-			return ;
-		}
-
-		if(diff < .5){
-			this.power = 70;
-			return ;
-		}
+		if(diff >= .5){ this.power = 0; return ; }
+		if(diff < -1){ this.power = 100; return ; }
+		if(diff < -.1){ this.power = 30; return ; }
+		if(diff < .5){ this.power = 70; return ; }
 
 		this.power = 50;
 	}
@@ -98,7 +80,7 @@ function Heater(name, pinNumber, positionInShiftRegister) {
 			bit = (i * 10 < this.power);
 
 			setTimeout(function(bit){
-				console.log('Setting power', this.pinNumber, this.power, bit);
+				// console.log('Setting power', this.pinNumber, this.power, bit);
 				shiftRegister.setValueInArray(this.positionInShiftRegister, bit);
 			}.bind(this, bit), i*500);
 		}
