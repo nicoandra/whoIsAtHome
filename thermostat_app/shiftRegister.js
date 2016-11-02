@@ -1,6 +1,7 @@
 function ShiftRegister(rpio, length){
 
 	var delay = 0;
+	this.sleepTime = 1;
 
 	this.data = new Array(8).fill(0)
 	// this.data = [0,0,0,0,0,0,0,0]
@@ -23,18 +24,19 @@ function ShiftRegister(rpio, length){
 
 	this.setPin = function(pinId, value){
 
-		if(value === 0){
+		if(value == 0){
 			value = rpio.LOW;
 		}
 
-		if(value === 1){
+		if(value == 1){
 			value = rpio.HIGH;
 		}
 
 
 		this.pinValues[pinId] = value;
 		rpio.write(this.pinNumbers[pinId], this.pinValues[pinId]);
-		console.log("Pin values:", this.pinValues);
+		rpio.msleep(this.sleepTime)
+		// console.log("Pin values:", this.pinValues);
 	}
 
 	this.init = function(){
@@ -42,76 +44,91 @@ function ShiftRegister(rpio, length){
 			rpio.open(this.pinNumbers[pinName], rpio.OUTPUT, this.pinValues[pinName]);
 			// this.setPin(pinName, this.pinValues[pinName]);
 		}.bind(this));
-
 		
-		this.setPin("SRCLR", 1);
+		this.setPin("SRCLR", 1);	// SRCLEAR Should be pulled HIGH
+
 		this.disableOutput();
+		this.data.fill(rpio.LOW);
 		this.writeBuffer();
+
+		this.data.fill(rpio.HIGH);
+		this.writeBuffer();
+
+		this.data.fill(rpio.LOW);
+		this.writeBuffer();
+
 		this.enableOutput();
+
 		this.setPin("RCLK", 0);
 		
 	}
 
 	this.enableOutput = function(){
-		this.setPin("OE", 0);
+		this.setPin("OE", 0)
+		rpio.msleep(this.sleepTime);
 	}
 
 	this.disableOutput = function(){
-		this.setPin("OE", 1);
+		this.setPin("OE", 1)
+		rpio.msleep(this.sleepTime);
 	}
 
 	this.sendBit = function(value){
-		
-		// this.setPin("RCLK", 0);
-
 		this.setPin("SRCLK", 0);
-		console.log("Ser set to", value)
+		// console.log("Ser set to", value)
 		this.setPin("SER", value);
 		this.setPin("SRCLK", 1);
-
-		// this.setPin("RCLK", 1);
-
+		
 	}
 
-
+	/*
 	this.addPin = function(value){
 		this.setPin("RCLK", 0);
 		this.sendBit(value);		
 		this.setPin("RCLK", 1);
 	}
+	*/
 
 
 	this.writeBuffer = function(callback){
 
 		callback = typeof callback == "function" ? callback : function(){}
-		position = 0;
 
 		this.setPin("RCLK", 0);
+
+		var dataSent = [];
+
+		num = Math.random() < .5 ? rpio.HIGH : rpio.LOW;
+		this.data.fill(num);
+
+
 		this.data.forEach(function(value, key){
-			keyToRead = this.data.length - (key + 1)
-			value = this.data[keyToRead];
-			value = value == 1 ? rpio.HIGH : value;
-			value = value == 0 ? rpio.LOW : value;
+/*			keyToRead = this.data.length - (key + 1)
+			value = this.data[keyToRead];*/
+			/*value = value == 1 ? rpio.HIGH : value;
+			value = value == 0 ? rpio.LOW : value;*/
 			this.sendBit(value);
+			dataSent.push(value);
 		}.bind(this))
 		
 		this.setPin("RCLK", 1);
+
+		console.log(this.data, dataSent);
+
 		callback();
 	}
-
 
 
 	this.setValueInArray = function(position, value){
 		if(position < 0) throw new Exception("Position is too low");
 		if(position >= this.data.length) throw new Exception("Position is too high");
 
+		value = value == 0 ? rpio.LOW : rpio.HIGH;
+
 		this.data[position] = value;
 	}
 
 	this.init();
-	this.disableOutput();
-	this.enableOutput();	
-
 }
 
 

@@ -47,7 +47,7 @@ var sensor = {
 	start: function(){
 		setTimeout(function() {
 			this.read();
-		}.bind(this), 2000);
+		}.bind(this), 3000);
 	}
 };
 
@@ -63,6 +63,9 @@ function Heater(name, pinNumber, positionInShiftRegister) {
 	this.calculate = function(){
 		diff = this.currentTemp - this.desiredTemp;
 		// console.log(this.name, this.currentTemp, this.desiredTemp, diff);
+
+		this.power = 30;
+		return ;
 
 		if(diff >= .5){
 			this.power = 0;
@@ -113,8 +116,8 @@ function Heater(name, pinNumber, positionInShiftRegister) {
 }
 
 var heaters = {
-	kitchen : new Heater('kitchen', 18),
-	living : new Heater('living', 23)
+	kitchen : new Heater('kitchen', 18, 2),
+	living : new Heater('living', 23, 4)
 }
 
 heaters.kitchen.start();
@@ -179,5 +182,5 @@ setInterval(
 	function(){
 		shiftRegister.writeBuffer(function(){})
 	},
-	500
+	250
 )
