@@ -43,15 +43,13 @@ function ShiftRegister(rpio, length){
 			// this.setPin(pinName, this.pinValues[pinName]);
 		}.bind(this));
 
-		this.setPin("SRCLR", 1);
-
-		this.enableOutput();
-
 		
+		this.setPin("SRCLR", 1);
+		this.disableOutput();
+		this.writeBuffer();
+		this.enableOutput();
 		this.setPin("RCLK", 0);
 		
-
-		this.writeBuffer();
 	}
 
 	this.enableOutput = function(){
