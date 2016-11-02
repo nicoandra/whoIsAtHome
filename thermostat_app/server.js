@@ -20,11 +20,11 @@ var sensor = {
 	sensors: [ {
 			name: "kitchen",
 			type: 22,
-			pin: 4
+			pin: 25
 		}, {
 			name: "living",
 			type: 22,
-			pin: 17
+			pin: 24
 		}
 	],
 
@@ -143,6 +143,11 @@ app.get('/get/:room/', function(req, res){
 	console.log('Getting stats for ', room);
 
 });
+
+
+app.get('/light/:lightNumber/:lightStatus', function(req, res){
+	console.log(req.params);
+})
 
 app.get('/set/:room/', function(req, res){
 	room = req.params.room;

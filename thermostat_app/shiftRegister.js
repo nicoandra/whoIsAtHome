@@ -81,25 +81,21 @@ function ShiftRegister(rpio, length){
 		
 	}
 
-	/*
 	this.addPin = function(value){
 		this.setPin("RCLK", 0);
 		this.sendBit(value);		
 		this.setPin("RCLK", 1);
 	}
-	*/
-
 
 	this.writeBuffer = function(callback){
-
 		callback = typeof callback == "function" ? callback : function(){}
 
 		this.setPin("RCLK", 0);
 
 		var dataSent = [];
 
-		num = Math.random() < .5 ? rpio.HIGH : rpio.LOW;
-		this.data.fill(num);
+		/*num = Math.random() < .5 ? rpio.HIGH : rpio.LOW;
+		this.data.fill(num);*/
 
 
 		this.data.forEach(function(value, key){
