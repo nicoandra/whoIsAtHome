@@ -2,8 +2,8 @@ function ShiftRegister(rpio, length){
 
 	var delay = 0;
 
-	// this.data = Array(length).fill(0);
-	this.data = [0,0,0,0,0,0,0,0]
+	this.data = Array(length).fill(0);
+	// this.data = [0,0,0,0,0,0,0,0]
 	
 	this.pinValues = {
 		SER : 0, // (Serial) Input for the next pin that gets shifted in.
