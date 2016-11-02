@@ -3,7 +3,7 @@ rpio.init({mapping: 'gpio'});
 
 
 const ShiftRegister = require("./shiftRegister.js");
-var shiftRegister = new ShiftRegister(rpio);
+var shiftRegister = new ShiftRegister(rpio, 8);
 
 kitchenPin = 18;
 livingPin = 23;
@@ -174,27 +174,10 @@ app.listen(PORT, function(){
 })
 
 
-/*
+
 setInterval(
 	function(){
 		shiftRegister.writeBuffer(function(){})
 	},
 	500
 )
-
-*/
-
-shiftRegister.writeBuffer(function(){})
-
-for(i = 0; i<8;i++){
-	shiftRegister.setValueInArray(i, 1);
-}
-
-shiftRegister.writeBuffer(function(){})
-
-var cnt = 0;
-setInterval(function(){
-	shiftRegister.addPin(cnt++)
-	if(cnt > 1) cnt = 0
-
-}, 1000)
