@@ -370,6 +370,7 @@
 
             $scope.updateInterfaceWithResponse = function(response){
                 $scope.lights = response.lights;
+                $scope.homeStatus = response.people;
 
                 isAnyLightOn = Object.keys($scope.lights).reduce(function(prevVal,currVal,c,d){
                     currVal = $scope.lights[currVal]

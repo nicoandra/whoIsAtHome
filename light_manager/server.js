@@ -129,7 +129,10 @@ app.get("/angular", function(req,res){
 
 
 app.get("/angular/lights/getInterfaceOptions", function(req, res){
-	res.send(lightManager.getInterfaceOptions())
+	lights = lightManager.getInterfaceOptions();
+	people = peopleTracker.getHomeStatus();
+
+	res.send({'lights' : lights.lights , 'people' : people});
 })
 
 app.get("/angular/lights/getStatus", function(req, res){
