@@ -161,11 +161,16 @@ function Light(name, displayName, socket){
     this.sendQueue = function(){
         if(this.socket && this.commandQueue.length){
             toSend = this.commandQueue.shift();
-            this.socket.queueStuff(toSend);
+
+            if(this.name == 'kitchenCountertop'){
+                // For Kitchen Countertop, queue commands many times!
+                this.socket.queueStuff(toSend);
+                this.socket.queueStuff(toSend);
+                this.socket.queueStuff(toSend);
+            }
         }
     }
 
-    self = this;
     setInterval(this.sendQueue.bind(this), 50);
 
     this.on = function(){
@@ -285,7 +290,7 @@ function Light(name, displayName, socket){
 
     this.ocean = function(step){
         this.commandQueue = [];
-        var self = this;
+
         if(!step){
             if(this.color =='ocean'){
                 // Return immediately to not pile up timeouts
@@ -312,15 +317,15 @@ function Light(name, displayName, socket){
                 if(this.color == 'ocean'){
                     this.ocean(step);
                 }
-            }.bind(self).bind(step), Math.random() * 2000);
+            }.bind(this).bind(step), Math.random() * 2000);
         }
     }
 
     this.fire = function(step){
         this.commandQueue = [];
-        var self = this;
+
         if(!step){
-            if(self.color == 'fire'){
+            if(this.color == 'fire'){
                 // Return immediately to not pile up timeouts
                 return ;
             }
@@ -347,15 +352,15 @@ function Light(name, displayName, socket){
                 if(this.color == 'fire'){
                     this.fire(step);
                 }
-            }.bind(self).bind(step), 100);
+            }.bind(this).bind(step), 100);
         }
     }
 
     this.pinks = function(step){
         this.commandQueue = [];
-        var self = this;
+
         if(!step){
-            if(self.color == 'pinks'){
+            if(this.color == 'pinks'){
                 // Return immediately to not pile up timeouts
                 return ;
             }
@@ -378,13 +383,13 @@ function Light(name, displayName, socket){
                 if(this.color == 'pinks'){
                     this.pinks(step);
                 }
-            }.bind(self).bind(step), 2500);
+            }.bind(this).bind(step), 2500);
         }
     }
 
     this.greens = function(step){
         this.commandQueue = [];
-        var self = this;
+
         if(!step){
             if(this.color == 'greens'){
                 // Return immediately to not pile up timeouts
@@ -411,7 +416,7 @@ function Light(name, displayName, socket){
                 if(this.color == 'greens'){
                     this.greens(step);
                 }
-            }.bind(self).bind(step), 2500);
+            }.bind(this).bind(step), 2500);
         }
     }
 }
