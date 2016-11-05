@@ -4,7 +4,8 @@ var env = process.env.NODE_ENV || 'development'
 	, debug = require('debug')
 	, moment = require('moment')
 	, bodyParser = require('body-parser')
-	, PeopleTracker = require('./peopleTracker.js');
+	, PeopleTracker = require('./peopleTracker.js')
+	, notificationQueue = [];
 
 
 var request = require('request');
@@ -76,8 +77,14 @@ lightManager.addProgramInstance(romantic)
 
 
 /** Prepare heaters */
-heaterManager.addHeater('Kitchen', 'kitchen', '192.168.1.125');
-heaterManager.addHeater('Living', 'living', '192.168.1.125');
+var notificationEventEmitter = new EventEmitter()
+notificationEventEmitter.setMaxListeners(100);
+notificationEventEmitter.on('message', function(data){
+	notificationQueue.unshift(data);
+})
+
+heaterManager.addHeater('Kitchen', 'kitchen', '192.168.1.125', { eventEmitter : notificationEventEmitter });
+heaterManager.addHeater('Living', 'living', '192.168.1.125', { eventEmitter : notificationEventEmitter });
 
 
 /** HTTP SERVER **/
@@ -153,7 +160,6 @@ app.get("/angular/lights/getAvailablePrograms", function(req, res){
 
 })
 
-
 var changeEventEmitter = new EventEmitter()
 changeEventEmitter.setMaxListeners(100)
 app.get("/angular/socketSimulator", function(req,res){
@@ -197,9 +203,13 @@ app.get("/angular/system/getNotifications", function(req,res){
 		type = "danger";
 	}
 
-	toSend = [
+	var toSend = [
 		{ date : new Date(), type: type, title:"Uptime", text: "Uptime is " + moment.duration(uptime, 'minutes').humanize()}
 	];
+
+	console.log(toSend);
+
+	notificationQueue.forEach(function(a){ toSend.unshift(a); })
 
 	res.send(toSend)
 })
@@ -270,6 +280,12 @@ app.get("/cameras/getList", function(req, res){
 	])
 })
 
+
+
+app.get('/jquery-1.8.3.min.js', function(req, res){
+	res.sendFile("/home/nico/code/whoIsAtHome/light_manager/bower_components/jquery/dist/jquery.js");
+})
+
 app.get("/cameras/watch/:cameraName", function(req, res){
 
 	cameraConfig = require("./config/restricted/cameras.js"),
@@ -313,11 +329,13 @@ app.post("/people/setAsSleeping", function(req,res){
 	res.send(peopleTracker.getHomeStatus());
 })
 
+
+
 app.use('/', function(req, res, next){
 	res.redirect("/angular");
 });
 
-httpServer.listen(port, function(){
+httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
 	console.log('http interface listening on port '+port);	
 });
 
@@ -341,3 +359,4 @@ setInterval(function(){
 		strip.setColor(group, group+5, values[0], values[1], values[2]);
 	}
 }, 400)
+

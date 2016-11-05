@@ -2,8 +2,8 @@ Heater = require('./heater.js');
 
 function HeaterManager(){
     this.heaters = [];
-    this.addHeater = function(name, id, ip){
-        newHeater = new Heater(name, id, ip);
+    this.addHeater = function(name, id, ip, options){
+        newHeater = new Heater(name, id, ip, options);
         this.heaters.push(newHeater);
     }
 

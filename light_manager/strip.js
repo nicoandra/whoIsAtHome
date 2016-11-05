@@ -3,26 +3,22 @@ const dgram = require('dgram');
 
 function Strip(){
 
-	this.server = dgram.createSocket('udp4');
-	this.server.on('error', (err) => {
-	  console.log(`server error:\n${err.stack}`);
-	  this.server.close();
-	});
+	this.init = function(){
+		this.server = dgram.createSocket('udp4');
+		this.server.on('error', (err) => {
+		  console.log(`server error:\n${err.stack}`);
+		  this.server.close();
+		  this.init();
+		});
 
-	this.server.on('message', (msg, rinfo) => {
-	  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
-	});
+		this.server.on('message', (msg, rinfo) => {
+	  		console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+		});
+	}
 
-	// server.on('listening', () => {
-	//   var address = server.address();
-	//   console.log(`server listening ${address.address}:${address.port}`);
-	// });
 
-	//server.bind(process.argv[2]);
-	// server listening 0.0.0.0:41234
-
-	//send some data
-
+	this.init();
+	
 	this.setColor = function(start, end, r, g, b, callback){
 		var payload = [];
 		payload.push(0x01) // set range to color
@@ -40,9 +36,10 @@ function Strip(){
 				if(err){
 					console.log("StripError", err.stack);
 					this.server.close();
+					this.init();
 				}
 
-				console.log("sent");	
+//				console.log("sent");	
 				callback();
 			}.bind(this));
 		} catch(err){
