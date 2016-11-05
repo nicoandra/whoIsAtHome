@@ -80,7 +80,18 @@ lightManager.addProgramInstance(romantic)
 var notificationEventEmitter = new EventEmitter()
 notificationEventEmitter.setMaxListeners(100);
 notificationEventEmitter.on('message', function(data){
+	
+	type = "normal";
+	switch(data.type){
+		case 'heaters:heater:wentDown': type = 'danger'; message = data.ref + " heater went down"; break;
+		case 'heaters:heater:cameBack': type = 'success'; message = data.ref + " heater came back"; break;
+		default: return;
+	}
+
+	var toSend = { date : new Date(), type: type, title:"Heaters", text: message }
 	notificationQueue.unshift(data);
+
+
 })
 
 heaterManager.addHeater('Kitchen', 'kitchen', '192.168.1.125', { eventEmitter : notificationEventEmitter });
@@ -139,7 +150,7 @@ app.get("/angular/lights/getInterfaceOptions", function(req, res){
 	lights = lightManager.getInterfaceOptions();
 	people = peopleTracker.getHomeStatus();
 
-	res.send({'lights' : lights.lights , 'people' : people});
+	res.send({'lights' : lights.lights , 'people' : people, 'programs' : lights.programs});
 })
 
 app.get("/angular/lights/getStatus", function(req, res){
@@ -299,8 +310,13 @@ app.get("/cameras/watch/:cameraName", function(req, res){
 			"Content-Type":"multipart/x-mixed-replace;boundary=ZoneMinderFrame"
 		});
 
-		request.get("http://"+cameraConfig.host+"/cgi-bin/nph-zms?mode=jpeg&scale=100&maxfps=10&monitor="+cameraName+"&connkey=574247&rand=1477156808").pipe(res)
-		return ;
+		try {
+			request.get("http://"+cameraConfig.host+"/cgi-bin/nph-zms?mode=jpeg&scale=100&maxfps=10&monitor="+cameraName+"&connkey=574247&rand=1477156808").pipe(res)
+			return ;
+		} catch(excp){
+			console.log("Cameras::ExceptionCaught", excp)
+		}
+
 	}
 	res.send(cameraName + "Invalid camera");
 	return;
