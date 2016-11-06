@@ -16,6 +16,40 @@ function Heater(name, id, ip, options){
         return "http://" + this.ip + '/' + method +'/' + this.id;
     }
 
+
+    this.ensureTemperatureIsSet = function(desiredTemperature, callback){
+        this.desiredTemp = desiredTemperature;
+
+        this.setTemperature(this.desiredTemp, function(err, info){
+            if(err){
+
+                setTimeout(function(){
+                    this.ensureTemperatureIsSet(this.desiredTemp, callback);
+                    console.log("Heaters:: Watch Out! Trying to set temp to", this.desiredTemp, "again on", this.id)
+                }.bind(this), 30000);
+
+                return ;
+            }
+
+
+            if(info.desiredTemperature == this.desiredTemp){
+                callback(false, info);
+                return ;
+            } else {
+                // The desired temperature in the heater is not the one I expected. Retry.
+                setTimeout(function(){
+                    this.ensureTemperatureIsSet(this.desiredTemp, callback);
+                    console.log("Heaters:: Watch Out! Trying to set temp to", this.desiredTemp, "again on", this.id)
+                }.bind(this), 30000);
+
+                return ;
+
+            }
+
+        }.bind(this));
+    }
+
+
     this.setTemperature = function(desiredTemperature, callback){
 
         this.desiredTemperature = desiredTemperature;
