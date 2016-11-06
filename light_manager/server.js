@@ -79,7 +79,7 @@ lightManager.addProgramInstance(romantic)
 /** Prepare heaters */
 var notificationEventEmitter = new EventEmitter()
 notificationEventEmitter.setMaxListeners(100);
-notificationEventEmitter.on('message', function(data){
+notificationEventEmitter.on('heaters', function(data){
 	
 	type = "normal";
 	switch(data.type){
@@ -89,9 +89,20 @@ notificationEventEmitter.on('message', function(data){
 	}
 
 	var toSend = { date : new Date(), type: type, title:"Heaters", text: message }
-	notificationQueue.unshift(data);
+	notificationQueue.unshift(toSend);
+})
 
+notificationEventEmitter.on('strips', function(data){
+	
+	type = "normal";
+	switch(data.type){
+		case 'strips:strip:notReachable': type = 'danger'; message = data.ref + " strip went down"; break;
+		case 'strips:strip:cameBack': type = 'success'; message = data.ref + " strip came back"; break;
+		default: return;
+	}
 
+	var toSend = { date : new Date(), type: type, title:"Light Strips", text: message }
+	notificationQueue.unshift(toSend);
 })
 
 heaterManager.addHeater('Kitchen', 'kitchen', '192.168.1.125', { eventEmitter : notificationEventEmitter });
@@ -311,6 +322,7 @@ app.get("/cameras/watch/:cameraName", function(req, res){
 		});
 
 		try {
+			res.send("Not Implemented");
 			request.get("http://"+cameraConfig.host+"/cgi-bin/nph-zms?mode=jpeg&scale=100&maxfps=10&monitor="+cameraName+"&connkey=574247&rand=1477156808").pipe(res)
 			return ;
 		} catch(excp){
@@ -366,6 +378,7 @@ console.log(fire);
 
 var Strip = require("./strip.js");
 var strip = new Strip();
+strip.setEventEmitter(notificationEventEmitter);
 
 setInterval(function(){
 

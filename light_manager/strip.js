@@ -3,6 +3,29 @@ const dgram = require('dgram');
 
 function Strip(){
 
+	this.eventEmitter = null;
+	this.isStripUp = true;
+
+	this.setEventEmitter = function(eventEmitter){
+		this.eventEmitter = eventEmitter;
+	}
+
+
+	this.setStatusOk = function(isStripUp){
+		if(this.isStripUp == isStripUp){
+			return false;
+		}
+
+		this.isStripUp = isStripUp;
+		if(this.isStripUp){
+			this.eventEmitter.emit("strips" , {type : "strips:strip:cameBack", 'ref' : "TheOnlyStrip" , 'data' : { 'when' : new Date()} });	
+		} else {
+			this.eventEmitter.emit("strips" , {type : "strips:strip:notReachable", 'ref' : "TheOnlyStrip" , 'data' : { 'when' : new Date()} });
+		}
+
+		return true;
+	}
+
 	this.init = function(){
 		this.server = dgram.createSocket('udp4');
 		this.server.on('error', (err) => {
@@ -34,18 +57,18 @@ function Strip(){
 		try {
 			this.server.send(new Buffer(payload), 0 ,6, 5000 /* port? */, "192.168.1.134", function(err,res){
 				if(err){
-					console.log("StripError", err.stack);
+					this.setStatusOk(false);
 					this.server.close();
 					this.init();
+				} else {
+					this.setStatusOk(true);
 				}
 
-//				console.log("sent");	
 				callback();
 			}.bind(this));
 		} catch(err){
 			console.log("Strip would have failed. Caught.");				
 		}
-
 	}
 
 	this.writeObject = function(toWrite){

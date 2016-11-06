@@ -56,14 +56,13 @@ function Heater(name, id, ip, options){
                 this.uptime = parseFloat(info.uptime);
                 this.power = parseFloat(info.power);
                 this.downSince = false;
-                this.eventEmitter.emit("asdasdasdasd!!");
-                this.eventEmitter.emit("message" , {type : "heaters:heater:cameBack", 'ref' : this.id , 'data' : { 'when' : new Date() } });
+                this.eventEmitter.emit("heaters" , {type : "heaters:heater:cameBack", 'ref' : this.id , 'data' : { 'when' : new Date() } });
 
                 callback(false, info);
             } else {
                 if(this.downSince == false){
                     this.downSince = new Date();
-                    this.eventEmitter.emit("message" , {type : "heaters:heater:wentDown", 'ref' : this.id , 'data' : { 'when' : this.downSince } });
+                    this.eventEmitter.emit("heaters" , {type : "heaters:heater:wentDown", 'ref' : this.id , 'data' : { 'when' : this.downSince } });
                 }
                 callback(error, false)
             }
