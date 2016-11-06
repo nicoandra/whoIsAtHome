@@ -19,7 +19,7 @@ function HeaterManager(){
     this.setTemperature = function(temperature, whichHeater){
         var temperature = temperature;
         this.heaters.forEach(function(heater, key){
-            heater.setTemperature(temperature, function(){})
+            heater.ensureTemperatureIsSet(temperature, function(){})
         })
     }
 
