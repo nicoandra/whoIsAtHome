@@ -15,7 +15,7 @@ rpio.open(livingPin, rpio.OUTPUT, rpio.LOW);
 
 
 var sensorLib = require('node-dht-sensor');	// https://github.com/momenso/node-dht-sensor
-
+/*
 var sensor = {
 	sensors: [ {
 			name: "kitchen",
@@ -51,6 +51,51 @@ var sensor = {
 	}
 };
 
+*/
+
+
+
+function Sensor(name, type, pin){
+	this.name = name;
+	this.type = type;
+	this.pin = pin;
+	this.temperature = 0;
+	this.humidity = 0;
+	this.error = false;
+
+	this.read = function(){
+		try {
+			var b = sensorLib.read(this.type, this.pin);
+			this.temperature = b.temperature.toFixed(2);
+			this.humidity = b.humidity.toFixed(2);
+			this.error = false;
+		} catch (excep){
+			this.error = new Date();
+		}
+	}
+
+	this.start = function(){
+		setTimeout(function(){
+			this.read()
+		}.bind(this), 10000)
+	}
+
+	this.getTemperature = function(){
+		return this.temperature;
+	}
+
+	this.getHumidity = function(){
+		return this.humidity;
+	}
+
+	this.read();
+	this.start();
+}
+
+
+var kitchenSensor = new Sensor("Kitchen", 22, 25);
+var livingSensor = new Sensor("Living", 22, 24);
+
 function Heater(name, pinNumber, positionInShiftRegister) {
 	this.name = name;
 	this.humidity = -1;
@@ -59,6 +104,14 @@ function Heater(name, pinNumber, positionInShiftRegister) {
 	this.power = 0;
 	this.pinNumber = pinNumber;
 	this.positionInShiftRegister = positionInShiftRegister;
+
+	this.setCurrentTemperature = function(temperature){
+		this.currentTemp = temperature;
+	}
+
+	this.setDesiredTemperature = function(temperature){
+		this.desiredTemp = temperature;
+	}
 
 	this.calculate = function(){
 		diff = this.currentTemp - this.desiredTemp;
@@ -71,6 +124,7 @@ function Heater(name, pinNumber, positionInShiftRegister) {
 
 		this.power = 50;
 	}
+
 
 
 	this.writeValue = function(){
@@ -106,7 +160,6 @@ heaters.kitchen.start();
 heaters.living.start();
 
 
-sensor.start();
 
 
 var express = require('express'),
@@ -114,15 +167,19 @@ app = express();
 app.get('/get/:room/', function(req, res){
 	room = req.params.room;
 
-	res.json({
-		response: 'OK', 
-		name : room,
-		currentTemperature: heaters[room].currentTemp,
-		desiredTemperature : heaters[room].desiredTemp, 
-		power : heaters[room].power,
-		currentHumidity: heaters[room].humidity
-	});
-	console.log('Getting stats for ', room);
+	try {
+		res.json({
+			response: 'OK', 
+			name : room,
+			currentTemperature: heaters[room].currentTemp,
+			desiredTemperature : heaters[room].desiredTemp, 
+			power : heaters[room].power,
+			currentHumidity: heaters[room].humidity
+		});
+		console.log('Getting stats for ', room);
+	} catch(exception){
+		res.json({response: "KO", 'exception' : exception, "availableHeaters" : Object.keys(heaters)});
+	}
 
 });
 
@@ -130,6 +187,8 @@ app.get('/get/:room/', function(req, res){
 app.get('/light/:lightNumber/:lightStatus', function(req, res){
 	console.log(req.params);
 })
+
+
 
 app.get('/set/:room/', function(req, res){
 	room = req.params.room;
@@ -144,7 +203,7 @@ app.get('/set/:room/', function(req, res){
 		return ;
 	}
 
-	heaters[room].desiredTemp = desiredTemperature;
+	heaters[room].setDesiredTemperature(desiredTemperature);
 
 	res.json({
 		response: 'OK',
@@ -157,6 +216,15 @@ app.get('/set/:room/', function(req, res){
 
 	console.log('Setting temperature for', req.params.room, 'to', heaters[room].desiredTemp);
 });
+
+
+setInterval(function(){
+	heaters.kitchen.setCurrentTemperature(kitchenSensor.getTemperature());
+	heaters.living.setCurrentTemperature(livingSensor.getTemperature())
+
+}, 30000);
+
+
 
 var PORT = 80;
 app.listen(PORT, function(){
