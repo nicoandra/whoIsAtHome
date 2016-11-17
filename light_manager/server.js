@@ -379,7 +379,7 @@ console.log(fire);
 var Strip = require("./strip.js");
 var strip = new Strip();
 strip.setEventEmitter(notificationEventEmitter);
-
+/*
 setInterval(function(){
 
 	for(group = 0; group < 30; group = group + 5){
@@ -389,3 +389,14 @@ setInterval(function(){
 	}
 }, 400)
 
+*/
+
+
+// strip.fillStrip(fire.getGroupedValues())
+/*
+setInterval(function(){
+	strip.updateStrip(fire.getGroupedValues())
+}, 1000)
+*/
+
+// fire.lavaStrip(strip);

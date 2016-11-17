@@ -2,6 +2,8 @@
  * Created by n_andrade on 10/27/2016.
  */
 
+var ping = require ("ping");
+
 var peopleTracker = function(lightManager){
 
     var lightManager = lightManager;
@@ -12,7 +14,15 @@ var peopleTracker = function(lightManager){
     }
 
     this.people = {
-        'nico' : { name : 'Nic', ips: ['192.68.1.112'], status : 'away', arrivesIn : false, lastTimeSeen : false }
+        'nico' : { name : 'Nic', ips: [
+            {'ip': '192.168.1.111', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600 , timeoutId : false} ,
+            {'ip': '192.168.1.112', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600 , timeoutId : false} ,
+        ], status : 'away', arrivesIn : false, lastTimeSeen : false },
+
+        'pris' : { name : 'Pris', ips: [
+            {'ip': '192.168.1.115', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600 , timeoutId : false} ,
+            {'ip': '192.168.1.116', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600 , timeoutId : false} , // iPad?
+        ], status : 'away', arrivesIn : false, lastTimeSeen : false }        
     }
 
     this.peopleAtHome = {}
@@ -124,8 +134,85 @@ var peopleTracker = function(lightManager){
 
     // Test home alone state every 5 minutes
     setInterval(function(){
-        this.decideIfHomeIsAloneOrNot()
+            this.decideIfHomeIsAloneOrNot()
     }.bind(this), 60 * 5 * 1000)
+
+
+    setInterval(function(){
+        this.startPingIntervals();
+    }.bind(this), 5000)
+
+
+    this.startPingIntervals = function(){
+
+        Object.keys(this.people).forEach(function(name){
+
+            this.people[name].ips.forEach(function(device){
+
+                if(device.timeoutId){
+                    // If the device already has a timeout ID, skip
+                    console.log("Skipping", device.ip);
+                    return ;
+                }
+
+                pingThisIp = function(){
+                    // console.log("Voy a pinguear", this);
+
+                    var options = {
+                        ttl: 64,
+                        timeout: 2000, // In seconds
+                        extra: ["-i 2"]
+                    };
+
+                    var host = this.ip;
+
+                    // Running ping with some default argument gone
+                    ping.sys.probe(host, function(isAlive){
+                        if(isAlive){
+                            this.status = "online";
+                            this.lastTimeSeen = new Date();
+                         } else {
+                            this.status = "offline";
+                        }
+
+                        var msg = isAlive ? 'host ' + host + ' is alive' : 'host ' + host + ' is dead';
+                        // console.log(msg);
+                        this.timeoutId = false;
+                    }.bind(this), options);
+                    
+                }
+
+
+                // Device looks like:
+                // {'ip': '192.68.1.115', 'status' : 'offline', 'lastTimeSeen' = false , 'scanIntervalTime' : 1800 } ,
+
+                // If never seen, force scan
+                var doScan = (device.lastTimeSeen == false);
+
+                // If the device is offline, do scan every 5 minutes;
+                if(!doScan && device.status == "offline"){
+                    doScan = true;
+                    var interval = 1 * 60 * 1000 ;    // 5 minutes, set to 500ms for testing purposes
+
+                }
+
+                // If the device is online, flag it as online and scan again in 30 minutes
+                if(!doScan && device.status == "online"){
+                    doScan = true;
+                    var interval = device.scanIntervalTime * 1000; // Use value from Object. Set to 5 seconds for testing purposes
+                }
+
+
+                if(doScan){
+                    device.timeoutId = setTimeout(pingThisIp.bind(device), interval);
+                }
+
+
+            }.bind(this))
+
+        }.bind(this))
+
+    }
 
 }
 

@@ -6,6 +6,9 @@ function Strip(){
 	this.eventEmitter = null;
 	this.isStripUp = true;
 
+	this.host = "192.168.1.134";
+	this.port = 5000;
+
 	this.setEventEmitter = function(eventEmitter){
 		this.eventEmitter = eventEmitter;
 	}
@@ -35,6 +38,15 @@ function Strip(){
 		});
 
 		this.server.on('message', (msg, rinfo) => {
+			try {
+				if(rinfo.address == this.host && rinfo.port == this.port){
+					this.setStatusOk(true);
+				}
+			} catch (exc){
+				this.setStatusOk(false);
+				console.log("strip is down");
+			}
+			
 	  		console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
 		});
 	}
@@ -53,29 +65,43 @@ function Strip(){
 
 		callback = typeof callback == "function" ? callback : function(){}
 
+		console.log("Sending to strip", payload)
 
 		try {
-			this.server.send(new Buffer(payload), 0 ,6, 5000 /* port? */, "192.168.1.134", function(err,res){
+			this.server.send(new Buffer(payload), 0, 6, this.port /* port? */, this.host, function(err,res){
 				if(err){
 					this.setStatusOk(false);
 					this.server.close();
 					this.init();
-				} else {
-					this.setStatusOk(true);
 				}
 
 				callback();
+
 			}.bind(this));
 		} catch(err){
 			console.log("Strip would have failed. Caught.");				
 		}
 	}
 
-	this.writeObject = function(toWrite){
-		Object.keys(toWrite).forEach(function(key){
-			this.setColor(key, key+1, toWrite[key][0], toWrite[key][1], toWrite[key][2])
+	this.fillStrip = function(toWrite){
+
+		toWrite.forEach(function(val, key){
+			console.log("Pos", key, val);
+			this.setColor(key, key+1, val[0], val[1], val[2])
 		}.bind(this))
 	}
+
+	this.updateStrip = function(toWrite){
+
+		toWrite.forEach(function(val, key){
+			if(val[0] == 0 && val[1] == 0 && val[2] == 0){
+				return ;
+			}
+			console.log("Pos", key, val);
+			this.setColor(key, key+1, val[0], val[1], val[2])
+		}.bind(this))
+	}
+
 
 }
 

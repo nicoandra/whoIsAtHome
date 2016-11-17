@@ -22,7 +22,7 @@
     "grunt-cli": "^0.1.13",
     "limitless-gem": "^0.3.0",
     "moment": "^2.15.1",
-    "net-ping": "^1.1.12",
+    "ping": "^0.2.1",
     "plotter": "^0.5.0",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",
