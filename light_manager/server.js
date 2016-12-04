@@ -309,6 +309,8 @@ app.get('/jquery-1.8.3.min.js', function(req, res){
 })
 
 app.get("/cameras/watch/:cameraName", function(req, res){
+	res.send("Not implemented yet");
+	return ;
 
 	cameraConfig = require("./config/restricted/cameras.js"),
 	cameraName = parseInt(req.params.cameraName);
@@ -368,13 +370,12 @@ httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
 });
 
 
-
-
-const Fire = require("./fire.js");
-var fire = new Fire();
-console.log(fire);
 /** END OF HTTP SERVER **/
 
+
+/*const Fire = require("./fire.js");
+var fire = new Fire();
+console.log(fire);*/
 
 var Strip = require("./strip.js");
 var strip = new Strip();
