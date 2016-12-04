@@ -15,13 +15,13 @@ var peopleTracker = function(lightManager){
 
     this.people = {
         'nico' : { name : 'Nic', ips: [
-            {'ip': '192.168.1.111', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600 , timeoutId : false} ,
-            {'ip': '192.168.1.112', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600 , timeoutId : false} ,
+            {'ip': '192.168.1.111', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0, timeoutId : false} ,
+            {'ip': '192.168.1.112', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} ,
         ], status : 'away', arrivesIn : false, lastTimeSeen : false },
 
         'pris' : { name : 'Pris', ips: [
-            {'ip': '192.168.1.115', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600 , timeoutId : false} ,
-            {'ip': '192.168.1.116', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600 , timeoutId : false} , // iPad?
+            {'ip': '192.168.1.115', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} ,
+            {'ip': '192.168.1.116', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} , // iPad?
         ], status : 'away', arrivesIn : false, lastTimeSeen : false }        
     }
 
@@ -147,17 +147,19 @@ var peopleTracker = function(lightManager){
 
         Object.keys(this.people).forEach(function(name){
 
+            console.log(this.people[name])
+
             this.people[name].ips.forEach(function(device){
 
                 if(device.timeoutId){
                     // If the device already has a timeout ID, skip
-                    console.log("Skipping", device.ip);
+                    // console.log("Skipping", device.ip);
                     return ;
                 }
 
-                pingThisIp = function(){
-                    // console.log("Voy a pinguear", this);
 
+                // Helper method to perform pings
+                pingThisIp = function(){
                     var options = {
                         ttl: 64,
                         timeout: 2000, // In seconds
@@ -166,22 +168,25 @@ var peopleTracker = function(lightManager){
 
                     var host = this.ip;
 
-                    // Running ping with some default argument gone
                     ping.sys.probe(host, function(isAlive){
                         if(isAlive){
+                            this.consecutiveFailures = 0;
                             this.status = "online";
                             this.lastTimeSeen = new Date();
                          } else {
-                            this.status = "offline";
+                            
+                            this.consecutiveFailures++;
+                            if(this.maxConsecutiveFailures == 0 || this.consecutiveFailures == this.maxConsecutiveFailures){
+                                this.status = "offline";    
+                            }
                         }
 
                         var msg = isAlive ? 'host ' + host + ' is alive' : 'host ' + host + ' is dead';
-                        // console.log(msg);
-                        this.timeoutId = false;
-                    }.bind(this), options);
-                    
-                }
 
+                        this.timeoutId = false;
+
+                    }.bind(this), options);
+                }
 
                 // Device looks like:
                 // {'ip': '192.68.1.115', 'status' : 'offline', 'lastTimeSeen' = false , 'scanIntervalTime' : 1800 } ,
@@ -193,6 +198,7 @@ var peopleTracker = function(lightManager){
                 if(!doScan && device.status == "offline"){
                     doScan = true;
                     var interval = 1 * 60 * 1000 ;    // 5 minutes, set to 500ms for testing purposes
+                    var interval = 1 * 3 * 1000 ;    // 5 minutes, set to 500ms for testing purposes
 
                 }
 
@@ -200,6 +206,7 @@ var peopleTracker = function(lightManager){
                 if(!doScan && device.status == "online"){
                     doScan = true;
                     var interval = device.scanIntervalTime * 1000; // Use value from Object. Set to 5 seconds for testing purposes
+                    var interval = 15 * 1000 ; // Use value from Object. Set to 5 seconds for testing purposes
                 }
 
 
@@ -207,8 +214,17 @@ var peopleTracker = function(lightManager){
                     device.timeoutId = setTimeout(pingThisIp.bind(device), interval);
                 }
 
-
             }.bind(this))
+
+
+            var onlineOrOffline = "offline";
+            onlineOrOffline = this.people[name].ips.reduce(function(accumulator,currentDevice,index,fullArray){
+                if(accumulator == "online" || currentDevice.status == "online"){
+                    return "online";
+                }
+                return accumulator;
+            }, onlineOrOffline)
+            this.people[name].status = onlineOrOffline;
 
         }.bind(this))
 

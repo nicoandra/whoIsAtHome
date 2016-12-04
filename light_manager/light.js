@@ -151,6 +151,8 @@ function Light(name, displayName, socket){
 
     this.queueOff = function(){
         this.commandQueue.push(this.socket.commandOff);
+        this.commandQueue.push(this.socket.commandOff);
+        this.commandQueue.push(this.socket.commandOff);
     }
 
     this.queueColor = function(color){
