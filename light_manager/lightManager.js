@@ -50,6 +50,9 @@ function LightManager(){
         
     }
 
+
+
+
     this.addLight = function(name, displayName, socketNumber, groupNumber, hasRgb, hasDimmer){
 
         if(this.receiverSockets[socketNumber] == undefined){
@@ -57,9 +60,12 @@ function LightManager(){
         }
 
         lightSocket = new LightSocket("name", groupNumber, this.receiverSockets[socketNumber]);
-        light = new Light(name, displayName, lightSocket).hasRgb(hasRgb).hasDimmer(hasDimmer);
-        this.lights[name] = light;
+        this.lights[name] = new Light(name, displayName, lightSocket).hasRgb(hasRgb).hasDimmer(hasDimmer);
+
     }
+
+
+
 
 
     this.addProgramInstance = function(lightProgram){
@@ -73,6 +79,7 @@ function LightManager(){
             }.bind(this));
         }
     }
+
 
     this.addProgram = function(name, command, affectedLights, statusObject){
         // This method will store a program in memory
@@ -145,6 +152,9 @@ function LightManager(){
     this.hash = function(string){
         return crypto.createHash("md5").update(string.toLowerCase().trim()).digest("hex");
     }
+
+
+
 
     this.setStatus = function(lightName, status, callback){
 

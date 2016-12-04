@@ -12,9 +12,9 @@ function LightPrograms(){
         var affectedLights = [];
 
         if(programName.match('get lights status')){
-            this.lights.officeBoards.off();
+            /*this.lights.officeBoards.off();
             this.lights.officeLamp.off();
-            this.lights.kitchenLamp.off();
+            this.lights.kitchenLamp.off();*/
             return {methodToExecute : 'getLightsStatus' };
         }
 

@@ -140,7 +140,7 @@ var peopleTracker = function(lightManager){
 
     setInterval(function(){
         this.startPingIntervals();
-    }.bind(this), 5000)
+    }.bind(this), 50000)
 
 
     this.startPingIntervals = function(){

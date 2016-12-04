@@ -25,10 +25,10 @@ function LightSocket(name, group, receiver){
         lavendar : [0x40, 0xf0]
     };
 
+    this.commandOn = led.RGBW['GROUP'+this.group+'_ON'];
+    this.commandOff = led.RGBW['GROUP'+this.group+'_OFF'];
+    this.commandWhite = led.RGBW['GROUP'+this.group+'_SET_TO_WHITE'];
 
-    this.commandOn = led.RGBW['GROUP'+group+'_ON'];
-    this.commandOff = led.RGBW['GROUP'+group+'_OFF'];
-    this.commandWhite = led.RGBW['GROUP'+group+'_SET_TO_WHITE'];
     this.commandDisco = led.RGBW.DISCO_MODE;
     this.commandDiscoFaster = led.RGBW.DISCO_FASTER;
     this.commandDiscoSlower = led.RGBW.DISCO_SLOWER;
@@ -37,15 +37,17 @@ function LightSocket(name, group, receiver){
     this.commandBrightnessMin = led.RGBW.BRIGHTNESS_MIN;
 
     this.on = function(cb){
+        console.log("GROUP", this.group, "ON!");
         this.receiver.queueStuff(this.commandOn);
     }
 
     this.off = function(cb){
+        console.log("GROUP", this.group, "OFF!");
         this.receiver.queueStuff(this.commandOff);
     }
 
     this.white = function(cb){
-        this.receiver.queueStuff(this.commandWhite);
+        console.log("GROUP", this.group, "WHITE!");
         this.receiver.queueStuff(this.commandWhite);
     }
 
@@ -91,7 +93,11 @@ function LightSocket(name, group, receiver){
     }
 
     this.queueStuff = function(stuff){
+
+
         this.receiver.queueStuff(stuff);
+
+        
     }
 
     this.sendStuff = function(){

@@ -114,6 +114,7 @@ var express = require('express'),
 app = express(),
 port = cfg.httpPort;
 app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views')
 
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
