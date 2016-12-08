@@ -5,18 +5,16 @@ function ReceiverSocket(params){
     this.buffer = [];
     this.port = params.port;
     this.delayBetweenCommands = params.delayBetweenCommands;
-    this.repeat = params.repeat;
+    this.repeat = params.repeat;	// NOT USED AS OF NOW
     this.host = params.host;
     this.CLOSE_BYTE = 0x55;
     var self = this;
 
     this.queueStuff = function(stuff){
         stuff = JSON.parse(JSON.stringify(stuff));
-
-        for(i = 0; i < this.repeat; i++){
-            stuff.push(this.CLOSE_BYTE);
-        }
-        
+        stuff.push(this.CLOSE_BYTE);
+        this.buffer.push(stuff);
+        this.buffer.push(stuff);
         this.buffer.push(stuff);
     }
 
@@ -60,9 +58,9 @@ function ReceiverSocket(params){
                             self.host,
                             function(err){
                                 // calls itelf again
-                                setTimeout(this.sendQueuedStuff.bind(this), this.delayBetweenCommands);
+                                setTimeout(this.sendQueuedStuff.bind(this), 50);	// @@TODO@@ USE THE SETTING VALUE
                             }.bind(this)
-                        )}.bind(this), this.delayBetweenCommands);
+                        )}.bind(this), 50);	// @@TODO@@ USE THE SETTING VALUE
                 }.bind(this)
             );
 

@@ -132,9 +132,6 @@ function Light(name, displayName, socket){
        
     }
 
-
-
-
     // Internal, queue management attributes and methods
     this.commandQueue = [];
 
@@ -154,6 +151,8 @@ function Light(name, displayName, socket){
 
     this.queueOff = function(){
         this.commandQueue.push(this.socket.commandOff);
+        this.commandQueue.push(this.socket.commandOff);
+        this.commandQueue.push(this.socket.commandOff);
     }
 
     this.queueColor = function(color){
@@ -162,22 +161,16 @@ function Light(name, displayName, socket){
     }
 
     this.sendQueue = function(){
-        if(!this.socket || !this.commandQueue.length){
-            return ;
+        if(this.socket && this.commandQueue.length){
+            toSend = this.commandQueue.shift();
+
+            if(this.name == 'kitchenCountertop'){
+                // For Kitchen Countertop, queue commands many times!
+                this.socket.queueStuff(toSend);
+                this.socket.queueStuff(toSend);
+                this.socket.queueStuff(toSend);
+            }
         }
-
-        toSend = this.commandQueue.shift();
-
-        this.socket.queueStuff(toSend);
-        return;
-
-        if(true || this.name == 'kitchenCountertop'){
-            // For Kitchen Countertop, queue commands many times!
-            this.socket.queueStuff(toSend);
-            this.socket.queueStuff(toSend);
-            this.socket.queueStuff(toSend);
-        }
-
     }
 
     setInterval(this.sendQueue.bind(this), 50);
