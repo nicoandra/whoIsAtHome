@@ -50,7 +50,6 @@ function ReceiverSocket(params){
                 buffer1, 0, buffer1.length, this.port,
                 this.host,
                 function(err){
-
                     setTimeout(function(){
 
                         this.client.send(
@@ -58,9 +57,9 @@ function ReceiverSocket(params){
                             self.host,
                             function(err){
                                 // calls itelf again
-                                setTimeout(this.sendQueuedStuff.bind(this), 50);	// @@TODO@@ USE THE SETTING VALUE
+                                setTimeout(this.sendQueuedStuff.bind(this), this.delayBetweenCommands);	// @@TODO@@ USE THE SETTING VALUE
                             }.bind(this)
-                        )}.bind(this), 50);	// @@TODO@@ USE THE SETTING VALUE
+                        )}.bind(this), this.delayBetweenCommands);	// @@TODO@@ USE THE SETTING VALUE
                 }.bind(this)
             );
 
@@ -76,7 +75,7 @@ function ReceiverSocket(params){
                 this.host,
                 function(err){
                     // calls itelf again
-                    setTimeout(self.sendQueuedStuff.bind(this), this.delayBetweenCommands);
+                    setTimeout(self.sendQueuedStuff.bind(this), this.delayBetweenCommands);    // @@TODO@@ USE THE SETTING VALUE
                 }.bind(this)
             );
         }

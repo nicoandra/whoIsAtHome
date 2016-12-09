@@ -49,6 +49,9 @@ function Light(name, displayName, socket){
     }
 
     this.setManualStatus = function(status, callback){
+
+        console.log("vino a esta la concha suya", status.onOff);
+
         callback = (typeof callback === 'function') ? callback : function() {};
 
         if(status.onOff != undefined && this.actualStatus.onOff != status.onOff){
@@ -129,7 +132,7 @@ function Light(name, displayName, socket){
         }
 
         return resultOptions;
-       
+      
     }
 
     // Internal, queue management attributes and methods
@@ -164,9 +167,10 @@ function Light(name, displayName, socket){
         if(this.socket && this.commandQueue.length){
             toSend = this.commandQueue.shift();
 
+            this.socket.queueStuff(toSend);
+
             if(this.name == 'kitchenCountertop'){
                 // For Kitchen Countertop, queue commands many times!
-                this.socket.queueStuff(toSend);
                 this.socket.queueStuff(toSend);
                 this.socket.queueStuff(toSend);
             }
