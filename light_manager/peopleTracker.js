@@ -35,7 +35,7 @@ var peopleTracker = function(lightManager){
     this.setAsSleeping = function(name){
         this.people[name].status = "sleeping";
         this.people[name].arrivesIn = false;
-        lightManager.allLightsOff();
+        // lightManager.allLightsOff();
     }
 
     this.setAsAtHome = function(name){
@@ -133,8 +133,8 @@ var peopleTracker = function(lightManager){
     }
 
     // Test home alone state every 5 minutes
-    setInterval(function(){
-            this.decideIfHomeIsAloneOrNot()
+    if(false) setInterval(function(){
+        this.decideIfHomeIsAloneOrNot()
     }.bind(this), 60 * 5 * 1000)
 
 
@@ -197,8 +197,8 @@ var peopleTracker = function(lightManager){
                 // If the device is offline, do scan every 5 minutes;
                 if(!doScan && device.status == "offline"){
                     doScan = true;
-                    var interval = 1 * 60 * 1000 ;    // 5 minutes, set to 500ms for testing purposes
-                    var interval = 1 * 3 * 1000 ;    // 5 minutes, set to 500ms for testing purposes
+                    var interval = 1 * 600 * 1000 ;    // 5 minutes, set to 500ms for testing purposes
+                    // var interval = 1 * 3 * 1000 ;    // 5 minutes, set to 500ms for testing purposes
 
                 }
 
@@ -206,9 +206,8 @@ var peopleTracker = function(lightManager){
                 if(!doScan && device.status == "online"){
                     doScan = true;
                     var interval = device.scanIntervalTime * 1000; // Use value from Object. Set to 5 seconds for testing purposes
-                    var interval = 15 * 1000 ; // Use value from Object. Set to 5 seconds for testing purposes
+                    // var interval = 15 * 1000 ; // Use value from Object. Set to 5 seconds for testing purposes
                 }
-
 
                 if(doScan){
                     device.timeoutId = setTimeout(pingThisIp.bind(device), interval);

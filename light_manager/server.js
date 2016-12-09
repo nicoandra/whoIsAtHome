@@ -28,29 +28,31 @@ heaterManager = new HeaterManager();
 ActionScheduler = require('./actionScheduler.js');
 actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager);
 
+
+lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("officeLamp", "Office Lamp", /*ReceiverId */ 0,  /* GroupId */ 1, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* GroupId */ 2, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */ true);
-lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */ true);
+
 
 
 normalOptions = new LightProgram("Normal", "normal");
 normalLow = new LightProgram("Low", "normal-low");
-normalLow.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 40 });
 normalLow.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 40  });
+normalLow.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 40 });
 normalLow.addStatus({lightName: 'officeBoards', onOff : false });
 normalLow.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 40  });	
 
 
 normalMed = new LightProgram("Med", "normal-med");
-normalMed.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 70 });
 normalMed.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 70  });
+normalMed.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 70 });
 normalMed.addStatus({lightName: 'officeBoards', onOff : false });
 normalMed.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 70  });
 
 normalHigh = new LightProgram("High", "normal-high");
-normalHigh.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 });
 normalHigh.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 100  });
+normalHigh.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 });
 normalHigh.addStatus({lightName: 'officeBoards', onOff : false });
 normalHigh.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100  });
 normalOptions.addChildProgram(normalLow);
