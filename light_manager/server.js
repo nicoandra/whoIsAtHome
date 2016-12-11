@@ -1,7 +1,7 @@
 var env = process.env.NODE_ENV || 'development'
 	, cfg = require(__dirname + '/config/config.'+env+'.js')
 	, dgram = require('dgram')
-	, debug = require('debug')
+	, debug = require('debug')("app:server")
 	, moment = require('moment')
 	, bodyParser = require('body-parser')
 	, PeopleTracker = require('./peopleTracker.js')
@@ -342,17 +342,20 @@ app.get("/cameras/watch/:cameraName", function(req, res){
 
 
 app.post("/people/setAsAway", function(req,res){
+	debug("Requested", req.url)
 	peopleTracker.setAsAway("nico");
 	res.send(peopleTracker.getHomeStatus());
 })
 
 
 app.post("/people/setAsAtHome", function(req,res){
+	debug("Requested", req.url)
 	peopleTracker.setAsAtHome("nico");
 	res.send(peopleTracker.getHomeStatus());
 })
 
 app.post("/people/setAsComingBack", function(req,res){
+	debug("Requested", req.url)
 	peopleTracker.setAsComingBack("nico", 20);
 	res.send(peopleTracker.getHomeStatus());
 })
@@ -379,10 +382,11 @@ httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
 /*const Fire = require("./fire.js");
 var fire = new Fire();
 console.log(fire);*/
-
+/*
 var Strip = require("./strip.js");
 var strip = new Strip();
 strip.setEventEmitter(notificationEventEmitter);
+*/
 /*
 setInterval(function(){
 

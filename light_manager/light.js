@@ -49,9 +49,6 @@ function Light(name, displayName, socket){
     }
 
     this.setManualStatus = function(status, callback){
-
-        console.log("vino a esta la concha suya", status.onOff);
-
         callback = (typeof callback === 'function') ? callback : function() {};
 
         if(status.onOff != undefined && this.actualStatus.onOff != status.onOff){

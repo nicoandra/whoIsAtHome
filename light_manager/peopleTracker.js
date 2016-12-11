@@ -1,12 +1,14 @@
 /**
  * Created by n_andrade on 10/27/2016.
  */
-
 var ping = require ("ping");
+const debug = require('debug')("app:peopleTracker");
 
 var peopleTracker = function(lightManager){
 
     var lightManager = lightManager;
+
+    this.enableDetectionByPing = false;
 
     this.home = {
         isAlone: true,
@@ -52,6 +54,11 @@ var peopleTracker = function(lightManager){
     }
 
     this.wasUserOfflineLongTime = function(name){
+
+
+        return false;
+
+
         if(this.people[name].lastTimeSeen === false){
             // I dont' know
             return false;
@@ -71,26 +78,38 @@ var peopleTracker = function(lightManager){
 
     this.decideIfHomeIsAloneOrNot = function() {
 
-        var homeIsAlone = false;
+        var homeIsAlone = true;
+        var someoneAtHome = false;
 
         Object.keys(this.people).forEach(function (name) {
-            result = true;
 
-            if(this.wasUserOfflineLongTime(name)){
+            if(this.enableDetectionByPing && this.wasUserOfflineLongTime(name)){
                 this.setAsAway(name);
             }
 
-            if (this.people[name].status == 'away') {
+            if (['online', 'atHome', 'sleeping'].indexOf(this.people[name].status) > -1) {
                 result = false;
+                someoneAtHome = true;
+            }
+
+            if (this.people[name].status == 'away') {
+                result = true;
             }
 
             if (this.people[name].status == 'comingBack') {
-                result = false;
+                result = true;
             }
 
-            homeIsAlone = homeIsAlone || !result;
+            // homeIsAlone = homeIsAlone || result;
+
             this.peopleAtHome[name] = this.people[name].status
+
+            debug("decideIfHomeIsAloneOrNot", name, this.people[name].status);
+
         }, this)
+
+        
+        homeIsAlone = !someoneAtHome;
 
         if(this.home.isAlone != homeIsAlone){
             this.home.sinceWhen = new Date();
@@ -182,6 +201,7 @@ var peopleTracker = function(lightManager){
                         }
 
                         var msg = isAlive ? 'host ' + host + ' is alive' : 'host ' + host + ' is dead';
+                        debug(msg);
 
                         this.timeoutId = false;
 

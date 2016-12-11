@@ -1,8 +1,9 @@
 var moment = require('moment');
+const debug = require('debug')("app:actionScheduler");
 
 function actionScheduler(peopleTracker, lightManager, heaterManager){
 
-	this.checkCycleDuration = 1; // In seconds
+	this.checkCycleDuration = 60; // In seconds
 
 	this.peopleTracker = peopleTracker;
 	this.lightManager = lightManager;
@@ -11,6 +12,11 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 	this.nightStartsAt = 16;
 	this.nightEndsAt = 8;
 
+
+	this.isHomeAlone = function(){
+		homeStatus = this.peopleTracker.getHomeStatus().home;		
+		return homeStatus.isAlone;
+	}
 
 	this.runActionBasedOnHomeStatus = function(){
 
@@ -41,12 +47,14 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 
 	this.verifyIfNightStartedOrEnded = function(){
 		if(this.wasNightOnLastCheck != this.isNightTime()) {
-			// this.runActionBasedOnHomeStatus();
+			this.runActionBasedOnHomeStatus();
 			this.wasNightOnLastCheck = this.isNightTime();
 		}
 		
 
-		if(this.isNightTime()){
+		debug("Is Home Alone in verifyIfNightStartedOrEnded?", this.isHomeAlone());
+
+		if(this.isNightTime() && this.isHomeAlone()){
 			hour = moment().hour();
 			if(hour >= 1 && hour < this.nightStartsAt){
 				this.lightManager.allLightsOff();
@@ -96,7 +104,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 	this.start = function(){
 		setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
-
 	}
 
 
