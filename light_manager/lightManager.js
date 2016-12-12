@@ -161,7 +161,6 @@ function LightManager(){
     }
 
 
-
     /*
     This method supports two formats:
     1- Array of lightnames and a status: [light1, light2,light3], { statusObject }

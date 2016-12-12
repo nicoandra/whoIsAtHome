@@ -61,6 +61,11 @@ function Light(name, displayName, socket){
             this.setBrightness(status.brightness);
         }
 
+        if(status.nightMode != undefined && status.nightMode == true){
+            this.actualStatus.nightMode = status.nightMode;
+            this.nightMode();
+        }
+
         if(status.onOff != undefined && this.actualStatus.onOff != status.onOff){
             this.actualStatus.onOff = status.onOff;
             this.sendOnOff(status.onOff);

@@ -33,6 +33,17 @@ function LightSocket(name, group, receiver){
     this.commandDiscoFaster = led.RGBW.DISCO_FASTER;
     this.commandDiscoSlower = led.RGBW.DISCO_SLOWER;
 
+    this.commandNightMode = [0xC6 + group - 1, 0x00];
+
+    /*
+    ALL_NIGHT: [0xC1, 0x00],
+    GROUP1_NIGHT: [0xC6, 0x00],
+    GROUP2_NIGHT: [0xC8, 0x00],
+    GROUP3_NIGHT: [0xCA, 0x00],
+    GROUP4_NIGHT: [0xCC, 0x00],
+    */
+
+
     this.commandBrightnessMax = led.RGBW.BRIGHTNESS_MAX;
     this.commandBrightnessMin = led.RGBW.BRIGHTNESS_MIN;
 
@@ -51,6 +62,11 @@ function LightSocket(name, group, receiver){
         this.receiver.queueStuff(this.commandWhite);
         this.receiver.queueStuff(this.commandWhite);
     }
+
+    this.night = function(cb){
+        this.receiver.queueStuff(this.commandNightMode);
+    }
+
 
     this.disco = function(cb){
         this.receiver.queueStuff(this.commandOn.concat(0x55, this.commandDisco));
@@ -86,6 +102,17 @@ function LightSocket(name, group, receiver){
     }
 
     this.brightness = function(value){
+        if(value === 0){
+            this.receiver.queueStuff(this.commandNightMode);
+            return ;
+        }
+
+        if(value == 1){
+            // This is a hack to use 0 as Night Mode
+            // And 1 as the minimum brightness.
+            value = 0;
+        }
+
         value = Math.round( 2+ ( (value/100) *25 ));
 
         this.receiver.queueStuff(this.commandOn.concat(0x55, 0x4e, value));

@@ -37,11 +37,19 @@ lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* Gro
 
 
 normalOptions = new LightProgram("Normal", "normal");
+
+
+normalNight = new LightProgram("Night", "normal-night");
+normalNight.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 1  });
+normalNight.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 1 });
+normalNight.addStatus({lightName: 'officeBoards', onOff : false });
+normalNight.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 1 });
+
 normalLow = new LightProgram("Low", "normal-low");
 normalLow.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 40  });
 normalLow.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 40 });
 normalLow.addStatus({lightName: 'officeBoards', onOff : false });
-normalLow.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 40  });	
+normalLow.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 40  });
 
 
 normalMed = new LightProgram("Med", "normal-med");
@@ -55,6 +63,7 @@ normalHigh.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness"
 normalHigh.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 });
 normalHigh.addStatus({lightName: 'officeBoards', onOff : false });
 normalHigh.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100  });
+normalOptions.addChildProgram(normalNight);
 normalOptions.addChildProgram(normalLow);
 normalOptions.addChildProgram(normalMed);
 normalOptions.addChildProgram(normalHigh);
