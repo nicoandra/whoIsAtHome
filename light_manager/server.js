@@ -40,13 +40,13 @@ normalOptions = new LightProgram("Normal", "normal");
 
 
 normalNight = new LightProgram("Night", "normal-night");
-normalNight.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 1  });
-normalNight.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 1 });
+normalNight.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 0  });
+normalNight.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 0 });
 normalNight.addStatus({lightName: 'officeBoards', onOff : false });
-normalNight.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 1 });
+normalNight.addStatus({lightName: 'officeLamp', onOff : false });
 
 normalLow = new LightProgram("Low", "normal-low");
-normalLow.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 40  });
+normalLow.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 30  });
 normalLow.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 40 });
 normalLow.addStatus({lightName: 'officeBoards', onOff : false });
 normalLow.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 40  });
