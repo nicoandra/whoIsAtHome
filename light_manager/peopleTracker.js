@@ -3,6 +3,8 @@
  */
 var ping = require ("ping");
 const debug = require('debug')("app:peopleTracker");
+var env = process.env.NODE_ENV || 'development'
+    , cfg = require(__dirname + '/config/config.'+env+'.js');
 
 var peopleTracker = function(lightManager){
 
@@ -15,17 +17,20 @@ var peopleTracker = function(lightManager){
         sinceWhen: new Date()
     }
 
+
     this.people = {
         'nico' : { name : 'Nic', ips: [
             {'ip': '192.168.1.111', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0, timeoutId : false} ,
             {'ip': '192.168.1.112', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} ,
-        ], status : 'away', arrivesIn : false, lastTimeSeen : false },
+        ], status : cfg.peopleTracker.defaultStatus.nico, arrivesIn : false, lastTimeSeen : false },
 
         'pris' : { name : 'Pris', ips: [
             {'ip': '192.168.1.115', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} ,
             {'ip': '192.168.1.116', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} , // iPad?
         ], status : 'away', arrivesIn : false, lastTimeSeen : false }        
     }
+
+
 
     this.peopleAtHome = {}
 

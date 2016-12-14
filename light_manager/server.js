@@ -34,10 +34,7 @@ lightManager.addLight("officeLamp", "Office Lamp", /*ReceiverId */ 0,  /* GroupI
 lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* GroupId */ 2, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */ true);
 
-
-
 normalOptions = new LightProgram("Normal", "normal");
-
 
 normalNight = new LightProgram("Night", "normal-night");
 normalNight.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 0  });

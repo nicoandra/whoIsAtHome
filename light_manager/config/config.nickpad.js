@@ -9,4 +9,7 @@ config.milight = [
 	{host : '192.168.1.148' , port : 8899, delayBetweenCommands : 25, repeat: 2 }
 ];
 
+config.peopleTracker = {
+	defaultStatus : { nico : "atHome" }
+}
 module.exports = config;
