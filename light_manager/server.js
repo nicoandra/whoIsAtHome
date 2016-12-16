@@ -10,6 +10,14 @@ var env = process.env.NODE_ENV || 'development'
 
 var request = require('request');
 
+
+
+HeatersInterface = require("./heatersInterface.js");
+heatersInterface = new HeatersInterface();
+heatersInterface.discoverHeaters();
+
+setInterval(heatersInterface.discoverHeaters.bind(heatersInterface), 3000)
+
 var EventEmitter = require('events').EventEmitter
 const path = require('path');
 var LightProgram = require("./lightProgram.js")
