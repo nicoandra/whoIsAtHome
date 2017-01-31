@@ -6,9 +6,10 @@ const debug = require('debug')("app:peopleTracker");
 var env = process.env.NODE_ENV || 'development'
     , cfg = require(__dirname + '/config/config.'+env+'.js');
 
-var peopleTracker = function(lightManager){
+var peopleTracker = function(lightManager, internalEventEmitter){
 
     var lightManager = lightManager;
+    var internalEventEmitter = internalEventEmitter;
 
     this.enableDetectionByPing = false;
 
@@ -16,7 +17,6 @@ var peopleTracker = function(lightManager){
         isAlone: true,
         sinceWhen: new Date()
     }
-
 
     this.people = {
         'nico' : { name : 'Nic', ips: [
@@ -115,10 +115,9 @@ var peopleTracker = function(lightManager){
 
         if(this.home.isAlone != homeIsAlone){
             this.home.sinceWhen = new Date();
+            this.home.isAlone = homeIsAlone ? true : false;
+            internalEventEmitter.emit("home:statusChange", this.home);
         }
-
-        this.home.isAlone = homeIsAlone ? true : false;
-
     }
 
 
