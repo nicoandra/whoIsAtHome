@@ -52,7 +52,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 			this.runActionBasedOnHomeStatus();
 		}
-
 		this.verifyIfNightStartedOrEnded();
 	}
 
