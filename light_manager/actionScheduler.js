@@ -11,6 +11,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 	this.wasNightOnLastCheck = false;
 	this.nightStartsAt = 16;
 	this.nightEndsAt = 8;
+	this.lightsOffAtNightAfter = 1;
 
 
 	this.isHomeAlone = function(){
@@ -46,20 +47,42 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 	}
 
 	this.verifyIfNightStartedOrEnded = function(){
-		if(this.wasNightOnLastCheck != this.isNightTime()) {
-			this.runActionBasedOnHomeStatus();
-			this.wasNightOnLastCheck = this.isNightTime();
+
+		// If the status did not change, do nothing
+		if(this.wasNightOnLastCheck === this.isNightTime()){
+			debug("Night Status did not change. Return.")
+			return ;
 		}
-		
+
+		this.runActionBasedOnHomeStatus();
+		this.wasNightOnLastCheck = this.isNightTime();
 
 		debug("Is Home Alone in verifyIfNightStartedOrEnded?", this.isHomeAlone());
 
 		if(this.isNightTime() && this.isHomeAlone()){
 			hour = moment().hour();
-			if(hour >= 1 && hour < this.nightStartsAt){
+			if(hour >= this.lightsOffAtNightAfter && hour < this.nightStartsAt){
 				this.lightManager.allLightsOff();
 			}
 		}
+
+	}
+
+	this.lightsShouldBeTurnedOffWhenHomeIsAlone = function(){
+		if(this.isDayTIme()){
+			// During the day, the lights should be off
+			return true;
+		}
+
+		if(this.isNightTime()){
+			hour = moment().hour();
+			if(hour >= this.lightsOffAtNightAfter){
+				// During night, after 1AM, lights should be off.
+				return true;
+			}
+		}
+
+		return false;
 
 	}
 
@@ -85,7 +108,8 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 
 	this.someoneIsAtHome = function(){
 		// Disable enable heaters back, set temperature back to 22;
-		// this.heaterManager.setStatus(22);
+		this.heaterManager.setStatus(22);
+
 	}
 
 
@@ -105,9 +129,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 		setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
 	}
-
-
-
 
 	this.start();
 }

@@ -59,10 +59,7 @@ var peopleTracker = function(lightManager){
     }
 
     this.wasUserOfflineLongTime = function(name){
-
-
         return false;
-
 
         if(this.people[name].lastTimeSeen === false){
             // I dont' know
@@ -171,7 +168,10 @@ var peopleTracker = function(lightManager){
 
         Object.keys(this.people).forEach(function(name){
 
-            console.log(this.people[name])
+            // console.log(this.people[name])
+            if(this.enableDetectionByPing === false){
+                return ;
+            }
 
             this.people[name].ips.forEach(function(device){
 
