@@ -1,7 +1,7 @@
 var dgram = require('dgram');
 const env = process.env.NODE_ENV || 'development'
-    , cfg = require(__dirname + '/config/config.'+env+'.js')
-    , debug = require("debug")("appHeaterInterface");
+	, cfg = require(__dirname + '/config/config.'+env+'.js')
+	, debug = require("debug")("appHeaterInterface");
 
 
 function HeatersInterface(){
