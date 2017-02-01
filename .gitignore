@@ -1,3 +1,4 @@
+.idea/**
 node_modules/**
 light_manager/node_modules/**
 light_manager/bower_components/**
