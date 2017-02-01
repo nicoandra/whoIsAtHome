@@ -12,6 +12,8 @@ function Heater(name, id, ip, options){
     this.uptime = 0;
     this.downSince = 0;
 
+    this.intervalId = 0;
+
     this.buildUrl = function(method){
         return "http://" + this.ip + '/' + method +'/' + this.id;
     }
@@ -21,9 +23,10 @@ function Heater(name, id, ip, options){
         this.desiredTemp = desiredTemperature;
 
         this.setTemperature(this.desiredTemp, function(err, info){
-            if(err){
+            if(err && !this.intervalId ){
 
-                setTimeout(function(){
+                this.intervalId = setTimeout(function(){
+                    this.intervalId = 0;
                     this.ensureTemperatureIsSet(this.desiredTemp, callback);
                     console.log("Heaters:: Watch Out! Trying to set temp to", this.desiredTemp, "again on", this.id)
                 }.bind(this), 30000);
@@ -35,9 +38,11 @@ function Heater(name, id, ip, options){
             if(info.desiredTemperature == this.desiredTemp){
                 callback(false, info);
                 return ;
-            } else {
+            } else if(!this.intervalId ){
+{
                 // The desired temperature in the heater is not the one I expected. Retry.
-                setTimeout(function(){
+                this.intervalId = setTimeout(function(){
+                    this.intervalId = 0;
                     this.ensureTemperatureIsSet(this.desiredTemp, callback);
                     console.log("Heaters:: Watch Out! Trying to set temp to", this.desiredTemp, "again on", this.id)
                 }.bind(this), 30000);
@@ -135,7 +140,7 @@ function Heater(name, id, ip, options){
 
     setTimeout(function() {
         this.pollData()
-    }.bind(this), 1);
+    }.bind(this), 10000);
 }
 
 module.exports = Heater;
