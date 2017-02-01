@@ -15,7 +15,7 @@ HeatersInterface = require("./heatersInterface.js");
 heatersInterface = new HeatersInterface();
 heatersInterface.discoverHeaters();
 
-setInterval(heatersInterface.discoverHeaters.bind(heatersInterface), 3000)
+setInterval(heatersInterface.discoverHeaters.bind(heatersInterface), 30000);
 
 var EventEmitter = require('events').EventEmitter
 const path = require('path');

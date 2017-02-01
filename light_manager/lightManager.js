@@ -3,7 +3,8 @@ var env = process.env.NODE_ENV || 'development'
 	Light = require("./light.js"),
 	LightSocket = require("./lightSocket.js"),
 	ReceiverSocket = require("./receiverSocket.js"),
-	crypto = require('crypto');
+	crypto = require('crypto'),
+	debug = require('debug')("app:lightManager");
 
 function LightManager(){
 	this.lights = {};
@@ -13,7 +14,7 @@ function LightManager(){
 	this.activeProgram = false;
 
 	this.allLightsOff = function(){
-		console.log("Turning all lights off")
+		debug("allLightsOff: Turning all lights off")
 		Object.keys(this.lights).forEach(function(key){
 			this.setStatus(key, {onOff : false});
 		}.bind(this))
@@ -21,21 +22,21 @@ function LightManager(){
 
 	this.iterateBetweenChildPrograms = function(parentProgramKey){
 
-		console.log(Object.keys(this.programs));
+		debug("iterateBetweenChildPrograms:", Object.keys(this.programs));
 
 		if(!this.programs[parentProgramKey]){
-			console.log("Can not find such program... sorry");
+			debug("Can not find such program... sorry");
 			return false;
 		}
 
 		parentProgram = this.programs[parentProgramKey];
 		if(parentProgram.childPrograms.length < 1){
-			console.log("The selected program does not have child programs. Fallback to parent");
+			debug("The selected program does not have child programs. Fallback to parent");
 			this.runProgram(parentProgramKey);
 		}
 	   
 		indexOfProgramToRun = parentProgram.childPrograms.map(function(childProgram, index){
-			console.log(childProgram.id , this.activeProgram, index);
+			debug("iterateBetweenPrograms", childProgram.id , this.activeProgram, index);
 			return childProgram.id == this.activeProgram ? index : 0;
 		}.bind(this)).reduce(function(prev, current){
 			return prev + current;
@@ -61,11 +62,9 @@ function LightManager(){
 		this.lights[name] = light;
 	}
 
-
 	this.addProgramInstance = function(lightProgram){
 		this.programs[this.hash(lightProgram.id)] = lightProgram;
 		this.allKnownPrograms[this.hash(lightProgram.id)] = lightProgram;
-
 
 		if(lightProgram.childPrograms.length > 0){
 			lightProgram.childPrograms.forEach(function(childProgram){
@@ -112,10 +111,10 @@ function LightManager(){
 		if(this.allKnownPrograms[hash].statusToApply && this.allKnownPrograms[hash].statusToApply.length > 0){
 
 			// Here are the statuses to apply
-			console.log("GOING TO APPLY", this.allKnownPrograms[hash].statusToApply);
+			debug("runProgram", this.allKnownPrograms[hash].statusToApply);
 			this.allKnownPrograms[hash].statusToApply.forEach(function(status){
 
-				console.log("One Status", status);
+				debug("runProgram", "One Status", status);
 				this.setStatus(status, function(){});
 
 			}.bind(this));
@@ -133,7 +132,7 @@ function LightManager(){
 				status = this.programs[hash].status;
 			}
 
-			console.log("Setting ", lightName, " with status ", status);
+			debug("Setting ", lightName, " with status ", status);
 			this.lights[lightName].setManualStatus(status);
 			return true;
 

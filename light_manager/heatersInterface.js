@@ -1,7 +1,7 @@
 var dgram = require('dgram');
 const env = process.env.NODE_ENV || 'development'
 	, cfg = require(__dirname + '/config/config.'+env+'.js')
-	, debug = require("debug")("appHeaterInterface");
+	, debug = require("debug")("app:HeaterInterface");
 
 
 function HeatersInterface(){
@@ -70,7 +70,7 @@ function HeatersInterface(){
 		this.initClient(
 			function(){
 				this.initAnnouncer(function(){
-					this.sendBroadcastDiscoveryMessage(function(){debug("All DOne");})
+					this.sendBroadcastDiscoveryMessage(function(){debug("All Done");})
 					
 				}.bind(this))
 			}.bind(this)
