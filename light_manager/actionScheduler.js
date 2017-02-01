@@ -1,16 +1,19 @@
 var moment = require('moment');
 const debug = require('debug')("app:actionScheduler");
 
-function actionScheduler(peopleTracker, lightManager, heaterManager){
+function actionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter){
 
 	this.checkCycleDuration = 60; // In seconds
 
+	this.internalEventEmitter = internalEventEmitter;
 	this.peopleTracker = peopleTracker;
 	this.lightManager = lightManager;
 	this.heaterManager = heaterManager;
 	this.wasNightOnLastCheck = false;
 	this.nightStartsAt = 16;
 	this.nightEndsAt = 8;
+	this.lightsOffAtNightAfter = 1;
+	this.wasHomeAloneBefore = false;
 
 
 	this.isHomeAlone = function(){
@@ -19,13 +22,21 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 	}
 
 	this.runActionBasedOnHomeStatus = function(){
-
-		homeStatus = this.peopleTracker.getHomeStatus().home;
-		if(homeStatus.isAlone){
-			this.homeStartedToBeAlone();
+		if(this.wasHomeAloneBefore == this.isHomeAlone()){
+			// Return, nothing changed;
+			debug("runActionBasedOnHomeStatus: nothing changed.")
 			return;
 		}
-		this.someoneIsAtHome();
+
+		this.wasHomeAloneBefore = this.isHomeAlone();
+
+		if(this.isHomeAlone()){
+			debug("runActionBasedOnHomeStatus: home is alone. call homeStartedToBeAlone()")
+			this.homeStartedToBeAlone();
+		} else {
+			debug("runActionBasedOnHomeStatus: home is NOT alone. Someone is at home. Call someoneIsAtHome();")
+			this.someoneIsAtHome();
+		}
 	}
 
 	this.verifyStatus = function(){
@@ -41,26 +52,49 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 
 			this.runActionBasedOnHomeStatus();
 		}
-
 		this.verifyIfNightStartedOrEnded();
 	}
 
 	this.verifyIfNightStartedOrEnded = function(){
-		if(this.wasNightOnLastCheck != this.isNightTime()) {
-			this.runActionBasedOnHomeStatus();
-			this.wasNightOnLastCheck = this.isNightTime();
+		// If the status did not change, do nothing
+		if(this.wasNightOnLastCheck === this.isNightTime()){
+			debug("Night Status did not change. Return.")
+			return ;
 		}
-		
+
+		this.wasNightOnLastCheck = this.isNightTime();
+
+		if(this.isDayTime()){
+			internalEventEmitter.emit("time:isDayOrNight", { day: true, night: false });
+		} else {
+			internalEventEmitter.emit("time:isDayOrNight", { day: false, night: true });
+		}
+
+		this.runActionBasedOnHomeStatus();
+
 
 		debug("Is Home Alone in verifyIfNightStartedOrEnded?", this.isHomeAlone());
 
-		if(this.isNightTime() && this.isHomeAlone()){
+		if(this.isHomeAlone() && this.lightsShouldBeTurnedOffWhenHomeIsAlone()){
+			this.lightManager.allLightsOff();
+		}
+	}
+
+	this.lightsShouldBeTurnedOffWhenHomeIsAlone = function(){
+		if(this.isDayTime()){
+			// During the day, the lights should be off
+			return true;
+		}
+
+		if(this.isNightTime()){
 			hour = moment().hour();
-			if(hour >= 1 && hour < this.nightStartsAt){
-				this.lightManager.allLightsOff();
+			if(hour >= this.lightsOffAtNightAfter){
+				// During night, after 1AM, lights should be off.
+				return true;
 			}
 		}
 
+		return false;
 	}
 
 	this.homeStartedToBeAlone = function(){
@@ -85,7 +119,8 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 
 	this.someoneIsAtHome = function(){
 		// Disable enable heaters back, set temperature back to 22;
-		// this.heaterManager.setStatus(22);
+		this.heaterManager.setStatus(22);
+
 	}
 
 
@@ -97,7 +132,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 		return false
 	}
 
-	this.isDayTIme  = function(){
+	this.isDayTime  = function(){
 		return !this.isNightTime();
 	}
 
@@ -105,9 +140,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager){
 		setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
 	}
-
-
-
 
 	this.start();
 }

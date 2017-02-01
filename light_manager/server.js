@@ -11,7 +11,6 @@ var env = process.env.NODE_ENV || 'development'
 var request = require('request');
 
 
-
 HeatersInterface = require("./heatersInterface.js");
 heatersInterface = new HeatersInterface();
 heatersInterface.discoverHeaters();
@@ -20,13 +19,19 @@ setInterval(heatersInterface.discoverHeaters.bind(heatersInterface), 3000)
 
 var EventEmitter = require('events').EventEmitter
 const path = require('path');
-var LightProgram = require("./lightProgram.js")
 
+var notificationEventEmitter = new EventEmitter()
+notificationEventEmitter.setMaxListeners(100);
+
+var internalEventEmitter = new EventEmitter()
+internalEventEmitter.setMaxListeners(100);
+
+var LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
 LightManager = require("./lightManager.js");
 lightManager = new LightManager();	// With a LightManager, add lights
 
-var peopleTracker = new PeopleTracker(lightManager)
+var peopleTracker = new PeopleTracker(lightManager, internalEventEmitter)
 
 /** Prepare heaters */
 HeaterManager = require('./heaterManager.js');
@@ -34,7 +39,7 @@ heaterManager = new HeaterManager();
 
 
 ActionScheduler = require('./actionScheduler.js');
-actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager);
+actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter );
 
 
 lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */ true);
@@ -93,8 +98,7 @@ lightManager.addProgramInstance(romantic)
 
 
 /** Prepare heaters */
-var notificationEventEmitter = new EventEmitter()
-notificationEventEmitter.setMaxListeners(100);
+
 notificationEventEmitter.on('heaters', function(data){
 	
 	type = "normal";
