@@ -99,15 +99,15 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 	this.homeStartedToBeAlone = function(){
 		// Disable heaters, set temperature back to 17;
-		console.log('Called homeStartedToBeAlone');
+		debug('Called homeStartedToBeAlone');
 
 		if(this.isNightTime()){
-			console.log("It's night")
+			debug("It's night")
 			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 80  })
 			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 80  })
 			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 80  })
 		} else {
-			console.log("It's day")
+			debug("It's day")
 			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : false })
 			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : false })
 			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : false })
