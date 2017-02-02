@@ -2,18 +2,29 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0bd71bc8-f7e7-4d09-bd2e-c1e9620f9611" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/light_manager/tests/espHeater.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/light_manager/tests/milight.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/actionScheduler.js" afterPath="$PROJECT_DIR$/light_manager/actionScheduler.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/cli.js" afterPath="$PROJECT_DIR$/light_manager/cli.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/config/config.nickpad.js" afterPath="$PROJECT_DIR$/light_manager/config/config.nickpad.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/config/config.proliant.js" afterPath="$PROJECT_DIR$/light_manager/config/config.proliant.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/fire.js" afterPath="$PROJECT_DIR$/light_manager/fire.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/heater.js" afterPath="$PROJECT_DIR$/light_manager/heater.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/heaterManager.js" afterPath="$PROJECT_DIR$/light_manager/heaterManager.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/heatersInterface.js" afterPath="$PROJECT_DIR$/light_manager/heatersInterface.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/light.js" afterPath="$PROJECT_DIR$/light_manager/light.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/lightManager.js" afterPath="$PROJECT_DIR$/light_manager/lightManager.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/lightSocket.js" afterPath="$PROJECT_DIR$/light_manager/lightSocket.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/peopleTracker.js" afterPath="$PROJECT_DIR$/light_manager/peopleTracker.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/receiverSocket.js" afterPath="$PROJECT_DIR$/light_manager/receiverSocket.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/server.js" afterPath="$PROJECT_DIR$/light_manager/server.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/strip.js" afterPath="$PROJECT_DIR$/light_manager/strip.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/tests/espHeater.js" afterPath="$PROJECT_DIR$/light_manager/tests/espHeater.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/tests/milight.js" afterPath="$PROJECT_DIR$/light_manager/tests/milight.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/views/index.ejs" afterPath="$PROJECT_DIR$/light_manager/views/index.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thermostat_app/server.js" afterPath="$PROJECT_DIR$/thermostat_app/server.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thermostat_app/strip.js" afterPath="$PROJECT_DIR$/thermostat_app/strip.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thermostat_app/switchProgramsButton.js" afterPath="$PROJECT_DIR$/thermostat_app/switchProgramsButton.js" />
     </list>
     <ignored path="lightManager.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,11 +45,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="server.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="server.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/light_manager/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+            <state relative-caret-position="340">
+              <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -128,11 +139,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="heatersInterface.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="heatersInterface.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/light_manager/heatersInterface.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="507">
-              <caret line="112" column="50" selection-start-line="112" selection-start-column="50" selection-end-line="112" selection-end-column="50" />
+            <state relative-caret-position="255">
+              <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -320,6 +331,7 @@
     <property name="nodejs_interpreter_path" value="C:/Program Files (x86)/nodejs/node" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="last_opened_file_path" value="Y:/thermosp8266" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -398,7 +410,7 @@
       <workItem from="1481231924172" duration="3429000" />
       <workItem from="1485881238289" duration="105000" />
       <workItem from="1485881458668" duration="9567000" />
-      <workItem from="1485962222564" duration="11784000" />
+      <workItem from="1485962222564" duration="15208000" />
     </task>
     <task id="LOCAL-00001" summary="Start to build new Heaters interface, expecting more info from the Thermo App&#10;Making it so we can build an Angular UI for Web browsers.">
       <created>1476213817069</created>
@@ -610,11 +622,18 @@
       <option name="project" value="LOCAL" />
       <updated>1485985299000</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Line endings">
+      <created>1485985501767</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1485985501767</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="118076000" />
+    <option name="totallyTimeSpent" value="121500000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1924" y="-4" width="1928" height="1088" extended-state="6" />
@@ -689,7 +708,8 @@
     <MESSAGE value="Lights on and off when the house is alone." />
     <MESSAGE value="Moving towards an event-based system" />
     <MESSAGE value="Heater interface is being documented, some methods have been added as well." />
-    <option name="LAST_COMMIT_MESSAGE" value="Heater interface is being documented, some methods have been added as well." />
+    <MESSAGE value="Line endings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Line endings" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1033,14 +1053,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/heatersInterface.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="507">
-          <caret line="112" column="50" selection-start-line="112" selection-start-column="50" selection-end-line="112" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/light.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
@@ -1061,8 +1073,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+        <state relative-caret-position="340">
+          <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/heatersInterface.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
           <folding />
         </state>
       </provider>
