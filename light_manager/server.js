@@ -393,36 +393,4 @@ httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
 	console.log('http interface listening on port '+port);	
 });
 
-
 /** END OF HTTP SERVER **/
-
-
-/*const Fire = require("./fire.js");
-var fire = new Fire();
-console.log(fire);*/
-/*
-var Strip = require("./strip.js");
-var strip = new Strip();
-strip.setEventEmitter(notificationEventEmitter);
-*/
-/*
-setInterval(function(){
-
-	for(group = 0; group < 30; group = group + 5){
-		values = fire.getValues();
-		// values[0] = 0;
-		strip.setColor(group, group+5, values[0], values[1], values[2]);
-	}
-}, 400)
-
-*/
-
-
-// strip.fillStrip(fire.getGroupedValues())
-/*
-setInterval(function(){
-	strip.updateStrip(fire.getGroupedValues())
-}, 1000)
-*/
-
-// fire.lavaStrip(strip);

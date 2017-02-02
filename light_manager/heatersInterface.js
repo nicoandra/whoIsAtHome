@@ -112,7 +112,6 @@ function HeatersInterface(){
 		this.client.send(buffer, 0, buffer.length, heaterInfo.port, heaterInfo.host, function(err){
 			debug("Err setHeaterTemperature", err)
 		})
-
 	}
 
 	this.handleIncomingPackets = function(msg, rinfo){

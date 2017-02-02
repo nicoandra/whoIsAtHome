@@ -1,84 +1,58 @@
 var request = require('request');
+var dgram = require('dgram');
+const debug = require("debug")("app:heater");
 
-function Heater(name, id, ip, options){
+
+
+function Heater(name, id, ip, port, dgramClient, options){
 	this.name = name;
 	this.id = id;
 	this.ip = ip;
+	this.port = port;
+	this.dgramClient = dgramClient;
 	this.eventEmitter = options.eventEmitter;
+
 	this.currentTemperature = 999;
 	this.humidity = 999;
 	this.desiredTemp = 14;
 	this.power = 0;
-	this.uptime = 0;
+	this.upSince = 0;
 	this.downSince = 0;
 
-	this.intervalId = 0;
-
-	this.buildUrl = function(method){
-		return "http://" + this.ip + '/' + method +'/' + this.id;
-	}
-
-
-	this.ensureTemperatureIsSet = function(desiredTemperature, callback){
-		this.desiredTemp = desiredTemperature;
-
-		this.setTemperature(this.desiredTemp, 
-
-			function(err, info){
-				if(err && !this.intervalId ){
-
-					this.intervalId = setTimeout(function(){
-						this.intervalId = 0;
-						this.ensureTemperatureIsSet(this.desiredTemp, callback);
-						console.log("Heaters:: Watch Out! Trying to set temp to", this.desiredTemp, "again on", this.id)
-					}.bind(this), 30000);
-
-					return ;
-				}
-
-
-				if(info.desiredTemperature == this.desiredTemp){
-					callback(false, info);
-					return ;
-				}
-
-			if(!this.intervalId){
-				// The desired temperature in the heater is not the one I expected. Retry.
-				this.intervalId = setTimeout(function(){
-					this.intervalId = 0;
-					this.ensureTemperatureIsSet(this.desiredTemp, callback);
-					console.log("Heaters:: Watch Out! Trying to set temp to", this.desiredTemp, "again on", this.id)
-				}.bind(this), 30000);
-
-				return ;
-			}
-
-		}.bind(this));
-	}
-
-
-	this.setTemperature = function(desiredTemperature, callback){
-
-		this.desiredTemperature = desiredTemperature;
-
-		options = {
-			url: this.buildUrl('set'),
-			qs : {temperature : desiredTemperature },
-			timeout : 1000
+	this.flagAsUp = function(){
+		if(this.upSince == 0){
+			this.upSince = new Date();
+			this.downSince = 0;
 		}
+	}
 
-		request(options, function(error, response, body){
-			if(!error && response.statusCode == 200){
-				var info = JSON.parse(body);
-				callback(false, info);
+	this.flagAsDown = function(){
+		if(this.downSince == 0){
+			this.downSince = new Date();
+			this.upSince = 0;
+		}
+	}
+
+	this.setTemperature = function(desiredTemperature){
+		desiredTemperature = Math.abs(desiredTemperature);
+
+		var temperatureInteger = Math.trunc(desiredTemperature);
+		var temperatureDecimal = Math.trunc((desiredTemperature - temperatureInteger) * 256);
+		var payload = [ 0x10 , heaterInfo.toString(16), temperatureInteger.toString(16), temperatureDecimal.toString(16) ];
+
+		debug("setHeaterTemperature", name, desiredTemperature, payload);
+
+		var buffer = new Buffer(payload);
+
+		this.dgramClient.send(buffer, 0, buffer.length, this.port, this.host, function(err){
+			if(err){
+				debug("Err setHeaterTemperature", err)
+				this.flagAsDown();
 			} else {
-
-				// @@TODO@@ Add retry here. It's important to ensure the device knows the new
-				// Desired Temperature.
-				// As a safety measure, the device will also PULL these values and set itself to what it should be
-				callback(error, false)
+				this.flagAsUp();
 			}
-		});
+		}.bind(this));
+
 	}
 
 	this.pollData = function(callback){
