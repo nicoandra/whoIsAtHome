@@ -4,11 +4,12 @@ const debug = require("debug")("app:heater");
 
 
 
-function Heater(name, id, ip, port, dgramClient, options){
+function Heater(name, id, ip, port, dgramClient, serverPort,options){
 	this.name = name;
 	this.id = id;
 	this.ip = ip;
-	this.port = port;
+	this.heaterPort = heaterPort;
+	this.serverPort = serverPort;
 	this.dgramClient = dgramClient;
 	this.eventEmitter = options.eventEmitter;
 
@@ -18,6 +19,8 @@ function Heater(name, id, ip, port, dgramClient, options){
 	this.power = 0;
 	this.upSince = 0;
 	this.downSince = 0;
+
+	this.getStatusPayload = [0x30, 0xFF, Math.floor(this.serverPort / 256).toString(16),  Math.floor(this.serverPort % 256).toString(16)] ; //  Requests for status to be sen back to port
 
 	this.flagAsUp = function(){
 		if(this.upSince == 0){
@@ -38,13 +41,13 @@ function Heater(name, id, ip, port, dgramClient, options){
 
 		var temperatureInteger = Math.trunc(desiredTemperature);
 		var temperatureDecimal = Math.trunc((desiredTemperature - temperatureInteger) * 256);
-		var payload = [ 0x10 , heaterInfo.toString(16), temperatureInteger.toString(16), temperatureDecimal.toString(16) ];
+		var payload = [ 0x10 , this.id.toString(16), temperatureInteger.toString(16), temperatureDecimal.toString(16) ];
 
 		debug("setHeaterTemperature", name, desiredTemperature, payload);
 
 		var buffer = new Buffer(payload);
 
-		this.dgramClient.send(buffer, 0, buffer.length, this.port, this.host, function(err){
+		this.dgramClient.send(buffer, 0, buffer.length, this.heaterPort, this.host, function(err){
 			if(err){
 				debug("Err setHeaterTemperature", err)
 				this.flagAsDown();
@@ -55,31 +58,14 @@ function Heater(name, id, ip, port, dgramClient, options){
 
 	}
 
-	this.pollData = function(callback){
-		options = {
-			url: this.buildUrl('get'),
-			timeout: 2000
-		}
-
-		callback = typeof callback == "function" ? callback : function(){};
-
-		request(options, function(error, response, body){
-			if(!error && response.statusCode == 200){
-				var info = JSON.parse(body);
-				this.currentTemperature = parseFloat(info.currentTemperature);
-				this.humidity = parseFloat(info.humidity);
-				this.uptime = parseFloat(info.uptime);
-				this.power = parseFloat(info.power);
-				this.downSince = false;
-				this.eventEmitter.emit("heaters" , {type : "heaters:heater:cameBack", 'ref' : this.id , 'data' : { 'when' : new Date() } });
-
-				callback(false, info);
+	this.sendStatusRequest = function(callback){
+		var payload = this.getStatusPayload;
+		this.dgramClient.send(buffer, 0, buffer.length, this.heaterPort, this.host, function(err){
+			if(err){
+				debug("Err sendStatusRequest", err)
+				this.flagAsDown();
 			} else {
-				if(this.downSince == false){
-					this.downSince = new Date();
-					this.eventEmitter.emit("heaters" , {type : "heaters:heater:wentDown", 'ref' : this.id , 'data' : { 'when' : this.downSince } });
-				}
-				callback(error, false)
+				this.flagAsUp();
 			}
 		}.bind(this));
 	}
