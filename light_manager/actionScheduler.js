@@ -103,9 +103,9 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 		if(this.isNightTime()){
 			debug("It's night")
-			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 80  })
-			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 80  })
-			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 80  })
+			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 60 })
+			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 60 })
+			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 60 })
 		} else {
 			debug("It's day")
 			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : false })
@@ -123,9 +123,9 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		if(this.isDayTime()){
 			return false;
 		}
-		this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100  })
-		this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100  })
-		this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 100  })
+		this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100 })
+		this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 })
+		this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 100 })
 
 	}
 
