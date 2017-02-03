@@ -153,9 +153,9 @@ var peopleTracker = function(lightManager, internalEventEmitter){
     }
 
     // Test home alone state every 5 minutes
-    if(false) setInterval(function(){
+    if(true) setInterval(function(){
         this.decideIfHomeIsAloneOrNot()
-    }.bind(this), 60 * 5 * 1000)
+    }.bind(this), 1000) // 60 * 5 * 1000
 
 
     setInterval(function(){

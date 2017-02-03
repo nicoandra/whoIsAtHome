@@ -3,7 +3,7 @@ const debug = require('debug')("app:actionScheduler");
 
 function actionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter){
 
-	this.checkCycleDuration = 60; // In seconds
+	this.checkCycleDuration = 1; // 60; // In seconds
 
 	this.internalEventEmitter = internalEventEmitter;
 	this.peopleTracker = peopleTracker;
@@ -119,7 +119,13 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 	this.someoneIsAtHome = function(){
 		// Disable enable heaters back, set temperature back to 22;
-		this.heaterManager.setStatus(22);
+		// this.heaterManager.setGlobalTemperature(22);
+		if(this.isDayTime()){
+			return false;
+		}
+		this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100  })
+		this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100  })
+		this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 100  })
 
 	}
 

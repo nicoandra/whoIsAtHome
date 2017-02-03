@@ -125,9 +125,10 @@ notificationEventEmitter.on('strips', function(data){
 	notificationQueue.unshift(toSend);
 })
 
+/*
 heaterManager.addHeater('Kitchen', 'kitchen', '192.168.1.125', { eventEmitter : notificationEventEmitter });
 heaterManager.addHeater('Living', 'living', '192.168.1.125', { eventEmitter : notificationEventEmitter });
-
+*/
 
 /** HTTP SERVER **/
 var express = require('express'),

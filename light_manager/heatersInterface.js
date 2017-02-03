@@ -128,7 +128,7 @@ function HeatersInterface(){
 		this.handleIncomingPackets(a,b);
 	}.bind(this));
 
-	This.client.on('error', this.handleError.bind(this));
+	this.client.on('error', this.handleError.bind(this));
 
 
 }

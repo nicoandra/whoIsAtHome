@@ -1,6 +1,5 @@
 Heater = require('./heater.js');
 var dgram = require('dgram')
-	, cfg = require(__dirname + '/config/config.'+env+'.js')
 	, debug = require("debug")("app:heaterManager");
 
 function HeaterManager(){
@@ -32,14 +31,24 @@ function HeaterManager(){
 	}
 
 	this.getStatus = function(name){
-		return this.heaters[name].getStatus();
-		// Find heater by name in the array
-		// Get the status
-		// Return the value
+		try {
+			return this.heaters[name].getStatus();
+			// Find heater by name in the array
+			// Get the status
+			// Return the value
+		} catch(exception){
+			debug("setTemperature", exception);
+		}
+
 	}
 
 	this.setTemperature = function(name, temperature){
-		return this.heaters[name].setTemperature(temperature);
+		try {
+			return this.heaters[name].setTemperature(temperature);
+		} catch(exception){
+			debug("setTemperature", exception);
+		}
+
 	}
 
 }

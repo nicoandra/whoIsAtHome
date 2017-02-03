@@ -4,7 +4,7 @@ const debug = require("debug")("app:heater");
 
 
 
-function Heater(name, id, ip, port, dgramClient, serverPort,options){
+function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	this.name = name;
 	this.id = id;
 	this.ip = ip;
