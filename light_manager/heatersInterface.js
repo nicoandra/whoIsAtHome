@@ -48,6 +48,7 @@ function HeatersInterface(){
 	this.broadcastIp = "192.168.1.255";
 	// this.broadcastIp = "192.168.1.128";
 
+	
 	this.discoverHeaters = function(){
 		// Broadcast message
 		this.sendBroadcastMessage(this.discoveryPayload);
@@ -119,7 +120,7 @@ function HeatersInterface(){
 	}
 
 	this.handleError = function(msg, rinfo){
-		debug("ERRR", msg, info);
+		debug("ERRR", msg, rinfo);
 	}
 
 	// this.client.on('message', this.handleIncomingPackets.bind(this));

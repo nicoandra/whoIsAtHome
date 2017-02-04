@@ -1,5 +1,6 @@
 var moment = require('moment');
 const debug = require('debug')("app:actionScheduler");
+const debugTime = require('debug')("app:actionScheduler:time");
 
 function actionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter){
 
@@ -22,14 +23,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 	}
 
 	this.runActionBasedOnHomeStatus = function(){
-		if(this.wasHomeAloneBefore == this.isHomeAlone()){
-			// Return, nothing changed;
-			debug("runActionBasedOnHomeStatus: nothing changed.")
-			return;
-		}
-
-		this.wasHomeAloneBefore = this.isHomeAlone();
-
 		if(this.isHomeAlone()){
 			debug("runActionBasedOnHomeStatus: home is alone. call homeStartedToBeAlone()")
 			this.homeStartedToBeAlone();
@@ -52,7 +45,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 			this.runActionBasedOnHomeStatus();
 		}
-		this.verifyIfNightStartedOrEnded();
 	}
 
 	this.verifyIfNightStartedOrEnded = function(){
@@ -75,9 +67,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 		debug("Is Home Alone in verifyIfNightStartedOrEnded?", this.isHomeAlone());
 
-		if(this.isHomeAlone() && this.lightsShouldBeTurnedOffWhenHomeIsAlone()){
-			this.lightManager.allLightsOff();
-		}
 	}
 
 	this.lightsShouldBeTurnedOffWhenHomeIsAlone = function(){
@@ -103,11 +92,13 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 		if(this.isNightTime()){
 			debug("It's night")
+			debugTime("It's night and the home is alone, turning lights on");
 			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 60 })
 			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 60 })
 			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 60 })
 		} else {
 			debug("It's day")
+			debugTime("It's DAY and the home is alone, turning lights off");
 			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : false })
 			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : false })
 			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : false })
@@ -131,11 +122,18 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 
 	this.isNightTime = function(){
-		hour = moment().hour();
-		if(hour >= this.nightStartsAt || hour < this.nightEndsAt){
-			return true;
+
+		var dayTimeStarts = moment().seconds(0).hour(18).minute(36);
+		var dayTimeEnds = moment().seconds(0).hour(18).minute(37);
+		var now = moment();
+
+		if(now.isAfter(dayTimeStarts) && now.isBefore(dayTimeEnds)){
+			debugTime("After Day Starts and before day ends, is HomeAlone", this.isHomeAlone());
+			return false;
 		}
-		return false
+
+		debugTime("Is NightTime, is HomeAlone", this.isHomeAlone());
+		return true;
 	}
 
 	this.isDayTime  = function(){
