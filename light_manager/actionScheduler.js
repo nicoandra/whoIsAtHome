@@ -11,13 +11,12 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 	this.lightManager = lightManager;
 	this.heaterManager = heaterManager;
 	this.wasNightOnLastCheck = false;
-	this.nightStartsAt = 16;
-	this.nightEndsAt = 8;
 	this.lightsOffAtNightAfter = 1;
 	this.wasHomeAloneBefore = false;
+	this.dayTimeStarts = [7, 0, 0];
+	this.dayTimeEnds = [17, 0, 0];
 
-
-	this.isHomeAlone = function(){
+	this.isHomeAlone = function() {
 		homeStatus = this.peopleTracker.getHomeStatus().home;		
 		return homeStatus.isAlone;
 	}
@@ -64,26 +63,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 		this.runActionBasedOnHomeStatus();
 
-
 		debug("Is Home Alone in verifyIfNightStartedOrEnded?", this.isHomeAlone());
-
-	}
-
-	this.lightsShouldBeTurnedOffWhenHomeIsAlone = function(){
-		if(this.isDayTime()){
-			// During the day, the lights should be off
-			return true;
-		}
-
-		if(this.isNightTime()){
-			hour = moment().hour();
-			if(hour >= this.lightsOffAtNightAfter){
-				// During night, after 1AM, lights should be off.
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	this.homeStartedToBeAlone = function(){
@@ -107,7 +87,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		this.heaterManager.setTemperature(17);
 	}
 
-
 	this.someoneIsAtHome = function(){
 		// Disable enable heaters back, set temperature back to 22;
 		// this.heaterManager.setGlobalTemperature(22);
@@ -120,11 +99,9 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 	}
 
-
 	this.isNightTime = function(){
-
-		var dayTimeStarts = moment().seconds(0).hour(18).minute(36);
-		var dayTimeEnds = moment().seconds(0).hour(18).minute(37);
+		var dayTimeStarts = moment().hour(this.dayTimeStarts[0]).minute(this.dayTimeStarts[1]).seconds(this.dayTimeStarts[2]);
+		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2]);
 		var now = moment();
 
 		if(now.isAfter(dayTimeStarts) && now.isBefore(dayTimeEnds)){
