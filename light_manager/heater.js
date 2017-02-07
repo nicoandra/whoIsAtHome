@@ -15,12 +15,12 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 
 	this.currentTemperature = 999;
 	this.humidity = 999;
-	this.desiredTemp = 14;
+	this.desiredTemperature = 14;
 	this.power = 0;
 	this.upSince = 0;
 	this.downSince = 0;
 
-	this.getStatusPayload = [0x30, 0xFF, Math.floor(this.serverPort / 256).toString(16),  Math.floor(this.serverPort % 256).toString(16)] ; //  Requests for status to be sen back to port
+	this.getStatusPayload = [0x30, 0xFF, Math.floor(this.serverPort / 256),  Math.floor(this.serverPort % 256)] ; //  Requests for status to be sen back to port
 
 	this.flagAsUp = function(){
 		if(this.upSince == 0){
@@ -57,11 +57,29 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 		}.bind(this));
 	}
 
-	this.setStatusFromHeaterResponse = function(buffer){
-
+	this.setValues = function(currentTemperature, desiredTemperature, humidity, heaterPower, powerOutlet){
+		this.currentTemperature = currentTemperature;
+		this.desiredTemperature = desiredTemperature;
+		this.humidity = humidity;
+		this.power = heaterPower;
 	}
 
+
 	this.getStatus = function(){
+		return {
+			temperature: this.currentTemperature,
+			humidity: this.humidity,
+			desiredTemperature: this.desiredTemperature,
+			power: this.power * 10,
+			uptime: this.upSince,
+			downtime: this.downSince
+		}
+	}
+
+	this.requestStatus = function(){
+		this.dgramClient.send(new Buffer(this.getStatusPayload), 0, 4, this.heaterPort, this.ip, function(err,res){
+			console.log(err, res, this.getStatusPayload);
+		}.bind(this));
 
 	}
 
@@ -78,10 +96,10 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	}
 
 	//  Go!!
-	setInterval(this.pollData.bind(this), 60000);	// Poll temperature every minute
+	setInterval(this.getStatus.bind(this), 1000);	// Poll temperature every minute
 
 	setTimeout(function() {
-		this.pollData()
+		this.getStatus()
 	}.bind(this), 10000);
 }
 

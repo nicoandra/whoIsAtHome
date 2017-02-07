@@ -12,6 +12,10 @@ function HeaterManager(){
 	// this.client.on('message', this.handleIncomingPackets.bind(this));
 	this.client.on('message', function(message, networkInfo){
 
+		ip = networkInfo.address;
+		if(!this.heatersByIp[ip]){
+			return ;
+		}
 
 		for(i = 0; i < message.length; i++){
 			value = message.readUInt8(i);
@@ -56,6 +60,9 @@ function HeaterManager(){
 
 		}
 
+		this.heaters[this.heatersByIp[ip]].setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
+
+		/*
 		remoteIp = networkInfo.address;
 
 		console.log(
@@ -63,15 +70,8 @@ function HeaterManager(){
 			temperature, "*C, ", humidity, "%. Desired:",
 			desiredTemperature, "Power:", heaterPower, "/10; Outlet:", powerOutlet
 		);
+		*/
 
-
-		debug("on(message)", a,b,c,d,e,f);
-		ip = a;
-		if(this.heatersByIp[ip] === undefined){
-			debug("Heater with IP", ip, "was not found when handling response. Return.")
-			return;
-		}
-		debug("Going to parse the message!");
 	}.bind(this));
 
 	this.client.on('error', function(a,b,c,d,e,f){
@@ -84,9 +84,16 @@ function HeaterManager(){
 		this.heatersByIp[ip] = name;
 	}
 
-	this.getStatus = function(name){
+	this.getStatus = function(){
 		try {
-			return this.heaters[name].getStatus();
+
+			response = {}
+			Object.keys(this.heaters).forEach( function(name) {
+				response[name] = this.heaters[name].getStatus();
+
+			}.bind(this))
+
+			return response;
 			// Find heater by name in the array
 			// Get the status
 			// Return the value
@@ -102,8 +109,17 @@ function HeaterManager(){
 		} catch(exception){
 			debug("setTemperature", exception);
 		}
-
 	}
+
+	this.client.bind(this.localPort);
+
+	this.queryAllHeaters = function(){
+		Object.keys(this.heaters).forEach( (name) => {
+			this.heaters[name].requestStatus();
+		})
+	}
+
+	setInterval(this.queryAllHeaters.bind(this), 1000);
 
 }
 

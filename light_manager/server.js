@@ -11,12 +11,6 @@ var env = process.env.NODE_ENV || 'development'
 var request = require('request');
 
 
-HeatersInterface = require("./heatersInterface.js");
-heatersInterface = new HeatersInterface();
-heatersInterface.discoverHeaters();
-
-setInterval(heatersInterface.discoverHeaters.bind(heatersInterface), 30000);
-
 var EventEmitter = require('events').EventEmitter
 const path = require('path');
 
@@ -125,10 +119,9 @@ notificationEventEmitter.on('strips', function(data){
 	notificationQueue.unshift(toSend);
 })
 
-/*
-heaterManager.addHeater('Kitchen', 'kitchen', '192.168.1.125', { eventEmitter : notificationEventEmitter });
-heaterManager.addHeater('Living', 'living', '192.168.1.125', { eventEmitter : notificationEventEmitter });
-*/
+/**/
+// this.addHeater = function(name, descriptiveName, id, ip, port, options){
+heaterManager.addHeater('living', 'Living', 1, '192.168.1.113', 8888, { eventEmitter : notificationEventEmitter });
 
 /** HTTP SERVER **/
 var express = require('express'),
@@ -260,7 +253,8 @@ app.get("/angular/system/getNotifications", function(req,res){
 
 
 app.get("/angular/heaters/getStatus", function(req, res){
-	response =  heaterManager.getStatus();
+	console.log("VINO A ESTEEEE");
+	response = heaterManager.getStatus();
 	res.send(response);
 })
 
