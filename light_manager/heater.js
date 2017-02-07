@@ -41,7 +41,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 
 		var temperatureInteger = Math.trunc(desiredTemperature);
 		var temperatureDecimal = Math.trunc((desiredTemperature - temperatureInteger) * 256);
-		var payload = [ 0x10 , this.id.toString(16), temperatureInteger.toString(16), temperatureDecimal.toString(16) ];
+		var payload = [ 0x10 , 0x00, temperatureInteger.toString(16), temperatureDecimal.toString(16) ];
 
 		debug("setHeaterTemperature", name, desiredTemperature, payload);
 
@@ -55,33 +55,13 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 				this.flagAsUp();
 			}
 		}.bind(this));
-
 	}
 
-	this.sendStatusRequest = function(callback){
-		var payload = this.getStatusPayload;
-		this.dgramClient.send(buffer, 0, buffer.length, this.heaterPort, this.host, function(err){
-			if(err){
-				debug("Err sendStatusRequest", err)
-				this.flagAsDown();
-			} else {
-				this.flagAsUp();
-			}
-		}.bind(this));
+	this.setStatusFromHeaterResponse = function(buffer){
+
 	}
 
 	this.getStatus = function(){
-		// @@TODO@@ Make it so we poll the heater here, before sending a response
-		// with a promise!
-		response = new Object();
-		response.id = this.id;
-		response.name = this.name;
-		response.temperature =  this.getTemperature();
-		response.humidity = this.getHumidity();
-		response.power = this.getPower();
-		response.uptime = this.uptime;
-		response.downSince = this.downSince;
-		return response;
 
 	}
 

@@ -10,7 +10,61 @@ function HeaterManager(){
 	this.localPort = 8888;
 
 	// this.client.on('message', this.handleIncomingPackets.bind(this));
-	this.client.on('message', function(a,b,c,d,e,f){
+	this.client.on('message', function(message, networkInfo){
+
+
+		for(i = 0; i < message.length; i++){
+			value = message.readUInt8(i);
+			console.log(i, value);
+
+			messageId = [];
+
+			if(messageId.length == 2 && (messageId[0] != 0x30 || messageId[1] != 0xFF)){
+				console.log("Wrong message...");
+				return ;
+			}
+
+			switch(i){
+				case 1:
+				case 2:
+					messageId.push(value);
+				case 3:
+					temperature = value;
+					break;
+				case 4:
+					temperature += value / 256;
+					break;
+				case 5:
+					desiredTemperature = value;
+					break;
+				case 6:
+					desiredTemperature += desiredTemperature / 256;
+					break;
+				case 7:
+					heaterPower = value;
+					break;
+				case 8:
+					humidity = value;
+					break;
+				case 9:
+					humidity += value / 256;
+					break;
+				case 11:
+					powerOutlet = value === 1;
+					break;
+			}
+
+		}
+
+		remoteIp = networkInfo.address;
+
+		console.log(
+			"Heater at", remoteIp, "> Current:",
+			temperature, "*C, ", humidity, "%. Desired:",
+			desiredTemperature, "Power:", heaterPower, "/10; Outlet:", powerOutlet
+		);
+
+
 		debug("on(message)", a,b,c,d,e,f);
 		ip = a;
 		if(this.heatersByIp[ip] === undefined){
