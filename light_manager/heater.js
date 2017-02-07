@@ -5,6 +5,8 @@ const debug = require("debug")("app:heater");
 
 
 function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
+	this.pollInterval = 60000;
+
 	this.name = name;
 	this.id = id;
 	this.ip = ip;
@@ -41,13 +43,13 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 
 		var temperatureInteger = Math.trunc(desiredTemperature);
 		var temperatureDecimal = Math.trunc((desiredTemperature - temperatureInteger) * 256);
-		var payload = [ 0x10 , 0x00, temperatureInteger.toString(16), temperatureDecimal.toString(16) ];
+		var payload = [ 0x10 , 0x00, temperatureInteger, temperatureDecimal];
 
 		debug("setHeaterTemperature", name, desiredTemperature, payload);
 
 		var buffer = new Buffer(payload);
 
-		this.dgramClient.send(buffer, 0, buffer.length, this.heaterPort, this.host, function(err){
+		this.dgramClient.send(buffer, 0, buffer.length, this.heaterPort, this.ip, function(err){
 			if(err){
 				debug("Err setHeaterTemperature", err)
 				this.flagAsDown();
@@ -95,12 +97,6 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 		return this.power;
 	}
 
-	//  Go!!
-	setInterval(this.getStatus.bind(this), 1000);	// Poll temperature every minute
-
-	setTimeout(function() {
-		this.getStatus()
-	}.bind(this), 10000);
 }
 
 module.exports = Heater;

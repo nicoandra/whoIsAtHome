@@ -1,10 +1,13 @@
 Heater = require('./heater.js');
 var dgram = require('dgram')
-	, debug = require("debug")("app:heaterManager");
+	, debug = require("debug")("app:heaterManager")
+	, debugConnection = require("debug")("app:heaterConnection");
 
 function HeaterManager(){
 	this.heaters = {};
 	this.heatersByIp = {};
+
+	this.pollInterval = 15000;
 
 	this.client = dgram.createSocket('udp4');
 	this.localPort = 8888;
@@ -19,12 +22,11 @@ function HeaterManager(){
 
 		for(i = 0; i < message.length; i++){
 			value = message.readUInt8(i);
-			console.log(i, value);
 
 			messageId = [];
 
 			if(messageId.length == 2 && (messageId[0] != 0x30 || messageId[1] != 0xFF)){
-				console.log("Wrong message...");
+				debugConnection("Wrong message...");
 				return ;
 			}
 
@@ -61,18 +63,8 @@ function HeaterManager(){
 		}
 
 		this.heaters[this.heatersByIp[ip]].setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
-
-		/*
-		remoteIp = networkInfo.address;
-
-		console.log(
-			"Heater at", remoteIp, "> Current:",
-			temperature, "*C, ", humidity, "%. Desired:",
-			desiredTemperature, "Power:", heaterPower, "/10; Outlet:", powerOutlet
-		);
-		*/
-
 	}.bind(this));
+
 
 	this.client.on('error', function(a,b,c,d,e,f){
 		debug("on(error)", a,b,c,d,e,f);
@@ -90,6 +82,8 @@ function HeaterManager(){
 			response = {}
 			Object.keys(this.heaters).forEach( function(name) {
 				response[name] = this.heaters[name].getStatus();
+
+				this.heaters[name].setTemperature(18);
 
 			}.bind(this))
 
@@ -119,8 +113,11 @@ function HeaterManager(){
 		})
 	}
 
-	setInterval(this.queryAllHeaters.bind(this), 1000);
+	this.client.on("listening", this.queryAllHeaters.bind(this));
+	setInterval(this.queryAllHeaters.bind(this), this.pollInterval);
+	
 
 }
+
 
 module.exports = HeaterManager
