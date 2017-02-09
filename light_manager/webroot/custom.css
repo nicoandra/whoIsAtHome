@@ -29,6 +29,8 @@
 
 
 .nav.nav-pills > li > a {
+    padding-left: 10px;
+    padding-right: 10px;
     padding-top: 5px;
     padding-bottom: 5px;
 }
@@ -49,6 +51,11 @@
         margin-right: 0;
         margin-bottom:0;
     }
+
+    .panel-body, .list-group-item {
+        padding: 5px;
+    }
+
 }
 
                         
