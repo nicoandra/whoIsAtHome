@@ -215,7 +215,7 @@
 									</ng-if>
 
 									<ng-if ng-if="program.childPrograms.length > 0">
-										<div class="col-md-2 col-xs-4">
+										<div class="col-md-2 col-xs-2">
 											{{ program.displayName }}
 										</div>
 
@@ -278,23 +278,23 @@
 						<ul class="list-group">
 							<ng-repeat ng-repeat="(name, heater) in heaters">
 								<li class="row list-group-item" >
-									<div class="col-md-1 col-xs-1"  >
+									<div class="col-md-1 col-xs-6"  >
 										{{ heater.displayName }}
 									</div>
-									<div class="col-md-1 col-xs-1">
+									<div class="col-md-1 col-xs-3">
 										{{ heater.temperature | number: 2 }}°
 									</div>
-									<div class="col-md-1 col-xs-1">
+									<div class="col-md-1 col-xs-3">
 										{{ heater.humidity | number: 2 }}%
 									</div>
 
-									<div class="col-md-2 col-xs-2">
+									<div class="col-md-2 col-xs-9">
 										<h-number value="heaters[name].desiredTemperature" min="8" max="30" step="0.1" change="heaterChanged(name)">
 											<input type="text" ng-model="heaters[name].desiredTemperature">
 										</h-number>
 									</div>
 
-									<div class="col-md-1 col-xs-1">
+									<div class="col-md-1 col-xs-3">
 										<span class="label label-success" ng-if="heater.power > 0">{{ heater.power }}</span>
 										
 										<span ng-if="heater.downSince">
