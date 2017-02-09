@@ -315,7 +315,7 @@
 
 
 			<div class="panel-footer">
-				Nic is {{ homeStatus.people.nico }}. Home is {{ homeStatus.home.isAlone ? 'alone' : 'occupied' }} since {{ homeStatus.home.sinceWhen }}.
+				Nic is {{ homeStatus.people.nico }}. Home is {{ homeStatus.home.isAlone ? 'alone' : 'occupied' }} since {{ homeStatus.home.sinceWhen | date: 'medium' }}.
 			</div>
 
 		</div><!-- Closing panel panel-default -->
