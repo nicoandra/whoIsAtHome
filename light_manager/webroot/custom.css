@@ -35,7 +35,7 @@
 
 /* Disable margins and paddings in Mobile */
 @media (max-width: 978px) {
-    .container {
+    .container, .container-fluid {
         padding:0;
         margin:0;
     }
