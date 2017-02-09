@@ -39,8 +39,9 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	}
 
 	this.setTemperature = function(desiredTemperature){
-		desiredTemperature = Math.abs(desiredTemperature);
+		desiredTemperature = Math.round(Math.abs(desiredTemperature) * 10) / 10;
 
+		this.desiredTemperature = desiredTemperature;
 		var temperatureInteger = Math.trunc(desiredTemperature);
 		var temperatureDecimal = Math.trunc((desiredTemperature - temperatureInteger) * 256);
 		var payload = [ 0x10 , 0x00, temperatureInteger, temperatureDecimal];
@@ -69,6 +70,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 
 	this.getStatus = function(){
 		return {
+			displayName: this.name ,
 			temperature: this.currentTemperature,
 			humidity: this.humidity,
 			desiredTemperature: this.desiredTemperature,

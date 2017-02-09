@@ -4,7 +4,7 @@ const debugTime = require('debug')("app:actionScheduler:time");
 
 function actionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter){
 
-	this.checkCycleDuration = 1; // 60; // In seconds
+	this.checkCycleDuration = 60; // 60; // In seconds
 
 	this.internalEventEmitter = internalEventEmitter;
 	this.peopleTracker = peopleTracker;

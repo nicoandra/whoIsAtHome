@@ -18,6 +18,9 @@
 
 	<script src="/bower_components/bootstrap/js/bootstrap.js"></script>
 
+	<script src="/bower_components/angular-number-picker/dist/angular-number-picker.js"></script>
+
+
 	<style>
 		span.selectedOption {
 			font-weight: bold;
@@ -275,17 +278,20 @@
 						</div>
 
 						<ul class="list-group">
-							<ng-repeat ng-repeat="heater in heaters">
+							<ng-repeat ng-repeat="(name, heater) in heaters">
 								<li class="row list-group-item" >
 
 									<div class="col-md-2 col-xs-2"  >
-										{{ heater.name }}
+										{{ heater.displayName }}
 									</div>
 									<div class="col-md-2 col-xs-2">
-										<strong>{{ heater.temperature }}</strong>
+										<strong>{{ heater.temperature | number: 2 }}° {{ heater.humidity | number: 2}}%</strong>
 									</div>
-									<div class="col-md-2 col-xs-2" ng-if="heater.currentHumidity">
-										Humidity {{ heater.currentHumidity }} %
+
+									<div class="col-md-2 col-xs-2">
+										<h-number value="heaters[name].desiredTemperature" min="8" max="30" step="0.1" change="heaterChanged(name)" ng-model-options="{ debounce: 1000 }">
+											<input type="text" ng-model="heaters[name].desiredTemperature">
+										</h-number>
 									</div>
 
 									<div class="col-md-2 col-xs-2">
@@ -322,7 +328,7 @@
 </body>
 
 <script type="text/javascript">
-	angular.module("LightManagerApp", [])
+	angular.module("LightManagerApp", [ ngNumberPicker ])
 		.controller("LightManagerController", function($scope, $http, $timeout){
 
 			$scope.homeStatus = {
@@ -352,6 +358,17 @@
 			}
 			$scope.requestStatus = false;
 
+
+			$scope.heaterChanged = function(name){
+				$http.post(
+					"/angular/heathers/set", 
+					[{ [name] : $scope.heaters[name].desiredTemperature }]
+				).success(
+					function(){
+						$scope.getHeaters()
+					}
+				);
+			}
 
 			$scope.requestStarted = function(){
 				$scope.requestStatus = true;

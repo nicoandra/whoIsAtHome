@@ -31,7 +31,6 @@ var peopleTracker = function(lightManager, internalEventEmitter){
     }
 
 
-
     this.peopleAtHome = {}
 
     this.setAsAway = function(name){

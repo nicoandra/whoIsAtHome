@@ -62,6 +62,8 @@ function HeaterManager(){
 
 		}
 
+		console.log("In the response, the heaterPower is", heaterPower);
+
 		this.heaters[this.heatersByIp[ip]].setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
 	}.bind(this));
 
@@ -82,8 +84,10 @@ function HeaterManager(){
 			response = {}
 			Object.keys(this.heaters).forEach( function(name) {
 				response[name] = this.heaters[name].getStatus();
-
-				this.heaters[name].setTemperature(18);
+				response[name].name = name;
+				response[name].desiredTemperature = Math.round(response[name].desiredTemperature * 10) / 10;	// Round to 1 decimal
+				
+				// this.heaters[name].setTemperature(18);
 
 			}.bind(this))
 
@@ -98,6 +102,9 @@ function HeaterManager(){
 	}
 
 	this.setTemperature = function(name, temperature){
+
+		temperature = Math.round(temperature * 10) / 10; 	// Round to 1 decimal
+
 		try {
 			return this.heaters[name].setTemperature(temperature);
 		} catch(exception){
@@ -105,14 +112,35 @@ function HeaterManager(){
 		}
 	}
 
-	this.client.bind(this.localPort);
-
+	
 	this.queryAllHeaters = function(){
 		Object.keys(this.heaters).forEach( (name) => {
 			this.heaters[name].requestStatus();
 		})
 	}
 
+	this.setMultipleStatus = function(statuses, callback){
+		if(typeof callback !== "function"){
+			callback = function(){};
+		}
+
+		statuses.forEach(function(status){
+			try {
+				heatherName = Object.keys(status)[0];
+				temperature = status[heatherName];
+				this.setTemperature(heatherName, temperature);
+				console.log("Updating", heatherName, temperature);
+			} catch(exception){
+				console.log("ERRRRR", exception);
+			}
+		}.bind(this))
+
+		callback();
+
+	}
+
+
+	this.client.bind(this.localPort);
 	this.client.on("listening", this.queryAllHeaters.bind(this));
 	setInterval(this.queryAllHeaters.bind(this), this.pollInterval);
 	
