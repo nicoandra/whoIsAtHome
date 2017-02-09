@@ -51,6 +51,18 @@
         margin-right: 0;
         margin-bottom:0;
     }
+
+    /* For heaters input */
+    .form-control input[type=text] {
+        width: 45px;
+        text-align: center;
+        border: none;
+    }
+
+    div.input-group {
+        width: 100%;
+    }
+
 }
 
                         

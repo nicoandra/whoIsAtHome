@@ -4,6 +4,7 @@
     <list default="true" id="0bd71bc8-f7e7-4d09-bd2e-c1e9620f9611" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/views/index.ejs" afterPath="$PROJECT_DIR$/light_manager/views/index.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/webroot/custom.css" afterPath="$PROJECT_DIR$/light_manager/webroot/custom.css" />
     </list>
     <ignored path="lightManager.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -77,10 +78,10 @@
       <file leaf-file-name="index.ejs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/light_manager/views/index.ejs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="317" column="165" selection-start-line="317" selection-start-column="165" selection-end-line="317" selection-end-column="165" />
+            <state relative-caret-position="496">
+              <caret line="303" column="88" selection-start-line="303" selection-start-column="88" selection-end-line="303" selection-end-column="88" />
               <folding>
-                <marker date="1486683161914" expanded="true" signature="3157:3371" ph="{...}" />
+                <marker date="1486683670984" expanded="true" signature="3157:3371" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -89,8 +90,8 @@
       <file leaf-file-name="custom.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/light_manager/webroot/custom.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="562">
-              <caret line="53" column="0" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+            <state relative-caret-position="715">
+              <caret line="62" column="20" selection-start-line="62" selection-start-column="20" selection-end-line="62" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -409,7 +410,7 @@
       <workItem from="1485881458668" duration="9567000" />
       <workItem from="1485962222564" duration="26147000" />
       <workItem from="1486408333393" duration="4551000" />
-      <workItem from="1486659872659" duration="11495000" />
+      <workItem from="1486659872659" duration="12004000" />
     </task>
     <task id="LOCAL-00001" summary="Start to build new Heaters interface, expecting more info from the Thermo App&#10;Making it so we can build an Angular UI for Web browsers.">
       <created>1476213817069</created>
@@ -705,11 +706,18 @@
       <option name="project" value="LOCAL" />
       <updated>1486682986540</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="Mobile interface">
+      <created>1486683170340</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1486683170340</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="148485000" />
+    <option name="totallyTimeSpent" value="148994000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1924" y="-4" width="1928" height="1088" extended-state="6" />
@@ -847,7 +855,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1486683161914" expanded="true" signature="3157:3371" ph="{...}" />
+            <marker date="1486683670984" expanded="true" signature="3157:3371" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -1136,18 +1144,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/webroot/custom.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="562">
-          <caret line="53" column="0" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+        <state relative-caret-position="715">
+          <caret line="62" column="20" selection-start-line="62" selection-start-column="20" selection-end-line="62" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/views/index.ejs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="317" column="165" selection-start-line="317" selection-start-column="165" selection-end-line="317" selection-end-column="165" />
+        <state relative-caret-position="496">
+          <caret line="303" column="88" selection-start-line="303" selection-start-column="88" selection-end-line="303" selection-end-column="88" />
           <folding>
-            <marker date="1486683161914" expanded="true" signature="3157:3371" ph="{...}" />
+            <marker date="1486683670984" expanded="true" signature="3157:3371" ph="{...}" />
           </folding>
         </state>
       </provider>
