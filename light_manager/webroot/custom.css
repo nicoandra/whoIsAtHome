@@ -33,6 +33,24 @@
     padding-bottom: 5px;
 }
 
+/* Disable margins and paddings in Mobile */
+@media (max-width: 978px) {
+    .container {
+        padding:0;
+        margin:0;
+    }
+
+    body {
+        padding:0;
+    }
+
+    .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom:0;
+    }
+}
+
                         
 .refreshButton.spinning {     opacity: 1;  }
 .refreshButton.glyphicon-thumbs-up {     opacity: 1; }
