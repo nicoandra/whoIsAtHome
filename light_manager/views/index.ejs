@@ -209,13 +209,13 @@
 								<li class="row list-group-item">
 
 									<ng-if ng-if="program.statusToApply.length > 0">
-										<div class="col-md-6 col-xs-6" ng-class="{'bg-success': program.key == activeProgram}">
+										<div class="col-md-6 col-xs-4" ng-class="{'bg-success': program.key == activeProgram}">
 											<a href="" ng-click="sendLightProgramByKey(program.key)">{{ program.displayName }}</a>
 										</div>
 									</ng-if>
 
 									<ng-if ng-if="program.childPrograms.length > 0">
-										<div class="col-md-2 col-xs-2">
+										<div class="col-md-2 col-xs-4">
 											{{ program.displayName }}
 										</div>
 

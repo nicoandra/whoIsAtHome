@@ -4,7 +4,6 @@
     <list default="true" id="0bd71bc8-f7e7-4d09-bd2e-c1e9620f9611" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/views/index.ejs" afterPath="$PROJECT_DIR$/light_manager/views/index.ejs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/webroot/custom.css" afterPath="$PROJECT_DIR$/light_manager/webroot/custom.css" />
     </list>
     <ignored path="lightManager.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -78,10 +77,10 @@
       <file leaf-file-name="index.ejs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/light_manager/views/index.ejs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="690">
-              <caret line="305" column="40" selection-start-line="305" selection-start-column="40" selection-end-line="305" selection-end-column="40" />
+            <state relative-caret-position="232">
+              <caret line="207" column="80" selection-start-line="207" selection-start-column="80" selection-end-line="207" selection-end-column="80" />
               <folding>
-                <marker date="1486682823459" expanded="true" signature="3157:3371" ph="{...}" />
+                <marker date="1486682903232" expanded="true" signature="3157:3371" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -410,7 +409,7 @@
       <workItem from="1485881458668" duration="9567000" />
       <workItem from="1485962222564" duration="26147000" />
       <workItem from="1486408333393" duration="4551000" />
-      <workItem from="1486659872659" duration="11156000" />
+      <workItem from="1486659872659" duration="11312000" />
     </task>
     <task id="LOCAL-00001" summary="Start to build new Heaters interface, expecting more info from the Thermo App&#10;Making it so we can build an Angular UI for Web browsers.">
       <created>1476213817069</created>
@@ -692,11 +691,18 @@
       <option name="project" value="LOCAL" />
       <updated>1486682610192</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Mobile interface">
+      <created>1486682831234</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1486682831234</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="148146000" />
+    <option name="totallyTimeSpent" value="148302000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1924" y="-4" width="1928" height="1088" extended-state="6" />
@@ -834,7 +840,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1486682823459" expanded="true" signature="3157:3371" ph="{...}" />
+            <marker date="1486682903232" expanded="true" signature="3157:3371" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -1131,10 +1137,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/views/index.ejs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="690">
-          <caret line="305" column="40" selection-start-line="305" selection-start-column="40" selection-end-line="305" selection-end-column="40" />
+        <state relative-caret-position="232">
+          <caret line="207" column="80" selection-start-line="207" selection-start-column="80" selection-end-line="207" selection-end-column="80" />
           <folding>
-            <marker date="1486682823459" expanded="true" signature="3157:3371" ph="{...}" />
+            <marker date="1486682903232" expanded="true" signature="3157:3371" ph="{...}" />
           </folding>
         </state>
       </provider>
