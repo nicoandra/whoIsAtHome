@@ -254,17 +254,16 @@ app.get("/angular/system/getNotifications", function(req,res){
 
 app.post("/angular/heathers/set", function(req,res){
 	console.log("HEATHER CHANGE", req.body)
-
 	heaterManager.setMultipleStatus(req.body, function(){
-		res.send("OK");
+		heaterManager.getStatus(function(err, response){
+			console.log("Sending response", response)
+			res.send(response);
+		});
 	})
-
-
 })
 
 
 app.get("/angular/heaters/getStatus", function(req, res){
-	console.log("VINO A ESTEEEE");
 	response = heaterManager.getStatus();
 	res.send(response);
 })

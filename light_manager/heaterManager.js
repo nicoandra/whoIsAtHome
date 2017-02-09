@@ -16,53 +16,27 @@ function HeaterManager(){
 	this.client.on('message', function(message, networkInfo){
 
 		ip = networkInfo.address;
+		if(message[0] == 0x31 && message[1] == 0xFF){
+			debug("Status received from ", ip);
+		} else {
+			debugConnection("Wrong message...");
+			return ;
+		}
+
+		debug("RES", message[5], message[6]);
+
+		
 		if(!this.heatersByIp[ip]){
 			return ;
 		}
 
-		for(i = 0; i < message.length; i++){
-			value = message.readUInt8(i);
+		temperature = message[3] + message[4] / 256;
+		desiredTemperature = message[5] + message[6] / 256;
+		heaterPower = message[7];
+		humidity = message[8] + message[9] / 256;
+		powerOutlet = message[11] === 1;
 
-			messageId = [];
-
-			if(messageId.length == 2 && (messageId[0] != 0x30 || messageId[1] != 0xFF)){
-				debugConnection("Wrong message...");
-				return ;
-			}
-
-			switch(i){
-				case 1:
-				case 2:
-					messageId.push(value);
-				case 3:
-					temperature = value;
-					break;
-				case 4:
-					temperature += value / 256;
-					break;
-				case 5:
-					desiredTemperature = value;
-					break;
-				case 6:
-					desiredTemperature += desiredTemperature / 256;
-					break;
-				case 7:
-					heaterPower = value;
-					break;
-				case 8:
-					humidity = value;
-					break;
-				case 9:
-					humidity += value / 256;
-					break;
-				case 11:
-					powerOutlet = value === 1;
-					break;
-			}
-
-		}
-
-		console.log("In the response, the heaterPower is", heaterPower);
+		debug("In the response from",ip,"the heaterPower is", heaterPower, desiredTemperature);
 
 		this.heaters[this.heatersByIp[ip]].setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
 	}.bind(this));
@@ -78,7 +52,8 @@ function HeaterManager(){
 		this.heatersByIp[ip] = name;
 	}
 
-	this.getStatus = function(){
+	this.getStatus = function(callback){
+
 		try {
 
 			response = {}
@@ -91,15 +66,23 @@ function HeaterManager(){
 
 			}.bind(this))
 
-			return response;
+			if(typeof callback != "function"){
+				return response;
+			}
+			callback(false, response);
+			
 			// Find heater by name in the array
 			// Get the status
 			// Return the value
 		} catch(exception){
 			debug("setTemperature", exception);
+			if(typeof callback != "function"){
+				return false;
+			}			
+			callback(true, null);
 		}
-
 	}
+	
 
 	this.setTemperature = function(name, temperature){
 
