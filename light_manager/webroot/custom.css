@@ -28,6 +28,11 @@
 }
 
 
+.nav.nav-pills > li > a {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
                         
 .refreshButton.spinning {     opacity: 1;  }
 .refreshButton.glyphicon-thumbs-up {     opacity: 1; }

@@ -10,7 +10,6 @@ var env = process.env.NODE_ENV || 'development'
 
 var request = require('request');
 
-
 var EventEmitter = require('events').EventEmitter
 const path = require('path');
 
@@ -19,6 +18,10 @@ notificationEventEmitter.setMaxListeners(100);
 
 var internalEventEmitter = new EventEmitter()
 internalEventEmitter.setMaxListeners(100);
+internalEventEmitter.on("heaterUpdated", function(data) {
+	// When a heater changes, emit a changeEvent so the interfaces are updated
+	changeEventEmitter.emit("message", data);
+});
 
 var LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
@@ -29,8 +32,7 @@ var peopleTracker = new PeopleTracker(lightManager, internalEventEmitter)
 
 /** Prepare heaters */
 HeaterManager = require('./heaterManager.js');
-heaterManager = new HeaterManager();
-
+heaterManager = new HeaterManager(internalEventEmitter);
 
 ActionScheduler = require('./actionScheduler.js');
 actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter );
@@ -399,3 +401,6 @@ httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
 });
 
 /** END OF HTTP SERVER **/
+
+
+

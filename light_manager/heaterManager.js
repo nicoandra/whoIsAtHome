@@ -3,29 +3,32 @@ var dgram = require('dgram')
 	, debug = require("debug")("app:heaterManager")
 	, debugConnection = require("debug")("app:heaterConnection");
 
-function HeaterManager(){
+function HeaterManager(eventEmitter){
 	this.heaters = {};
 	this.heatersByIp = {};
+	this.eventEmitter = eventEmitter;
 
 	this.pollInterval = 15000;
 
 	this.client = dgram.createSocket('udp4');
 	this.localPort = 8888;
 
-	// this.client.on('message', this.handleIncomingPackets.bind(this));
-	this.client.on('message', function(message, networkInfo){
 
+	this.handleMovementDetectedResponse = function(message, networkInfo){
 		ip = networkInfo.address;
-		if(message[0] == 0x31 && message[1] == 0xFF){
-			debug("Status received from ", ip);
-		} else {
-			debugConnection("Wrong message...");
-			return ;
+
+		if(!this.heatersByIp[ip]){
+			return false;
 		}
+		heaterName = this.heaters[this.heatersByIp[ip]].name;
+		debug("Movement has been detected in", heaterName);
+		eventEmitter.emit("movementDetected", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip });
+		return true;
+	}
 
-		debug("RES", message[5], message[6]);
+	this.handleHeaterStatusResponse = function(message, networkInfo){
+		ip = networkInfo.address;
 
-		
 		if(!this.heatersByIp[ip]){
 			return ;
 		}
@@ -39,6 +42,25 @@ function HeaterManager(){
 		debug("In the response from",ip,"the heaterPower is", heaterPower, desiredTemperature);
 
 		this.heaters[this.heatersByIp[ip]].setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
+		eventEmitter.emit("heaterUpdated", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip });
+	}
+
+	// this.client.on('message', this.handleIncomingPackets.bind(this));
+	this.client.on('message', function(message, networkInfo){
+		ip = networkInfo.address;
+		if(message[0] == 0x31 && message[1] == 0xFF && message.length === 12) {
+			debug("Status received from ", ip);
+			return this.handleHeaterStatusResponse(message, networkInfo);
+		}
+
+		if(message[0] == 0x11 && message[1] == 0x00){
+			return this.handleMovementDetectedResponse(message, networkInfo);
+		}
+
+			debugConnection("Wrong message...");
+			return ;
+
+
 	}.bind(this));
 
 
