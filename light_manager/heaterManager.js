@@ -57,8 +57,26 @@ function HeaterManager(eventEmitter){
 			return this.handleMovementDetectedResponse(message, networkInfo);
 		}
 
-			debugConnection("Wrong message...");
+		console.log(message, networkInfo);
+
+		if(message.length = 4 && message[0] == 0x41 && message[1] == 0xFF && message[2] == 0x00){
+			if(message[3] == 0x01){
+				console.log("CAMBIOOOO");
+				eventEmitter.emit("lightsSwitchProgramRequested", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip, program: "switch" });
+				return;
+			}
+
+			if(message[3] == 0x02){
+				console.log("OFFF");
+				eventEmitter.emit("lightsSwitchProgramRequested", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip , program: "off"});
+				return;
+			}
 			return ;
+		}
+
+
+		debugConnection("Wrong message...");
+		return ;
 
 
 	}.bind(this));

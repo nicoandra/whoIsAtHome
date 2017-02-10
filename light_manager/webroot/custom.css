@@ -61,6 +61,12 @@
 
     div.input-group {
         width: 100%;
+        text-align: center;
+    }
+
+    div#heatersTab ul.list-group div {
+        padding-top: 5px;
+        /*padding-bottom: 5px;*/
     }
 
 }

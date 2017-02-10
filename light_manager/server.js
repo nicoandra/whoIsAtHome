@@ -2,6 +2,7 @@ var env = process.env.NODE_ENV || 'development'
 	, cfg = require(__dirname + '/config/config.'+env+'.js')
 	, dgram = require('dgram')
 	, debug = require('debug')("app:server")
+	, debugEvents = require('debug')('app:events')
 	, moment = require('moment')
 	, bodyParser = require('body-parser')
 	, PeopleTracker = require('./peopleTracker.js')
@@ -20,8 +21,26 @@ var internalEventEmitter = new EventEmitter()
 internalEventEmitter.setMaxListeners(100);
 internalEventEmitter.on("heaterUpdated", function(data) {
 	// When a heater changes, emit a changeEvent so the interfaces are updated
+	debugEvents("heaterUpdated", data);
 	changeEventEmitter.emit("message", data);
 });
+
+internalEventEmitter.on("lightsSwitchProgramRequested", function(data) {
+	if(data.program === "switch"){
+		lightManager.iterateBetweenChildPrograms("13aa6f8804c24f132573b221c93f0e87");
+		debugEvents("lightsSwitchProgramRequested", data);
+		return;
+	}
+
+	if(data.program === "off"){
+		lightManager.allLightsOff();
+		debugEvents("lightsSwitchProgramRequested", data);
+		return;
+	}
+
+	changeEventEmitter.emit("message", data);
+});
+
 
 var LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
