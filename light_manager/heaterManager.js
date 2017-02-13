@@ -7,6 +7,7 @@ function HeaterManager(eventEmitter){
 	this.heaters = {};
 	this.heatersByIp = {};
 	this.eventEmitter = eventEmitter;
+	this.globalTemperature = -1;
 
 	this.pollInterval = 15000;
 
