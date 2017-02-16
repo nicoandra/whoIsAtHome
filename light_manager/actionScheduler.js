@@ -11,10 +11,20 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 	this.lightManager = lightManager;
 	this.heaterManager = heaterManager;
 	this.wasNightOnLastCheck = false;
-	this.lightsOffAtNightAfter = 1;
-	this.wasHomeAloneBefore = false;
 	this.dayTimeStarts = [7, 0, 0];
 	this.dayTimeEnds = [17, 0, 0];
+
+	this.getTimeWhenLightsGoOff = function(){
+		dayNumber = moment().day(); // Get the day number
+
+		if(dayNumber >= 5){
+			// Friday (5) and Saturday (6), close the lights later
+			return moment().hour(2).minute(30).seconds(0);
+		}
+
+		// During the week, turn them off much earlier
+		return moment().hour(0).minute(30).seconds(0);
+	}
 
 	this.isHomeAlone = function() {
 		homeStatus = this.peopleTracker.getHomeStatus().home;		
