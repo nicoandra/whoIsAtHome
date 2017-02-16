@@ -65,10 +65,15 @@ server.on("message", function(message, networkInfo){
 	);
 })
 
-server.bind(8888);
 
-payload = setTempPayload;
 
-server.send(new Buffer(payload), 0, 4, 8888, "192.168.1.113", function(err,res){
+payload = getStatusPayload;
+
+
+server.bind(8888, function(){
+	server.setBroadcast(true);	
+});
+
+server.send(new Buffer(payload), 0, 4, 8888, "192.168.1.255", function(err,res){
 	console.log(err, res);
 });

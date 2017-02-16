@@ -142,7 +142,8 @@ notificationEventEmitter.on('strips', function(data){
 
 /**/
 // this.addHeater = function(name, descriptiveName, id, ip, port, options){
-heaterManager.addHeater('living', 'Living', 1, '192.168.1.113', 8888, { eventEmitter : notificationEventEmitter });
+heaterManager.addHeater('dev', 'Dev', 1, '192.168.1.113', 8888, { eventEmitter : notificationEventEmitter });
+heaterManager.addHeater('living', 'Living', 1, '192.168.1.130', 8888, { eventEmitter : notificationEventEmitter });
 
 /** HTTP SERVER **/
 var express = require('express'),
