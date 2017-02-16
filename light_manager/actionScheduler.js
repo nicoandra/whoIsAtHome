@@ -146,10 +146,18 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		}
 
 		var now = moment();
+		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2]);
+		if(now.isAfter(dayTimeEnds)){
+			// We're facing the night time now
+			return false;
+		}
+
 		if(now.isBefore(this.getTimeWhenLightsGoOff())) {
 			// If it's too early to turn the lights off, don't do anything
 			return false;
 		}
+
+
 
 		// Do not turn on the lights when it's too late.
 		debugTime("The home is alone, but it is too late to turn the lights on.");
