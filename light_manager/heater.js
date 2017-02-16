@@ -86,7 +86,6 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 		this.dgramClient.send(new Buffer(this.getStatusPayload), 0, 4, this.heaterPort, this.ip, function(err,res){
 			debug("Sent status request to ", this.name)
 		}.bind(this));
-
 	}
 
 	this.getTemperature = function(){
