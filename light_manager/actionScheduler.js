@@ -81,7 +81,14 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		debug('Called homeStartedToBeAlone');
 
 		if(this.isNightTime()){
-			debug("It's night")
+			debug("It's night");
+
+			if(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate()){
+				// Do not turn on the lights when it's too late.
+				debugTime("The home is alone, but it is too late to turn the lights on.");
+				return ;
+			}
+
 			debugTime("It's night and the home is alone, turning lights on");
 			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 60 })
 			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 60 })
@@ -92,7 +99,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : false })
 			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : false })
 			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : false })
-
 		}
 		this.heaterManager.setTemperature(17);
 	}
@@ -127,9 +133,37 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		return !this.isNightTime();
 	}
 
+
+	this.turnOffLightsWhenHomeIsAloneAndItIsTooLate = function(){
+		if(!this.isHomeAlone()){
+			// If there's someone at home, don't do anything
+			return false;
+		}
+
+		if(!this.isNightTime()){
+			// If it is not night time, don't do anything
+			return false;
+		}
+
+		if(now.isBefore(this.getTimeWhenLightsGoOff())) {
+			// If it's too early to turn the lights off, don't do anything
+			return false;
+		}
+
+		// Do not turn on the lights when it's too late.
+		debugTime("The home is alone, but it is too late to turn the lights on.");
+		this.lightManager.setStatus({ lightName: 'officeLamp', onOff : false })
+		this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : false })
+		this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : false })
+		return true;
+
+	}
+
+
 	this.start = function(){
 		setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
+		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), this.checkCycleDuration * 1000);
 	}
 
 	this.start();

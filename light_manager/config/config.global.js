@@ -7,6 +7,7 @@ config.milight = [{host : '192.168.1.148' , port : 8899, delayBetweenCommands : 
 
 
 
+config.email = require("./restricted/mail.js");
 
 config.peopleTracker = {
 	defaultStatus : { nico : "away" }

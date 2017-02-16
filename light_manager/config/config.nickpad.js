@@ -12,4 +12,5 @@ config.milight = [
 config.peopleTracker = {
 	defaultStatus : { nico : "atHome" }
 }
+
 module.exports = config;
