@@ -426,7 +426,7 @@ httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
 console.log(cfg);
 // return ;
 
-
+/*
 let smtpConfig = {
 	host: 'smtp.gmail.com',
 	port: 587,
@@ -460,3 +460,4 @@ var message = {
 transporter.sendMail(message, function(err, info){
 	console.log('send', err, info);
 })
+*/
