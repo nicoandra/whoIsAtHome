@@ -55,7 +55,7 @@ function HeaterManager(eventEmitter){
 				to: 'nico@nmac.com.ar'
 			};
 
-			message.subject = "Alert: temperature in " + heaterName + " is " . temperature;
+			message.subject = "Alert: temperature in " + heaterName + " is " + temperature;
 			message.text = message.subject;
 			message.html = message.subject;
 
