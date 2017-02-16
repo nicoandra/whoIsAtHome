@@ -145,6 +145,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 			return false;
 		}
 
+		var now = moment();
 		if(now.isBefore(this.getTimeWhenLightsGoOff())) {
 			// If it's too early to turn the lights off, don't do anything
 			return false;
@@ -156,9 +157,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : false })
 		this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : false })
 		return true;
-
 	}
-
 
 	this.start = function(){
 		setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);

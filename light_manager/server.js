@@ -423,4 +423,40 @@ httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
 /** END OF HTTP SERVER **/
 
 
+console.log(cfg);
+// return ;
 
+
+let smtpConfig = {
+	host: 'smtp.gmail.com',
+	port: 587,
+	secure: false, // upgrade later with STARTTLS
+	auth: {
+		user: 'user@gmail.com',
+		pass: 'pass'
+	}
+};
+
+var message = {
+	from: 'sender@server.com',
+	to: 'receiver@sender.com',
+	subject: 'Message title',
+	text: 'Plaintext version of the message',
+	html: '<p>HTML version of the message</p>'
+};
+
+
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
+var message = {
+	from: {name: 'HomeOwn', address: 'proliant@nmac.com.ar'},
+	to: 'nico@nmac.com.ar',
+	subject: 'toda adentro',
+	text: ' text message',
+	html: '<b>html</b> message'
+};
+
+transporter.sendMail(message, function(err, info){
+	console.log('send', err, info);
+})

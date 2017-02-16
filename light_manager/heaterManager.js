@@ -1,5 +1,7 @@
 Heater = require('./heater.js');
-var dgram = require('dgram')
+var env = process.env.NODE_ENV || 'development'
+	, dgram = require('dgram')
+	, cfg = require(__dirname + '/config/config.'+env+'.js')
 	, debug = require("debug")("app:heaterManager")
 	, debugConnection = require("debug")("app:heaterConnection");
 
@@ -42,6 +44,26 @@ function HeaterManager(eventEmitter){
 
 		debug("In the response from",ip,"the heaterPower is", heaterPower, desiredTemperature);
 
+		heaterName = this.heaters[this.heatersByIp[ip]].name;
+
+		if(temperature < 10 || temperature > 40 || temperature > 15){
+			var nodemailer = require('nodemailer');
+			var smtpTransport = require('nodemailer-smtp-transport');
+			var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
+			var message = {
+				from: {name: 'HomeOwn', address: 'proliant@nmac.com.ar'},
+				to: 'nico@nmac.com.ar'
+			};
+
+			message.subject = "Alert: temperature in " + heaterName + " is " . temperature;
+			message.text = message.subject;
+			message.html = message.subject;
+
+			transporter.sendMail(message, function(err, info){
+				console.log('send', err, info);
+			})
+		}
+
 		this.heaters[this.heatersByIp[ip]].setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
 		eventEmitter.emit("heaterUpdated", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip });
 	}
@@ -62,13 +84,11 @@ function HeaterManager(eventEmitter){
 
 		if(message.length = 4 && message[0] == 0x41 && message[1] == 0xFF && message[2] == 0x00){
 			if(message[3] == 0x01){
-				console.log("CAMBIOOOO");
 				eventEmitter.emit("lightsSwitchProgramRequested", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip, program: "switch" });
 				return;
 			}
 
 			if(message[3] == 0x02){
-				console.log("OFFF");
 				eventEmitter.emit("lightsSwitchProgramRequested", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip , program: "off"});
 				return;
 			}
