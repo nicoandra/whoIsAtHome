@@ -46,7 +46,7 @@ function HeaterManager(eventEmitter){
 
 		heaterName = this.heaters[this.heatersByIp[ip]].name;
 
-		if(temperature < 10 || temperature > 40 || temperature > 15){
+		if(temperature < 10 || temperature > 35){
 			var nodemailer = require('nodemailer');
 			var smtpTransport = require('nodemailer-smtp-transport');
 			var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));

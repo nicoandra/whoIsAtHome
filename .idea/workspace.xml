@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0bd71bc8-f7e7-4d09-bd2e-c1e9620f9611" name="Default" comment="Start of logic to turn off lights at night when home is alone.">
+    <list default="true" id="0bd71bc8-f7e7-4d09-bd2e-c1e9620f9611" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/actionScheduler.js" afterPath="$PROJECT_DIR$/light_manager/actionScheduler.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/config/config.global.js" afterPath="$PROJECT_DIR$/light_manager/config/config.global.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/config/config.nickpad.js" afterPath="$PROJECT_DIR$/light_manager/config/config.nickpad.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/package.json" afterPath="$PROJECT_DIR$/light_manager/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/heaterManager.js" afterPath="$PROJECT_DIR$/light_manager/heaterManager.js" />
     </list>
     <ignored path="lightManager.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -28,28 +25,6 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/light_manager/node_modules/cookie/package.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1445">
-              <caret line="85" column="16" selection-start-line="85" selection-start-column="16" selection-end-line="85" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/light_manager/node_modules/cookie-parser/index.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="28" column="3" selection-start-line="28" selection-start-column="3" selection-end-line="28" selection-end-column="3" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/light_manager/node_modules/cookie-parser/package.json">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="391">
@@ -69,11 +44,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="actionScheduler.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="actionScheduler.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/light_manager/actionScheduler.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="486">
-              <caret line="160" column="0" selection-start-line="160" selection-start-column="0" selection-end-line="160" selection-end-column="0" />
+            <state relative-caret-position="248">
+              <caret line="144" column="25" selection-start-line="144" selection-start-column="25" selection-end-line="144" selection-end-column="25" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/light_manager/server.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="673">
+              <caret line="462" column="2" selection-start-line="462" selection-start-column="2" selection-end-line="462" selection-end-column="2" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="heaterManager.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/light_manager/heaterManager.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="306">
+              <caret line="48" column="49" selection-start-line="48" selection-start-column="49" selection-end-line="48" selection-end-column="49" />
               <folding />
             </state>
           </provider>
@@ -112,8 +107,8 @@
       <file leaf-file-name="mail.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/light_manager/config/restricted/mail.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+            <state relative-caret-position="204">
+              <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -178,10 +173,8 @@
         <option value="$PROJECT_DIR$/light_manager/routes.js" />
         <option value="$PROJECT_DIR$/light_manager/heatersInterface.js" />
         <option value="$PROJECT_DIR$/light_manager/heater.js" />
-        <option value="$PROJECT_DIR$/light_manager/server.js" />
         <option value="$PROJECT_DIR$/light_manager/webroot/custom.css" />
         <option value="$PROJECT_DIR$/light_manager/views/index.ejs" />
-        <option value="$PROJECT_DIR$/light_manager/heaterManager.js" />
         <option value="$PROJECT_DIR$/light_manager/stm.js" />
         <option value="$PROJECT_DIR$/light_manager/stmModule.js" />
         <option value="$PROJECT_DIR$/stm/package.js" />
@@ -191,6 +184,8 @@
         <option value="$PROJECT_DIR$/light_manager/config/config.global.js" />
         <option value="$PROJECT_DIR$/light_manager/config/restricted/mail.js" />
         <option value="$PROJECT_DIR$/light_manager/actionScheduler.js" />
+        <option value="$PROJECT_DIR$/light_manager/server.js" />
+        <option value="$PROJECT_DIR$/light_manager/heaterManager.js" />
       </list>
     </option>
   </component>
@@ -269,46 +264,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="light_manager" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lightManager" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lightManager" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="light_manager" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="config" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lightManager" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lightManager" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="light_manager" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="config" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="restricted" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -408,7 +363,7 @@
       <workItem from="1486659872659" duration="24070000" />
       <workItem from="1487007561882" duration="2108000" />
       <workItem from="1487020880247" duration="3280000" />
-      <workItem from="1487273592770" duration="1989000" />
+      <workItem from="1487273592770" duration="9931000" />
     </task>
     <task id="LOCAL-00001" summary="Start to build new Heaters interface, expecting more info from the Thermo App&#10;Making it so we can build an Angular UI for Web browsers.">
       <created>1476213817069</created>
@@ -725,11 +680,32 @@
       <option name="project" value="LOCAL" />
       <updated>1487007986581</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="Llogic to turn off lights at night when home is alone.">
+      <created>1487275762493</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1487275762493</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Llogic to turn off lights at night when home is alone, fixed.&#10;Adding email alerts when the temperatures are too high or too low">
+      <created>1487283746575</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1487283746575</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Llogic to turn off lights at night when home is alone, fixed.&#10;Adding email alerts when the temperatures are too high or too low">
+      <created>1487283773599</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1487283773599</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="168437000" />
+    <option name="totallyTimeSpent" value="176379000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1924" y="-4" width="1928" height="1088" extended-state="6" />
@@ -788,7 +764,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="Start to build new Heaters interface, expecting more info from the Thermo App&#10;Making it so we can build an Angular UI for Web browsers." />
     <MESSAGE value="BREAKING CHANGES&#10;&#10;This release DOES NOT WORK" />
     <MESSAGE value="Starting with some Angular stuff" />
     <MESSAGE value="Some Angular good shit in /angular" />
@@ -812,7 +787,9 @@
     <MESSAGE value="CSS to reduce size of buttons on NavBar&#10;Event Emitter for changes in Heaters" />
     <MESSAGE value="Mobile interface" />
     <MESSAGE value="Start of logic to turn off lights at night when home is alone." />
-    <option name="LAST_COMMIT_MESSAGE" value="Start of logic to turn off lights at night when home is alone." />
+    <MESSAGE value="Llogic to turn off lights at night when home is alone." />
+    <MESSAGE value="Llogic to turn off lights at night when home is alone, fixed.&#10;Adding email alerts when the temperatures are too high or too low" />
+    <option name="LAST_COMMIT_MESSAGE" value="Llogic to turn off lights at night when home is alone, fixed.&#10;Adding email alerts when the temperatures are too high or too low" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1021,13 +998,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/heatersInterface.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
@@ -1039,13 +1009,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="656">
           <caret line="104" column="0" selection-start-line="104" selection-start-column="0" selection-end-line="105" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/heaterManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
         </state>
       </provider>
     </entry>
@@ -1135,14 +1098,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/config/config.nickpad.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
@@ -1159,18 +1114,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/config/restricted/mail.js">
+    <entry file="file://$PROJECT_DIR$/light_manager/config/config.nickpad.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+        <state relative-caret-position="238">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/actionScheduler.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
-          <caret line="160" column="0" selection-start-line="160" selection-start-column="0" selection-end-line="160" selection-end-column="0" />
+        <state relative-caret-position="248">
+          <caret line="144" column="25" selection-start-line="144" selection-start-column="25" selection-end-line="144" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="673">
+          <caret line="462" column="2" selection-start-line="462" selection-start-column="2" selection-end-line="462" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/config/restricted/mail.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/heaterManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="48" column="49" selection-start-line="48" selection-start-column="49" selection-end-line="48" selection-end-column="49" />
           <folding />
         </state>
       </provider>
