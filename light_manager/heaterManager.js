@@ -115,12 +115,14 @@ function HeaterManager(eventEmitter){
 
 	this.getStatus = function(callback){
 
+		momentsAgo = moment().substract(5, 'minutes');
 		try {
 
 			response = {}
 			Object.keys(this.heaters).forEach( function(name) {
 				response[name] = this.heaters[name].getStatus();
 				response[name].name = name;
+				response[name].isDown = response[name].lastResponseTime.isBefore(momentsAgo);
 				response[name].desiredTemperature = Math.round(response[name].desiredTemperature * 10) / 10;	// Round to 1 decimal
 				
 				// this.heaters[name].setTemperature(18);

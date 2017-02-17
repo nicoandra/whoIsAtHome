@@ -19,24 +19,9 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	this.humidity = 999;
 	this.desiredTemperature = 14;
 	this.power = 0;
-	this.upSince = 0;
-	this.downSince = 0;
+	this.lastResponseTime = 0;
 
 	this.getStatusPayload = [0x30, 0xFF, Math.floor(this.serverPort / 256),  Math.floor(this.serverPort % 256)] ; //  Requests for status to be sen back to port
-
-	this.flagAsUp = function(){
-		if(this.upSince == 0){
-			this.upSince = new Date();
-			this.downSince = 0;
-		}
-	}
-
-	this.flagAsDown = function(){
-		if(this.downSince == 0){
-			this.downSince = new Date();
-			this.upSince = 0;
-		}
-	}
 
 	this.setTemperature = function(desiredTemperature){
 		desiredTemperature = Math.trunc(Math.abs(desiredTemperature) * 10) / 10;
@@ -53,10 +38,8 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 		this.dgramClient.send(buffer, 0, buffer.length, this.heaterPort, this.ip, function(err){
 			if(err){
 				debug("Err setHeaterTemperature", err)
-				this.flagAsDown();
 			} else {
-				this.flagAsUp();
-				this.requestStatus();
+				this.lastResponseTime = moment();
 			}
 		}.bind(this));
 	}
@@ -77,8 +60,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 			humidity: this.humidity,
 			desiredTemperature: this.desiredTemperature,
 			power: this.power * 10,
-			uptime: this.upSince,
-			downtime: this.downSince
+			lastResponse: this.lastResponseTime
 		}
 	}
 
