@@ -1,6 +1,7 @@
 var request = require('request');
 var dgram = require('dgram');
 const debug = require("debug")("app:heater");
+var moment = require('moment');
 
 
 
@@ -50,6 +51,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 		debug("desiredTemperature set to", desiredTemperature);
 		this.humidity = humidity;
 		this.power = heaterPower;
+		this.lastResponseTime = moment();
 	}
 
 

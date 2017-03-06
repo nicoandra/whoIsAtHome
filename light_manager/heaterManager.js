@@ -5,6 +5,9 @@ var env = process.env.NODE_ENV || 'development'
 	, debug = require("debug")("app:heaterManager")
 	, debugConnection = require("debug")("app:heaterConnection");
 
+var moment = require('moment');
+
+
 function HeaterManager(eventEmitter){
 	this.heaters = {};
 	this.heatersByIp = {};
@@ -115,14 +118,19 @@ function HeaterManager(eventEmitter){
 
 	this.getStatus = function(callback){
 
-		momentsAgo = moment().substract(5, 'minutes');
+		momentsAgo = moment().subtract(30, 'seconds');
 		try {
 
 			response = {}
 			Object.keys(this.heaters).forEach( function(name) {
 				response[name] = this.heaters[name].getStatus();
 				response[name].name = name;
-				response[name].isDown = response[name].lastResponseTime.isBefore(momentsAgo);
+				response[name].isDown = response[name].lastResponse == 0 ? false : response[name].lastResponse.isBefore(momentsAgo);
+				if(response[name].isDown){
+					response[name].isDownSince = response[name].lastResponseTime;
+				} else {
+					response[name].isDownSince = false;
+				}
 				response[name].desiredTemperature = Math.round(response[name].desiredTemperature * 10) / 10;	// Round to 1 decimal
 				
 				// this.heaters[name].setTemperature(18);
