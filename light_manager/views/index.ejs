@@ -297,10 +297,8 @@
 										</h-number>
 									</div>
 
-									<div class="col-md-1 col-xs-12" ng-if="heater.downSince">
-										<span  class="hidden-lg">
-											<span class="label label-danger">Down since {{ heater.downSince }}</span>
-										</span>
+									<div class="col-md-1 col-xs-12" ng-if="heater.isDown">
+										<span class="label label-danger">Down since {{ heater.lastResponse }}</span>
 									</div>
 
 								</li>
