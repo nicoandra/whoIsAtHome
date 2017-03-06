@@ -54,11 +54,12 @@ function HeaterManager(eventEmitter){
 			var smtpTransport = require('nodemailer-smtp-transport');
 			var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
 			var message = {
-				from: {name: 'HomeOwn', address: 'proliant@nmac.com.ar'},
-				to: 'nico@nmac.com.ar'
+				from: cfg.email.fromFields,
+				to:  cfg.email.whoToContact
 			};
 
-			message.subject = "Alert: temperature in " + heaterName + " is " + temperature;
+			warningOrAlert = temperature < 5 || temperature > 40 ? "ALERT" : "Warning";
+			message.subject = warningOrAlert + ": temperature in " + heaterName + " is " + temperature;
 			message.text = message.subject;
 			message.html = message.subject;
 

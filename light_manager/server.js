@@ -42,6 +42,30 @@ internalEventEmitter.on("lightsSwitchProgramRequested", function(data) {
 });
 
 
+
+internalEventEmitter.on("movementDetected", function(data){
+	homeStatus = peopleTracker.getHomeStatus();
+	if(homeStatus.home.isAlone){
+		notificationEventEmitter.emit("movement", data);
+
+		var nodemailer = require('nodemailer');
+		var smtpTransport = require('nodemailer-smtp-transport');
+		var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
+		var message = {
+			from: cfg.email.fromFields,
+			to:  cfg.email.whoToContact
+		};
+		message.subject = "Alert: movement has been detected!";
+		message.text = message.subject;
+		message.html = message.subject;
+
+		transporter.sendMail(message, function(err, info){
+			console.log('send', err, info);
+		})
+
+	}
+})
+
 var LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
 LightManager = require("./lightManager.js");
@@ -137,6 +161,13 @@ notificationEventEmitter.on('strips', function(data){
 	}
 
 	var toSend = { date : new Date(), type: type, title:"Light Strips", text: message }
+	notificationQueue.unshift(toSend);
+})
+
+notificationEventEmitter.on('movement', function(data){
+
+	type = "normal";
+	var toSend = { date : new Date(), type: "alert", title:"Movement detected", text: "Movement detected in " }
 	notificationQueue.unshift(toSend);
 })
 
