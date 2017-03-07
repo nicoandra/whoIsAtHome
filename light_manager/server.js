@@ -47,6 +47,11 @@ internalEventEmitter.on("movementDetected", function(data){
 	homeStatus = peopleTracker.getHomeStatus();
 	if(homeStatus.home.isAlone){
 		notificationEventEmitter.emit("movement", data);
+	}
+
+/*	homeStatus = peopleTracker.getHomeStatus();
+	if(homeStatus.home.isAlone){
+		notificationEventEmitter.emit("movement", data);
 
 		var nodemailer = require('nodemailer');
 		var smtpTransport = require('nodemailer-smtp-transport');
@@ -63,7 +68,7 @@ internalEventEmitter.on("movementDetected", function(data){
 			console.log('send', err, info);
 		})
 
-	}
+	}*/
 })
 
 var LightProgram = require("./lightProgram.js")
@@ -167,7 +172,7 @@ notificationEventEmitter.on('strips', function(data){
 notificationEventEmitter.on('movement', function(data){
 
 	type = "normal";
-	var toSend = { date : new Date(), type: "alert", title:"Movement detected", text: "Movement detected in " }
+	var toSend = { date : new Date(), type: "alert", title:"Movement detected", text: "Movement detected in " + data.name }
 	notificationQueue.unshift(toSend);
 })
 

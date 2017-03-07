@@ -2,6 +2,9 @@ var moment = require('moment');
 const debug = require('debug')("app:actionScheduler");
 const debugTime = require('debug')("app:actionScheduler:time");
 
+var env = process.env.NODE_ENV || 'development'
+	, cfg = require(__dirname + '/config/config.'+env+'.js')
+
 function actionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter){
 
 	this.checkCycleDuration = 60; // 60; // In seconds
@@ -13,6 +16,44 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 	this.wasNightOnLastCheck = false;
 	this.dayTimeStarts = [7, 0, 0];
 	this.dayTimeEnds = [17, 0, 0];
+
+
+	this.movementWasDetected = function(data){
+		homeStatus = this.peopleTracker.getHomeStatus();
+		if(homeStatus.home.isAlone){
+			var nodemailer = require('nodemailer');
+			var smtpTransport = require('nodemailer-smtp-transport');
+			var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
+			var message = {
+				from: cfg.email.fromFields,
+				to:  cfg.email.whoToContact
+			};
+
+
+			debug("eventHandler movementWasDetected", data);
+			try {
+				name = data.name;
+			} catch (exception){
+				name = "(Unknown)";	
+			}
+
+			message.subject = "Alert: movement has been detected in " + name;
+			message.text = message.subject;
+			message.html = message.subject;
+
+			transporter.sendMail(message, function(err, info){
+				console.log('send', err, info);
+			})
+
+		}		
+	}
+
+
+	this.internalEventEmitter.on("movementDetected", function(data){
+		this.movementWasDetected(data);
+	}.bind(this));
+
+
 
 	this.getTimeWhenLightsGoOff = function(){
 		dayNumber = moment().day(); // Get the day number
