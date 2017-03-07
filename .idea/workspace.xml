@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0bd71bc8-f7e7-4d09-bd2e-c1e9620f9611" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/light_manager/README.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/heater.js" afterPath="$PROJECT_DIR$/light_manager/heater.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/heaterManager.js" afterPath="$PROJECT_DIR$/light_manager/heaterManager.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/server.js" afterPath="$PROJECT_DIR$/light_manager/server.js" />
     </list>
     <ignored path="lightManager.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -29,8 +28,8 @@
       <file leaf-file-name="actionScheduler.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/light_manager/actionScheduler.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="13" column="35" selection-start-line="13" selection-start-column="35" selection-end-line="13" selection-end-column="35" />
+            <state relative-caret-position="255">
+              <caret line="183" column="32" selection-start-line="183" selection-start-column="32" selection-end-line="183" selection-end-column="32" />
               <folding />
             </state>
           </provider>
@@ -40,8 +39,11 @@
         <entry file="file://$PROJECT_DIR$/light_manager/server.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="340">
-              <caret line="20" column="42" selection-start-line="20" selection-start-column="42" selection-end-line="20" selection-end-column="42" />
-              <folding />
+              <caret line="25" column="3" selection-start-line="25" selection-start-column="3" selection-end-line="25" selection-end-column="3" />
+              <folding>
+                <marker date="1488907720555" expanded="true" signature="1380:1508" ph="{...}" />
+                <marker date="1488907720555" expanded="true" signature="1455:1508" ph="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -49,8 +51,8 @@
       <file leaf-file-name="peopleTracker.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/light_manager/peopleTracker.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2125">
-              <caret line="145" column="23" selection-start-line="145" selection-start-column="23" selection-end-line="145" selection-end-column="23" />
+            <state relative-caret-position="652">
+              <caret line="256" column="2" selection-start-line="256" selection-start-column="0" selection-end-line="256" selection-end-column="2" />
               <folding>
                 <element signature="e#4008#4465#0" expanded="false" />
               </folding>
@@ -61,8 +63,8 @@
       <file leaf-file-name="heaterManager.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/light_manager/heaterManager.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="327">
-              <caret line="57" column="43" selection-start-line="57" selection-start-column="43" selection-end-line="57" selection-end-column="43" />
+            <state relative-caret-position="272">
+              <caret line="16" column="26" selection-start-line="16" selection-start-column="26" selection-end-line="16" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -88,11 +90,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.proliant.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/light_manager/config/config.proliant.js">
+      <file leaf-file-name="heater.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/light_manager/heater.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+            <state relative-caret-position="408">
+              <caret line="27" column="34" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -188,12 +190,12 @@
         <option value="$PROJECT_DIR$/light_manager/views/index.ejs" />
         <option value="$PROJECT_DIR$/light_manager/actionScheduler.js" />
         <option value="$PROJECT_DIR$/light_manager/config/config.global.js" />
-        <option value="$PROJECT_DIR$/light_manager/heater.js" />
         <option value="$PROJECT_DIR$/light_manager/heatersInterface.js" />
         <option value="$PROJECT_DIR$/light_manager/README.md" />
         <option value="$PROJECT_DIR$/light_manager/config/restricted/mail.js" />
-        <option value="$PROJECT_DIR$/light_manager/heaterManager.js" />
         <option value="$PROJECT_DIR$/light_manager/server.js" />
+        <option value="$PROJECT_DIR$/light_manager/heater.js" />
+        <option value="$PROJECT_DIR$/light_manager/heaterManager.js" />
       </list>
     </option>
   </component>
@@ -413,13 +415,6 @@
       <workItem from="1487020880247" duration="3280000" />
       <workItem from="1487273592770" duration="11571000" />
       <workItem from="1487352004168" duration="334000" />
-    </task>
-    <task id="LOCAL-00001" summary="Start to build new Heaters interface, expecting more info from the Thermo App&#10;Making it so we can build an Angular UI for Web browsers.">
-      <created>1476213817069</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1476213817069</updated>
     </task>
     <task id="LOCAL-00002" summary="BREAKING CHANGES&#10;&#10;This release DOES NOT WORK">
       <created>1476396034613</created>
@@ -757,17 +752,24 @@
       <option name="project" value="LOCAL" />
       <updated>1487284979838</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="Email when movement is detected.&#10;Show notification on the interface as well.&#10;Adding Readme file">
+      <created>1488828959120</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1488828959120</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="183065000" />
+    <option name="totallyTimeSpent" value="187368000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-4" y="-4" width="1928" height="1044" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1484375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1484375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3296371" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -820,7 +822,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="BREAKING CHANGES&#10;&#10;This release DOES NOT WORK" />
     <MESSAGE value="Starting with some Angular stuff" />
     <MESSAGE value="Some Angular good shit in /angular" />
     <MESSAGE value="Test with color picker" />
@@ -845,7 +846,8 @@
     <MESSAGE value="Start of logic to turn off lights at night when home is alone." />
     <MESSAGE value="Llogic to turn off lights at night when home is alone." />
     <MESSAGE value="Llogic to turn off lights at night when home is alone, fixed.&#10;Adding email alerts when the temperatures are too high or too low" />
-    <option name="LAST_COMMIT_MESSAGE" value="Llogic to turn off lights at night when home is alone, fixed.&#10;Adding email alerts when the temperatures are too high or too low" />
+    <MESSAGE value="Email when movement is detected.&#10;Show notification on the interface as well.&#10;Adding Readme file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Email when movement is detected.&#10;Show notification on the interface as well.&#10;Adding Readme file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1106,28 +1108,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/heater.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="43" column="13" selection-start-line="43" selection-start-column="13" selection-end-line="43" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/heatersInterface.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="493">
           <caret line="32" column="28" selection-start-line="32" selection-start-column="28" selection-end-line="32" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/peopleTracker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2125">
-          <caret line="145" column="23" selection-start-line="145" selection-start-column="23" selection-end-line="145" selection-end-column="23" />
-          <folding>
-            <element signature="e#4008#4465#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1174,19 +1158,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/actionScheduler.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" column="35" selection-start-line="13" selection-start-column="35" selection-end-line="13" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/server.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
-          <caret line="20" column="42" selection-start-line="20" selection-start-column="42" selection-end-line="20" selection-end-column="42" />
-          <folding />
+          <caret line="25" column="3" selection-start-line="25" selection-start-column="3" selection-end-line="25" selection-end-column="3" />
+          <folding>
+            <marker date="1488907720555" expanded="true" signature="1380:1508" ph="{...}" />
+            <marker date="1488907720555" expanded="true" signature="1455:1508" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1198,10 +1177,36 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/peopleTracker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="652">
+          <caret line="256" column="2" selection-start-line="256" selection-start-column="0" selection-end-line="256" selection-end-column="2" />
+          <folding>
+            <element signature="e#4008#4465#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/actionScheduler.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="183" column="32" selection-start-line="183" selection-start-column="32" selection-end-line="183" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/heater.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="27" column="34" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/heaterManager.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="57" column="43" selection-start-line="57" selection-start-column="43" selection-end-line="57" selection-end-column="43" />
+        <state relative-caret-position="272">
+          <caret line="16" column="26" selection-start-line="16" selection-start-column="26" selection-end-line="16" selection-end-column="26" />
           <folding />
         </state>
       </provider>

@@ -14,11 +14,10 @@ function HeaterManager(eventEmitter){
 	this.eventEmitter = eventEmitter;
 	this.globalTemperature = -1;
 
-	this.pollInterval = 15000;
+	this.pollInterval = 30000;
 
 	this.client = dgram.createSocket('udp4');
 	this.localPort = 8888;
-
 
 	this.handleMovementDetectedResponse = function(message, networkInfo){
 		ip = networkInfo.address;
@@ -26,10 +25,17 @@ function HeaterManager(eventEmitter){
 		if(!this.heatersByIp[ip]){
 			return false;
 		}
-		heaterName = this.heaters[this.heatersByIp[ip]].name;
-		debug("Movement has been detected in", heaterName);
-		eventEmitter.emit("movementDetected", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip });
-		return true;
+
+		heater = this.heaters[this.heatersByIp[ip]];
+
+		if(heater.movementNeedsToBeNotified()){
+			heaterName = heater.name;
+			debug("Movement has been detected in", heaterName);
+			eventEmitter.emit("movementDetected", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip });
+			return true;
+		}
+
+		return false;
 	}
 
 	this.handleHeaterStatusResponse = function(message, networkInfo){
@@ -98,12 +104,8 @@ function HeaterManager(eventEmitter){
 			}
 			return ;
 		}
-
-
 		debugConnection("Wrong message...");
 		return ;
-
-
 	}.bind(this));
 
 
@@ -133,8 +135,6 @@ function HeaterManager(eventEmitter){
 					response[name].isDownSince = false;
 				}
 				response[name].desiredTemperature = Math.round(response[name].desiredTemperature * 10) / 10;	// Round to 1 decimal
-				
-				// this.heaters[name].setTemperature(18);
 
 			}.bind(this))
 
@@ -198,7 +198,6 @@ function HeaterManager(eventEmitter){
 	this.client.bind(this.localPort);
 	this.client.on("listening", this.queryAllHeaters.bind(this));
 	setInterval(this.queryAllHeaters.bind(this), this.pollInterval);
-	
 
 }
 
