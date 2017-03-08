@@ -453,7 +453,6 @@ httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
 /** END OF HTTP SERVER **/
 
 
-console.log(cfg);
 // return ;
 
 /*

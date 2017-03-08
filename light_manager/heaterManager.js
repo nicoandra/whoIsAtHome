@@ -131,19 +131,21 @@ function HeaterManager(eventEmitter){
 		momentsAgo = moment().subtract(5, 'minutes');
 		try {
 
-			response = {}
+			response = { heaters : { }}
 			Object.keys(this.heaters).forEach( function(name) {
-				response[name] = this.heaters[name].getStatus();
-				response[name].name = name;
-				response[name].isDown = response[name].lastResponse == 0 ? false : response[name].lastResponse.isBefore(momentsAgo);
-				if(response[name].isDown){
-					response[name].isDownSince = response[name].lastResponseTime;
+				response.heaters[name] = this.heaters[name].getStatus();
+				response.heaters[name].name = name;
+				response.heaters[name].isDown = response.heaters[name].lastResponse == 0 ? false : response.heaters[name].lastResponse.isBefore(momentsAgo);
+				if(response.heaters[name].isDown){
+					response.heaters[name].isDownSince = response.heaters[name].lastResponseTime;
 				} else {
-					response[name].isDownSince = false;
+					response.heaters[name].isDownSince = false;
 				}
-				response[name].desiredTemperature = Math.round(response[name].desiredTemperature * 10) / 10;	// Round to 1 decimal
+				response.heaters[name].desiredTemperature = Math.round(response.heaters[name].desiredTemperature * 10) / 10;	// Round to 1 decimal
 
 			}.bind(this))
+
+			response['localWeather'] = this.currentWeatherAtHome;
 
 			if(typeof callback != "function"){
 				return response;
@@ -200,20 +202,28 @@ function HeaterManager(eventEmitter){
 	}
 
 
-	function queryCurrentWeatherAtHome = function(){
-
-		url = "http://api.openweathermap.org/data/weather?id=" + cfg.secrets.openWeatherMap.cityId + "&units=metric&APPID=" + cfg.secrets.openWeatherMap.apiKey;
+	this.queryCurrentWeatherAtHome = function(){
+		var url = "http://api.openweathermap.org/data/2.5/weather?id=" + cfg.secrets.openWeatherMap.cityId + "&units=metric&APPID=" + cfg.secrets.openWeatherMap.apiKey;
 		request.get(url, function(err, res, body){
 			if(err){
 				return false;
 			}
-			this.currentWeatherAtHome = body.weather[0];
-			this.currentWeatherAtHome.cityName = body.name;
-			this.currentWeatherAtHome.currentTemperature = body.main.temp;
-			this.currentWeatherAtHome.humidity 			 = body.main.humidity;
-			this.currentWeatherAtHome.minimumTemperature = body.main.temp_min;
-			this.currentWeatherAtHome.maximumTemperature = body.main.temp_max;
-		})
+
+			try {
+				body = JSON.parse(res.toJSON().body); 
+
+				this.currentWeatherAtHome = body.weather[0];
+				this.currentWeatherAtHome.cityName = body.name;
+				this.currentWeatherAtHome.currentTemperature = body.main.temp;
+				this.currentWeatherAtHome.humidity 			 = body.main.humidity;
+				this.currentWeatherAtHome.minimumTemperature = body.main.temp_min;
+				this.currentWeatherAtHome.maximumTemperature = body.main.temp_max;
+
+			} catch(exception){
+				console.log("Getting weather", exception);
+			}
+
+		}.bind(this))
 
 	}
 

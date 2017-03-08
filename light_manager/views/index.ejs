@@ -309,8 +309,7 @@
 			</div>
 
 			<div class="panel-footer">
-				Nic is <strong>{{ homeStatus.people.nico }}</strong>.
-				Home is {{ homeStatus.home.isAlone ? 'alone' : 'occupied' }} since {{ homeStatus.home.sinceWhen | date: 'medium' }}.
+				Home is {{ homeStatus.home.isAlone ? 'alone' : 'occupied' }} since {{ homeStatus.home.sinceWhen | date: 'medium' }}. Now: {{ localWeather.main}}, {{ localWeather.currentTemperature }}&deg; Min {{ localWeather.minimumTemperature }}&deg; Max {{ localWeather.maximumTemperature}} &deg; 
 			</div>
 
 		</div><!-- Closing panel panel-default -->
@@ -499,7 +498,8 @@
 
 			$scope.getHeaters = function(){
 				$http.get("/angular/heaters/getStatus").success(function(response){
-					$scope.heaters = response;
+					$scope.heaters = response.heaters;
+					$scope.localWeather = response.localWeather;
 				})
 			}
 			$scope.getHeaters();
