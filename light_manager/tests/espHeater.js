@@ -6,6 +6,8 @@ var setTempPayload = [0x10, 0x00, 0x13, 0x08];
 var getStatusPayload = [0x30, 0xFF, 0x22, 0xB8];
 
 
+var setLedPowerPayload = [0x20, 0x00, 0x03, 0xFF];
+
 server.on("message", function(message, networkInfo){
 	// message = message.values(;
 
@@ -50,8 +52,11 @@ server.on("message", function(message, networkInfo){
 				humidity += value / 256;
 				break;
 			case 11:
-				powerOutlet = value === 1;
+				powerOutlet = value * 256;
 				break;
+			case 12:
+				powerOutlet = powerOutlet + value;
+				break;				
 		}
 
 	}
@@ -67,7 +72,7 @@ server.on("message", function(message, networkInfo){
 
 
 
-payload = getStatusPayload;
+payload = setLedPowerPayload;
 
 
 server.bind(8888, function(){

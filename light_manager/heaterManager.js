@@ -19,6 +19,10 @@ function HeaterManager(eventEmitter){
 	this.client = dgram.createSocket('udp4');
 	this.localPort = 8888;
 
+	this.getHeaterByName = function(name){
+		return this.heaters[name];
+	}
+
 	this.handleMovementDetectedResponse = function(message, networkInfo){
 		ip = networkInfo.address;
 

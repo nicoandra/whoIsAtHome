@@ -4,7 +4,8 @@ var env = process.env.NODE_ENV || 'development'
 	LightSocket = require("./lightSocket.js"),
 	ReceiverSocket = require("./receiverSocket.js"),
 	crypto = require('crypto'),
-	debug = require('debug')("app:lightManager");
+	debug = require('debug')("app:lightManager"),
+	HeaterLight = require("./heaterLight");
 
 function LightManager(){
 	this.lights = {};
@@ -49,6 +50,10 @@ function LightManager(){
 
 		this.runProgram(parentProgram.childPrograms[indexOfProgramToRun].id);
 		
+	}
+
+	this.addHeaterLight = function(name, displayName, heater){
+		this.lights[name] = new HeaterLight(name, displayName, heater);
 	}
 
 	this.addLight = function(name, displayName, socketNumber, groupNumber, hasRgb, hasDimmer){

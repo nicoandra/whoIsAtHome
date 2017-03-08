@@ -181,6 +181,10 @@ notificationEventEmitter.on('movement', function(data){
 heaterManager.addHeater('dev', 'Dev', 1, '192.168.1.113', 8888, { eventEmitter : notificationEventEmitter });
 heaterManager.addHeater('living', 'Living', 1, '192.168.1.130', 8888, { eventEmitter : notificationEventEmitter });
 
+
+lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
+
+
 /** HTTP SERVER **/
 var express = require('express'),
 app = express(),
@@ -260,7 +264,7 @@ changeEventEmitter.setMaxListeners(100)
 app.get("/angular/socketSimulator", function(req,res){
 
 	changeEventEmitter.on('message', function(data){
-		// console.log(req.ip, "Data which triggered the event", data)
+
 		try {
 			res.send(true)
 		} catch(exception){}
@@ -302,19 +306,17 @@ app.get("/angular/system/getNotifications", function(req,res){
 		{ date : new Date(), type: type, title:"Uptime", text: "Uptime is " + moment.duration(uptime, 'minutes').humanize()}
 	];
 
-	console.log(toSend);
-
-	notificationQueue.forEach(function(a){ toSend.unshift(a); })
+	notificationQueue.forEach(function(a){
+		toSend.push(a);
+	})
 
 	res.send(toSend)
 })
 
 
 app.post("/angular/heathers/set", function(req,res){
-	console.log("HEATHER CHANGE", req.body)
 	heaterManager.setMultipleStatus(req.body, function(){
 		heaterManager.getStatus(function(err, response){
-			console.log("Sending response", response)
 			res.send(response);
 		});
 	})
@@ -328,27 +330,19 @@ app.get("/angular/heaters/getStatus", function(req, res){
 
 
 app.post("/angular/runProgram", function(req, res){
-	// console.log(req.body);
-
-	console.log(req.body);
-
-
 	if(req.body.programKey){
 		try {
 			lightManager.runProgram(req.body.programKey);
-			console.log("Change has been done");
 		} catch(exception){
 			console.log(exception)
 		}
 	} else if(typeof req.body.lightName == "string") {
 		lightManager.setStatus(req.body, function () {
 			// Emit message only after the change has been applied
-			console.log("Change has been done");
 		});
 	} else {
 		lightManager.setMultipleStatus(req.body.lightName, req.body, function () {
 			// Emit message only after the change has been applied
-			console.log("Change has been done");
 		});
 	}
 

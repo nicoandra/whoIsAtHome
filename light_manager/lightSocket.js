@@ -1,4 +1,5 @@
 var led = require('limitless-gem/index.js');
+var debug = require("debug")("App:LightSocket")
 
 function LightSocket(name, group, receiver){
     this.name = name;
@@ -48,17 +49,17 @@ function LightSocket(name, group, receiver){
     this.commandBrightnessMin = led.RGBW.BRIGHTNESS_MIN;
 
     this.on = function(cb){
-        console.log("GROUP", this.group, "ON!");
+        debug("GROUP", this.group, "ON!");
         this.receiver.queueStuff(this.commandOn);
     }
 
     this.off = function(cb){
-        console.log("GROUP", this.group, "OFF!");
+        debug("GROUP", this.group, "OFF!");
         this.receiver.queueStuff(this.commandOff);
     }
 
     this.white = function(cb){
-        console.log("GROUP", this.group, "WHITE!");
+        debug("GROUP", this.group, "WHITE!");
         this.receiver.queueStuff(this.commandWhite);
         this.receiver.queueStuff(this.commandWhite);
     }
