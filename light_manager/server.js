@@ -426,17 +426,20 @@ app.post("/people/setAsAway", function(req,res){
 app.post("/people/setAsAtHome", function(req,res){
 	debug("Requested", req.url)
 	peopleTracker.setAsAtHome("nico");
+	changeEventEmitter.emit("message", req.body)
 	res.send(peopleTracker.getHomeStatus());
 })
 
 app.post("/people/setAsComingBack", function(req,res){
 	debug("Requested", req.url)
 	peopleTracker.setAsComingBack("nico", 20);
+	changeEventEmitter.emit("message", req.body)
 	res.send(peopleTracker.getHomeStatus());
 })
 
 app.post("/people/setAsSleeping", function(req,res){
 	peopleTracker.setAsSleeping("nico");
+	changeEventEmitter.emit("message", req.body)
 	res.send(peopleTracker.getHomeStatus());
 })
 
