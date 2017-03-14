@@ -10,7 +10,7 @@ var request = require("request");
 
 function HeaterManager(eventEmitter){
 	this.heaters = {};
-	this.heatersByIp = {};
+	this.heatersByIpAndId = {};
 	this.eventEmitter = eventEmitter;
 	this.globalTemperature = -1;
 
@@ -29,16 +29,9 @@ function HeaterManager(eventEmitter){
 	this.handleMovementDetectedResponse = function(message, networkInfo){
 		ip = networkInfo.address;
 
-		if(!this.heatersByIp[ip]){
-			return false;
-		}
-
-		heater = this.heaters[this.heatersByIp[ip]];
-
 		if(heater.movementNeedsToBeNotified()){
-			heaterName = heater.name;
-			debug("Movement has been detected in", heaterName);
-			eventEmitter.emit("movementDetected", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip });
+			debug("Movement has been detected in");
+			eventEmitter.emit("movementDetected", { name: ip, ip: ip });
 			return true;
 		}
 
@@ -48,40 +41,11 @@ function HeaterManager(eventEmitter){
 	this.handleHeaterStatusResponse = function(message, networkInfo){
 		ip = networkInfo.address;
 
-		if(!this.heatersByIp[ip]){
-			return ;
-		}
+		// Loop through all heaters and call parseResponse(message, networkInfo)
+		Object.keys(this.heaters).forEach(function(heaterName){
+			this.heaters[heaterName].parseResponse(heaterName);
+		}.bind(this))
 
-		temperature = message[3] + message[4] / 256;
-		desiredTemperature = message[5] + message[6] / 256;
-		heaterPower = message[7];
-		humidity = message[8] + message[9] / 256;
-		powerOutlet = message[11] === 1;
-
-		debug("In the response from",ip,"the heaterPower is", heaterPower, desiredTemperature);
-
-		heaterName = this.heaters[this.heatersByIp[ip]].name;
-
-		if(temperature < 10 || temperature > 35){
-			var nodemailer = require('nodemailer');
-			var smtpTransport = require('nodemailer-smtp-transport');
-			var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
-			var message = {
-				from: cfg.email.fromFields,
-				to:  cfg.email.whoToContact
-			};
-
-			warningOrAlert = temperature < 5 || temperature > 40 ? "ALERT" : "Warning";
-			message.subject = warningOrAlert + ": temperature in " + heaterName + " is " + temperature;
-			message.text = message.subject;
-			message.html = message.subject;
-
-			transporter.sendMail(message, function(err, info){
-				console.log('send', err, info);
-			})
-		}
-
-		this.heaters[this.heatersByIp[ip]].setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
 		eventEmitter.emit("heaterUpdated", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip });
 	}
 
@@ -101,12 +65,12 @@ function HeaterManager(eventEmitter){
 
 		if(message.length = 4 && message[0] == 0x41 && message[1] == 0xFF && message[2] == 0x00){
 			if(message[3] == 0x01){
-				eventEmitter.emit("lightsSwitchProgramRequested", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip, program: "switch" });
+				eventEmitter.emit("lightsSwitchProgramRequested", { name: ip, ip: ip, program: "switch" });
 				return;
 			}
 
 			if(message[3] == 0x02){
-				eventEmitter.emit("lightsSwitchProgramRequested", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip , program: "off"});
+				eventEmitter.emit("lightsSwitchProgramRequested", { name: ip, ip: ip , program: "off"});
 				return;
 			}
 			return ;
@@ -121,9 +85,13 @@ function HeaterManager(eventEmitter){
 	}.bind(this));
 
 	this.addHeater = function(name, descriptiveName, id, ip, port, options){
+		if(!this.heatersByIpAndId.hasOwnProperty(ip)){
+			this.heatersByIpAndId[ip] = {};
+		}
+
 		newHeater = new Heater(descriptiveName, id, ip, port, this.client, this.localPort, options);
 		this.heaters[name] = newHeater;
-		this.heatersByIp[ip] = name;
+		this.heatersByIpAndId[ip][id] = newHeater;
 	}
 
 	this.getStatus = function(callback){

@@ -54,7 +54,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 		// this.desiredTemperature = desiredTemperature;
 		var temperatureInteger = Math.trunc(desiredTemperature);
 		var temperatureDecimal = Math.trunc((desiredTemperature - temperatureInteger) * 256);
-		var payload = [ 0x10 , 0x00, temperatureInteger, temperatureDecimal];
+		var payload = [ 0x10 , this.id, temperatureInteger, temperatureDecimal];
 
 		debug("setHeaterTemperature", name, desiredTemperature, payload);
 
@@ -74,6 +74,46 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 		this.lastResponseTime = moment();
 	}
 
+
+	this.parseResponse = function(response, networkInfo){
+		ip = networkInfo.address;
+
+		if(this.ip !== ip){
+			return ;
+		}
+
+		// 3-9 or 10-16;
+		startPosition = 3 + (this.id - 1) * 7;
+
+		temperature = message[startPosition++] + message[startPosition++] / 256;
+		desiredTemperature = message[startPosition++] + message[startPosition++] / 256;
+		heaterPower = message[startPosition++];
+		humidity = message[startPosition++] + message[startPosition++] / 256;
+
+		debug("In the response from",ip,"the heaterPower is", heaterPower, desiredTemperature);
+
+		if(temperature < 10 || temperature > 35){
+			var nodemailer = require('nodemailer');
+			var smtpTransport = require('nodemailer-smtp-transport');
+			var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
+			var message = {
+				from: cfg.email.fromFields,
+				to:  cfg.email.whoToContact
+			};
+
+			warningOrAlert = temperature < 5 || temperature > 40 ? "ALERT" : "Warning";
+			message.subject = warningOrAlert + ": temperature in " + this.name + " is " + temperature;
+			message.text = message.subject;
+			message.html = message.subject;
+
+			transporter.sendMail(message, function(err, info){
+				console.log('send', err, info);
+			})
+		}
+
+		this.setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
+		return true;
+	}
 
 	this.getStatus = function(){
 		return {
