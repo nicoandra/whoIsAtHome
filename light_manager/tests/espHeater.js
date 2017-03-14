@@ -2,7 +2,7 @@ const dgram = require('dgram');
 
 server = dgram.createSocket('udp4');
 
-var setTempPayload = [0x10, 0x00, 0x13, 0x08];
+var setTempPayload = [0x10, 0x02, 0x10, 0x00];
 var getStatusPayload = [0x30, 0xFF, 0x22, 0xB8];
 
 
@@ -13,7 +13,9 @@ server.on("message", function(message, networkInfo){
 
 	console.log(message.length, message);
 
-	desiredTemperature = humidity = heaterPower = temperature = powerOutlet = 999;
+	desiredTemperature1 = desiredTemperature2 = 
+	temperature1 = temperature2 = humidity1 = humidity2 = 
+	heaterPower1 = heaterPower2 = powerOutlet = 999;
 
 	for(i = 0; i < message.length; i++){
 		value = message.readUInt8(i);
@@ -31,30 +33,55 @@ server.on("message", function(message, networkInfo){
 			case 2:
 				messageId.push(value);
 			case 3:
-				temperature = value;
+				temperature1 = value;
 				break;
 			case 4:
-				temperature += value / 256;
+				temperature1 += value / 256;
 				break;
 			case 5:
-				desiredTemperature = value;
+				desiredTemperature1 = value;
 				break;
 			case 6:
-				desiredTemperature += desiredTemperature / 256;
+				desiredTemperature1 += desiredTemperature1 / 256;
 				break;
 			case 7:
-				heaterPower = value;
+				heaterPower1 = value;
 				break;
 			case 8:
-				humidity = value;
+				humidity1 = value;
 				break;
 			case 9:
-				humidity += value / 256;
+				humidity1 += value / 256;
+				break;
+
+
+			case 10:
+				temperature2 = value;
 				break;
 			case 11:
-				powerOutlet = value * 256;
+				temperature2 += value / 256;
 				break;
 			case 12:
+				desiredTemperature2 = value;
+				break;
+			case 13:
+				desiredTemperature2 += desiredTemperature2 / 256;
+				break;
+			case 14:
+				heaterPower2 = value;
+				break;
+			case 15:
+				humidity2 = value;
+				break;
+			case 16:
+				humidity2 += value / 256;
+				break;				
+			case 17:
+				break;
+			case 18:
+				powerOutlet = value * 256;
+				break;
+			case 19:
 				powerOutlet = powerOutlet + value;
 				break;				
 		}
@@ -64,21 +91,28 @@ server.on("message", function(message, networkInfo){
 	remoteIp = networkInfo.address;
 
 	console.log(
-		"Heater at", remoteIp, "> Current:", 
-		temperature, "*C, ", humidity, "%. Desired:", 
-		desiredTemperature, "Power:", heaterPower, "/10; Outlet:", powerOutlet
-	);
+		"Heater at", remoteIp, ">");
+
+	console.log("Current1:", 
+		temperature1, "*C, ", humidity1, "%. Desired:", 
+		desiredTemperature1, "Power:", heaterPower1, "/10; ");
+	console.log(
+		"Current2:", 
+		temperature2, "*C, ", humidity2, "%. Desired:", 
+		desiredTemperature2, "Power:", heaterPower1, "/10");
+	console.log("powerOutlet:", powerOutlet);
+
 })
 
 
 
-payload = setLedPowerPayload;
+payload = setTempPayload;
 
 
 server.bind(8888, function(){
 	server.setBroadcast(true);	
 });
 
-server.send(new Buffer(payload), 0, 4, 8888, "192.168.1.255", function(err,res){
+server.send(new Buffer(payload), 0, 4, 8888, "192.168.1.113", function(err,res){
 	console.log(err, res);
 });
