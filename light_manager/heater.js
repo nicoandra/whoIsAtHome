@@ -75,20 +75,35 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	}
 
 
-	this.parseResponse = function(response, networkInfo){
+	this.parseMovementResponse = function(response, networkInfo){
+		try {
+			if(response[3] == this.id){
+				return true;
+			}
+			return false;
+		} catch(exception){
+		}
+		return false;
+	}
+
+	this.parseResponse = function(message, networkInfo){
 		ip = networkInfo.address;
 
 		if(this.ip !== ip){
-			return ;
+			return false;
+		}
+
+		if(message[0] == 0x11){
+			return this.parseMovementResponse(message, networkInfo);
 		}
 
 		// 3-9 or 10-16;
-		startPosition = 3 + (this.id - 1) * 7;
-
-		temperature = message[startPosition++] + message[startPosition++] / 256;
-		desiredTemperature = message[startPosition++] + message[startPosition++] / 256;
-		heaterPower = message[startPosition++];
-		humidity = message[startPosition++] + message[startPosition++] / 256;
+		indexToRead = 3 + (this.id - 1) * 7;
+		var temperature = parseInt(message[indexToRead++]) + parseInt(message[indexToRead++]) / 256;
+		var desiredTemperature = parseInt(message[indexToRead++]) + parseInt(message[indexToRead++]) / 256;
+		var heaterPower = parseInt(message[indexToRead++]);
+		var humidity = parseInt(message[indexToRead++]) + parseInt(message[indexToRead++]) / 256;
+		var powerOutlet = 0;
 
 		debug("In the response from",ip,"the heaterPower is", heaterPower, desiredTemperature);
 

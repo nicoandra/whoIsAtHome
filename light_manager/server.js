@@ -48,27 +48,6 @@ internalEventEmitter.on("movementDetected", function(data){
 	if(homeStatus.home.isAlone){
 		notificationEventEmitter.emit("movement", data);
 	}
-
-/*	homeStatus = peopleTracker.getHomeStatus();
-	if(homeStatus.home.isAlone){
-		notificationEventEmitter.emit("movement", data);
-
-		var nodemailer = require('nodemailer');
-		var smtpTransport = require('nodemailer-smtp-transport');
-		var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
-		var message = {
-			from: cfg.email.fromFields,
-			to:  cfg.email.whoToContact
-		};
-		message.subject = "Alert: movement has been detected!";
-		message.text = message.subject;
-		message.html = message.subject;
-
-		transporter.sendMail(message, function(err, info){
-			console.log('send', err, info);
-		})
-
-	}*/
 })
 
 var LightProgram = require("./lightProgram.js")
@@ -180,6 +159,9 @@ notificationEventEmitter.on('movement', function(data){
 // this.addHeater = function(name, descriptiveName, id, ip, port, options){
 heaterManager.addHeater('dev', 'Dev', 1, '192.168.1.113', 8888, { eventEmitter : notificationEventEmitter });
 heaterManager.addHeater('living', 'Living', 1, '192.168.1.130', 8888, { eventEmitter : notificationEventEmitter });
+
+heaterManager.addHeater('livingTest', 'Living Test', 1, '192.168.1.128', 8888, { eventEmitter : notificationEventEmitter });
+heaterManager.addHeater('officeTest', 'Office Test', 2, '192.168.1.128', 8888, { eventEmitter : notificationEventEmitter });
 
 
 lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));

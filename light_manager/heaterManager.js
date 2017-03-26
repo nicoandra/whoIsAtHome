@@ -29,30 +29,30 @@ function HeaterManager(eventEmitter){
 	this.handleMovementDetectedResponse = function(message, networkInfo){
 		ip = networkInfo.address;
 
-		if(heater.movementNeedsToBeNotified()){
-			debug("Movement has been detected in");
-			eventEmitter.emit("movementDetected", { name: ip, ip: ip });
-			return true;
-		}
+		// Loop through all heaters and call parseResponse(message, networkInfo)
+		Object.keys(this.heaters).forEach(function(heaterName){
+			if(this.heaters[heaterName].parseResponse(message, networkInfo)){
+				eventEmitter.emit("movementDetected", { name: this.heaters[heaterName].name });
+			};
+		}.bind(this))
 
-		return false;
 	}
 
 	this.handleHeaterStatusResponse = function(message, networkInfo){
-		ip = networkInfo.address;
 
 		// Loop through all heaters and call parseResponse(message, networkInfo)
 		Object.keys(this.heaters).forEach(function(heaterName){
-			this.heaters[heaterName].parseResponse(heaterName);
+			if(this.heaters[heaterName].parseResponse(message, networkInfo)){
+				return eventEmitter.emit("heaterUpdated",  { name: this.heaters[heaterName].name });
+			};
 		}.bind(this))
-
-		eventEmitter.emit("heaterUpdated", { name: this.heaters[this.heatersByIp[ip]].name, ip: ip });
 	}
+
 
 	// this.client.on('message', this.handleIncomingPackets.bind(this));
 	this.client.on('message', function(message, networkInfo){
 		ip = networkInfo.address;
-		if(message[0] == 0x31 && message[1] == 0xFF && message.length === 12) {
+		if(message[0] == 0x31 && message[1] == 0xFF && message.length === 20) {
 			debug("Status received from ", ip);
 			return this.handleHeaterStatusResponse(message, networkInfo);
 		}
