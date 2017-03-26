@@ -2,20 +2,34 @@ const dgram = require('dgram');
 
 server = dgram.createSocket('udp4');
 
-var setTempPayload = [0x10, 0x02, 0x10, 0x00];
+var setTempPayload = [0x10, 0x02, 0x15, 0x10];
 var getStatusPayload = [0x30, 0xFF, 0x22, 0xB8];
 
 
-var setLedPowerPayload = [0x20, 0x00, 0x03, 0xFF];
+// var setLedPowerPayload = [0x20, 0x00, 0x03, 0xFF];
+
 
 server.on("message", function(message, networkInfo){
 	// message = message.values(;
+
+	remoteIp = networkInfo.address;
+
+	if(remoteIp != "192.168.1.128"){
+		return false;
+	}
 
 	console.log(message.length, message);
 
 	desiredTemperature1 = desiredTemperature2 = 
 	temperature1 = temperature2 = humidity1 = humidity2 = 
 	heaterPower1 = heaterPower2 = powerOutlet = 999;
+
+
+	if(message[0] == 0x11){
+		console.log("Sensor message", message[3])
+		return ;
+	}
+
 
 	for(i = 0; i < message.length; i++){
 		value = message.readUInt8(i);
@@ -88,18 +102,11 @@ server.on("message", function(message, networkInfo){
 
 	}
 
-	remoteIp = networkInfo.address;
-
 	console.log(
 		"Heater at", remoteIp, ">");
 
-	console.log("Current1:", 
-		temperature1, "*C, ", humidity1, "%. Desired:", 
-		desiredTemperature1, "Power:", heaterPower1, "/10; ");
-	console.log(
-		"Current2:", 
-		temperature2, "*C, ", humidity2, "%. Desired:", 
-		desiredTemperature2, "Power:", heaterPower1, "/10");
+	console.log("Current1:", temperature1, "*C, ", humidity1, "%. Desired:", desiredTemperature1, "Power:", heaterPower1, "/10; ");
+	console.log("Current2:", temperature2, "*C, ", humidity2, "%. Desired:", desiredTemperature2, "Power:", heaterPower2, "/10");
 	console.log("powerOutlet:", powerOutlet);
 
 })
@@ -113,6 +120,6 @@ server.bind(8888, function(){
 	server.setBroadcast(true);	
 });
 
-server.send(new Buffer(payload), 0, 4, 8888, "192.168.1.113", function(err,res){
+server.send(new Buffer(payload), 0, 4, 8888, "192.168.1.128", function(err,res){
 	console.log(err, res);
 });
