@@ -18,8 +18,14 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 	this.dayTimeEnds = [17, 0, 0];
 
 
+	debug("enabled");
+
+
 	this.movementWasDetected = function(data){
 		homeStatus = this.peopleTracker.getHomeStatus();
+		debug("eventHandler movementWasDetected", data);
+
+
 		if(homeStatus.home.isAlone){
 			var nodemailer = require('nodemailer');
 			var smtpTransport = require('nodemailer-smtp-transport');
@@ -47,13 +53,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 		}		
 	}
-
-
-	this.internalEventEmitter.on("movementDetected", function(data){
-		this.movementWasDetected(data);
-	}.bind(this));
-
-
 
 	this.getTimeWhenLightsGoOff = function(){
 		dayNumber = moment().day(); // Get the day number
