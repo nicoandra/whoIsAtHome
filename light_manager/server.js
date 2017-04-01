@@ -60,8 +60,19 @@ internalEventEmitter.on("movementDetected", function(data){
 })
 
 var presencePhone = new DevicePresence({ name : "Nic phone", address : "192.168.1.141", eventEmitter : internalEventEmitter});
-internalEventEmitter.on("presenceMessage", function(a,b,c){
-	console.log("Mensajero",a,b,c);
+internalEventEmitter.on("presenceMessage", function(data){
+
+	if(data.event === 'back'){
+		peopleTracker.setAsAtHome("nico");
+		changeEventEmitter.emit("message", data);
+		return ;
+	}
+
+	if(data.event === 'left'){
+		peopleTracker.setAsAway("nico");
+		changeEventEmitter.emit("message", data);
+		return ;
+	}
 })
 presencePhone.begin();
 

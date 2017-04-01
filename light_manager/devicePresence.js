@@ -5,7 +5,7 @@ var Debug = require('debug');
 function DevicePresence(options){
 
 
-	this.unit = 'seconds';
+	this.unit = 'minutes';
 	try {
 		this.name = options.name ;
 		this.address = options.address;
@@ -19,23 +19,32 @@ function DevicePresence(options){
 		return this.deviceIsPresent;
 	}
 
-	this.lastTimeSeenOnline = new moment().subtract(10, this.unit);
+	this.lastTimeSeenOnline = new moment().subtract(5, this.unit);
 	this.deviceIsPresent = true;
 
 	this.ping = function(){
-
 		var code = shell.exec('ping ' + this.address + ' -c1 -W1', { silent : 1 }).code;
-
+		
 		debug('Pinging...', code);
 
-		var momentsAgo = new moment().subtract(10, this.unit);
+		if(code === 0){
+			var momentsAgo = new moment().subtract(10, this.unit);
+			if(this.lastTimeSeenOnline.isBefore(momentsAgo)){
+				// Ping was successful and it was long time ago...
+				// The device is back!
+				return this.deviceIsBack();
+			}
 
-		if(code === 0 && this.lastTimeSeenOnline.isBefore(momentsAgo)){
-			// Ping was successful and it was long time ago...
-			// The device is back!
-			this.deviceIsBack();
+			if(this.deviceIsPresent){
+				debug("Still around...");
+				return ;
+			}
+
+			return;
 		}
 
+
+		var momentsAgo = new moment().subtract(10, this.unit);
 		if(code === 1 && this.lastTimeSeenOnline.isBefore(momentsAgo)){
 			this.deviceIsGone();
 		}
@@ -54,10 +63,6 @@ function DevicePresence(options){
 
 	this.deviceIsBack = function(){
 		this.lastTimeSeenOnline = new moment();
-		if(this.deviceIsPresent){
-			debug("Still around...");
-			return ;
-		}
 		debug("Device is back")
 		this.eventEmitter.emit("presenceMessage", { event : "back" , ref: this});
 		this.deviceIsPresent = true;
