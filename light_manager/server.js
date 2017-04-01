@@ -6,6 +6,7 @@ var env = process.env.NODE_ENV || 'development'
 	, moment = require('moment')
 	, bodyParser = require('body-parser')
 	, PeopleTracker = require('./peopleTracker.js')
+	, DevicePresence = require('./devicePresence.js')
 	, notificationQueue = [];
 
 
@@ -45,31 +46,25 @@ internalEventEmitter.on("lightsSwitchProgramRequested", function(data) {
 
 internalEventEmitter.on("movementDetected", function(data){
 	homeStatus = peopleTracker.getHomeStatus();
+
 	if(homeStatus.home.isAlone){
-		notificationEventEmitter.emit("movement", data);
+		if(presencePhone.isPresent()){
+			peopleTracker.setAsAtHome("nico");
+			changeEventEmitter.emit("message", data);
+		} else {
+			actionScheduler.movementWasDetected(data);
+			notificationEventEmitter.emit("movement", data);
+		}
+		
 	}
-
-/*	homeStatus = peopleTracker.getHomeStatus();
-	if(homeStatus.home.isAlone){
-		notificationEventEmitter.emit("movement", data);
-
-		var nodemailer = require('nodemailer');
-		var smtpTransport = require('nodemailer-smtp-transport');
-		var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
-		var message = {
-			from: cfg.email.fromFields,
-			to:  cfg.email.whoToContact
-		};
-		message.subject = "Alert: movement has been detected!";
-		message.text = message.subject;
-		message.html = message.subject;
-
-		transporter.sendMail(message, function(err, info){
-			console.log('send', err, info);
-		})
-
-	}*/
 })
+
+var presencePhone = new DevicePresence({ name : "Nic phone", address : "192.168.1.141", eventEmitter : internalEventEmitter});
+internalEventEmitter.on("presenceMessage", function(a,b,c){
+	console.log("Mensajero",a,b,c);
+})
+presencePhone.begin();
+
 
 var LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
@@ -83,7 +78,7 @@ HeaterManager = require('./heaterManager.js');
 heaterManager = new HeaterManager(internalEventEmitter);
 
 ActionScheduler = require('./actionScheduler.js');
-actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter );
+var actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter );
 
 
 lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */ true);
@@ -139,6 +134,9 @@ romantic.addStatus({lightName: 'kitchenCountertop', onOff : false });
 romantic.addStatus({lightName: 'officeBoards', onOff : false });
 romantic.addStatus({lightName: 'officeLamp', onOff : true, color: "white", brightness: 20 });
 lightManager.addProgramInstance(romantic)
+
+
+
 
 
 /** Prepare heaters */
