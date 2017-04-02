@@ -7,7 +7,7 @@ var env = process.env.NODE_ENV || 'development'
 
 function actionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter){
 
-	this.checkCycleDuration = 60; // 60; // In seconds
+	this.checkCycleDuration = 2; // 60; // In seconds
 
 	this.internalEventEmitter = internalEventEmitter;
 	this.peopleTracker = peopleTracker;
@@ -17,9 +17,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 	this.dayTimeStarts = [7, 0, 0];
 	this.dayTimeEnds = [17, 0, 0];
 
-
 	debug("enabled");
-
 
 	this.movementWasDetected = function(data){
 		homeStatus = this.peopleTracker.getHomeStatus();
@@ -90,7 +88,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		if(now - lastStatusChange < this.checkCycleDuration){
 			// If the change was done in the last cycle, consider the actual status as the "new" status
 			// and trigger an action
-			console.log("Home status changed to ", homeStatus)
+			//console.log("Home status changed to ", homeStatus)
 
 			this.runActionBasedOnHomeStatus();
 		}

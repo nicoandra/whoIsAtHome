@@ -19,7 +19,7 @@ function DevicePresence(options){
 		return this.deviceIsPresent;
 	}
 
-	this.lastTimeSeenOnline = new moment().subtract(5, this.unit);
+	this.lastTimeSeenOnline = new moment().subtract(15, this.unit);
 	this.deviceIsPresent = true;
 
 	this.ping = function(){
@@ -28,24 +28,34 @@ function DevicePresence(options){
 		debug('Pinging...', code);
 
 		if(code === 0){
-			var momentsAgo = new moment().subtract(10, this.unit);
-			if(this.lastTimeSeenOnline.isBefore(momentsAgo)){
-				// Ping was successful and it was long time ago...
-				// The device is back!
-				return this.deviceIsBack();
-			}
+			// Ping worked. Next ping will be done in 20 seconds
+
+			setTimeout(this.ping.bind(this), 20000);
+
+			this.lastTimeSeenOnline = new moment();
 
 			if(this.deviceIsPresent){
 				debug("Still around...");
 				return ;
 			}
 
-			return;
+			
+			this.deviceIsPresent = true;
+			return this.deviceIsBack();
+
 		}
 
 
-		var momentsAgo = new moment().subtract(10, this.unit);
-		if(code === 1 && this.lastTimeSeenOnline.isBefore(momentsAgo)){
+		// Ping did not work. Next ping will be done in 4 seconds
+		setTimeout(this.ping.bind(this), 4000);
+
+		var momentsAgo = new moment().subtract(5, this.unit);
+		if(
+			code === 1 && 				// Not pong
+			this.deviceIsPresent &&		// I think it should pong!
+			this.lastTimeSeenOnline.isBefore(momentsAgo)	// Last pong was some time ago...
+			){
+			
 			this.deviceIsGone();
 		}
 	}
@@ -71,8 +81,8 @@ function DevicePresence(options){
 
 	this.begin = function(){
 		debug("Begin")
-		this.ping();
-		setInterval(this.ping.bind(this), 4000);
+
+		setTimeout(this.ping.bind(this), 4000);
 	}
 
 }
