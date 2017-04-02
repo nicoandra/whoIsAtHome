@@ -21,12 +21,12 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	this.desiredTemperature = 14;
 	this.power = 0;
 	this.lastResponseTime = 0;
-	this.lastTimeMovementWasDetected = moment();
+	this.lastTimeMovementWasDetected = moment().subtract(20, 'seconds');
 
 	this.getStatusPayload = [0x30, 0xFF, Math.floor(this.serverPort / 256),  Math.floor(this.serverPort % 256)] ; //  Requests for status to be sen back to port
 
 	this.movementNeedsToBeNotified = function(){
-		fiveMinutesAgo = moment().subtract(5, 'minute');
+		fiveMinutesAgo = moment().subtract(20, 'seconds');
 
 		if(this.lastTimeMovementWasDetected.isBefore(fiveMinutesAgo)){
 			this.lastTimeMovementWasDetected = moment();

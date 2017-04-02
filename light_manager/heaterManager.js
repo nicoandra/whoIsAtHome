@@ -35,7 +35,6 @@ function HeaterManager(eventEmitter){
 				eventEmitter.emit("movementDetected", { name: this.heaters[heaterName].name });
 			};
 		}.bind(this))
-
 	}
 
 	this.handleHeaterStatusResponse = function(message, networkInfo){
@@ -43,7 +42,7 @@ function HeaterManager(eventEmitter){
 		// Loop through all heaters and call parseResponse(message, networkInfo)
 		Object.keys(this.heaters).forEach(function(heaterName){
 			if(this.heaters[heaterName].parseResponse(message, networkInfo)){
-				return eventEmitter.emit("heaterUpdated",  { name: this.heaters[heaterName].name });
+				return this.eventEmitter.emit("heaterUpdated",  { name: this.heaters[heaterName].name });
 			};
 		}.bind(this))
 	}
@@ -61,7 +60,7 @@ function HeaterManager(eventEmitter){
 			return this.handleMovementDetectedResponse(message, networkInfo);
 		}
 
-		console.log(message, networkInfo);
+		debug(message, networkInfo);
 
 		if(message.length = 4 && message[0] == 0x41 && message[1] == 0xFF && message[2] == 0x00){
 			if(message[3] == 0x01){
@@ -159,9 +158,9 @@ function HeaterManager(eventEmitter){
 				heatherName = Object.keys(status)[0];
 				temperature = status[heatherName];
 				this.setTemperature(heatherName, temperature);
-				console.log("Updating", heatherName, temperature);
+				debug("Updating", heatherName, temperature);
 			} catch(exception){
-				console.log("ERRRRR", exception);
+				debug("ERRRRR", exception);
 			}
 		}.bind(this))
 
@@ -188,7 +187,7 @@ function HeaterManager(eventEmitter){
 				this.currentWeatherAtHome.maximumTemperature = body.main.temp_max;
 
 			} catch(exception){
-				console.log("Getting weather", exception);
+				debug("Getting weather", exception);
 			}
 
 		}.bind(this))

@@ -177,7 +177,7 @@ function LightManager(){
 			if(typeof lightName == 'string') {
 				// Handling first case
 				this.setStatus(lightName, status, function () {
-					console.log("Setting status of", lightName)
+					debug("Setting status of", lightName)
 				});
 			}
 
@@ -185,7 +185,7 @@ function LightManager(){
 				status = lightName;
 				lightName = status.lightName;
 				this.setStatus(lightName, status, function () {
-					console.log("Setting status of", lightName)
+					indexToRead("Setting status of", lightName)
 				});
 			}
 		}.bind(this))
@@ -196,7 +196,7 @@ function LightManager(){
 	}
 
 	this.getStatus = function(){
-		// console.log(this.lights);
+		// debug(this.lights);
 
 		result = new Object();
 		result.lights = new Object();
