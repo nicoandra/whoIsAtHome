@@ -194,8 +194,8 @@ notificationEventEmitter.on('movement', function(data){
 heaterManager.addHeater('dev', 'Dev', 1, '192.168.1.113', 8888, { eventEmitter : notificationEventEmitter });
 heaterManager.addHeater('living', 'Living', 1, '192.168.1.130', 8888, { eventEmitter : notificationEventEmitter });
 
-heaterManager.addHeater('livingTest', 'Living Test', 1, '192.168.1.128', 8888, { eventEmitter : notificationEventEmitter });
-heaterManager.addHeater('officeTest', 'Office Test', 2, '192.168.1.128', 8888, { eventEmitter : notificationEventEmitter });
+heaterManager.addHeater('livingDual', 'Living Dual', 1, '192.168.1.128', 8888, { eventEmitter : notificationEventEmitter });
+heaterManager.addHeater('officeDual', 'Office Dual', 2, '192.168.1.128', 8888, { eventEmitter : notificationEventEmitter });
 
 
 lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
@@ -468,6 +468,8 @@ app.use('/', function(req, res, next){
 httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
 	console.log('http interface listening on port '+port);	
 });
+
+
 
 /** END OF HTTP SERVER **/
 

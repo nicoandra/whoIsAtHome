@@ -9,7 +9,7 @@ var getStatusPayload = [0x30, 0xFF, 0x22, 0xB8];
 var setLedPowerPayload = [0x20, 0x00, 0x03, 0xFF];
 
 server.on("message", function(message, networkInfo){
-	console.log(message);
+	console.log(message,networkInfo);
 
 })
 
