@@ -3,6 +3,8 @@ var dgram = require('dgram');
 const debug = require("debug")("app:heater");
 var moment = require('moment');
 
+var env = process.env.NODE_ENV || 'development'
+	, cfg = require(__dirname + '/config/config.'+env+'.js')
 
 
 function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
