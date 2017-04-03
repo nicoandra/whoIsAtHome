@@ -5,7 +5,7 @@ var Debug = require('debug');
 function DevicePresence(options){
 
 
-	this.unit = 'minutes';
+	this.unit = 'seconds';
 	try {
 		this.name = options.name ;
 		this.address = options.address;
@@ -19,7 +19,7 @@ function DevicePresence(options){
 		return this.deviceIsPresent;
 	}
 
-	this.lastTimeSeenOnline = new moment().subtract(15, this.unit);
+	this.lastTimeSeenOnline = new moment().subtract(60 * 3 + 15, this.unit);
 	this.deviceIsPresent = true;
 
 	this.ping = function(){
@@ -39,17 +39,15 @@ function DevicePresence(options){
 				return ;
 			}
 
-			
 			this.deviceIsPresent = true;
 			return this.deviceIsBack();
-
 		}
 
 
 		// Ping did not work. Next ping will be done in 4 seconds
-		setTimeout(this.ping.bind(this), 4000);
+		setTimeout(this.ping.bind(this), 2000);
 
-		var momentsAgo = new moment().subtract(5, this.unit);
+		var momentsAgo = new moment().subtract(60 * 3, this.unit);
 		if(
 			code === 1 && 				// Not pong
 			this.deviceIsPresent &&		// I think it should pong!

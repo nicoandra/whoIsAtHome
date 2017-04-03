@@ -66,12 +66,22 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	}
 
 	this.setValues = function(currentTemperature, desiredTemperature, humidity, heaterPower, powerOutlet){
+
+		result = false;
+
+
+		if(this.currentTemperature != currentTemperature) result = true;
+		if(this.desiredTemperature != desiredTemperature) result = true;
+		if(this.humidity != humidity) result = true;
+		if(this.power != heaterPower) result = true;
+
 		this.currentTemperature = currentTemperature;
 		this.desiredTemperature = desiredTemperature;
 		debug("desiredTemperature set to", desiredTemperature);
 		this.humidity = humidity;
 		this.power = heaterPower;
 		this.lastResponseTime = moment();
+		return result;
 	}
 
 
@@ -128,8 +138,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 			})
 		}
 
-		this.setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
-		return true;
+		return this.setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
 	}
 
 	this.getStatus = function(){

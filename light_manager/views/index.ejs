@@ -303,6 +303,14 @@
 
 								</li>
 							</ng-repeat>
+
+							<li class="row list-group-item" >
+
+								<ng-repeat ng-repeat="temp in [17, 17.5, 18, 18.5, 19, 19.5, 20, 20.5, 21,21.5,22 ]">
+									<a class="btn btn-default glyphicon glyphicon-off" ng-click="setAllHeaters(temp)">{{ temp }}</a>
+								</ng-repeat>
+
+							</li>
 						</ul>
 					</div>
 				</div> <!-- end tab-content -->
@@ -346,11 +354,18 @@
 			$scope.requestStatus = false;
 
 
+			$scope.setAllHeaters = function(desiredTemperature){
+				Object.keys($scope.heaters).forEach(function(heaterName){
+					$scope.heaters[heaterName].desiredTemperature = desiredTemperature;
+					$scope.heaterChanged(heaterName);
+				});
+
+				
+			}
+
 			$scope.heaterChanged = function(name){
-				$http.post(
-					"/angular/heathers/set", 
-					[{ [name] : $scope.heaters[name].desiredTemperature }]
-				)
+				var toSend = name !== undefined ? [{ [name] : $scope.heaters[name].desiredTemperature }] : {}
+				$http.post("/angular/heathers/set", toSend)
 			}
 
 			$scope.requestStarted = function(){

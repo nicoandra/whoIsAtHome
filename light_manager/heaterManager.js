@@ -38,12 +38,10 @@ function HeaterManager(eventEmitter){
 	}
 
 	this.handleHeaterStatusResponse = function(message, networkInfo){
-
 		// Loop through all heaters and call parseResponse(message, networkInfo)
 		Object.keys(this.heaters).forEach(function(heaterName){
-			debug(heaterName);
 			if(this.heaters[heaterName].parseResponse(message, networkInfo)){
-				debug(heaterName, "yeah!");
+				debug("Heater matched:", heaterName);
 				return this.eventEmitter.emit("heaterUpdated",  { name: this.heaters[heaterName].name });
 			};
 		}.bind(this))
@@ -52,9 +50,11 @@ function HeaterManager(eventEmitter){
 
 	// this.client.on('message', this.handleIncomingPackets.bind(this));
 	this.client.on('message', function(message, networkInfo){
+
+
 		ip = networkInfo.address;
-		if(message[0] == 0x31 && message[1] == 0xFF && message.length === 20) {
-			debug("Status received from ", ip);
+		if(message[0] == 0x31 && message[1] == 0xFF && (message.length === 20 || message.length === 12)) {
+			// debug("Status received from ", ip);
 			return this.handleHeaterStatusResponse(message, networkInfo);
 		}
 
@@ -137,10 +137,13 @@ function HeaterManager(eventEmitter){
 
 	this.setTemperature = function(name, temperature){
 		temperature = Math.round(temperature * 10) / 10; 	// Round to 1 decimal
-
 		try {
+			if(this.heaters[name] === undefined){
+				return false;
+			}
 			return this.heaters[name].setTemperature(temperature);
 		} catch(exception){
+			debug("Err with ", name);
 			debug("setTemperature", exception);
 		}
 	}
