@@ -4,7 +4,7 @@ var Debug = require('debug');
 
 function DevicePresence(options){
 
-	this.failureCounter = 20;
+	this.failureCounter = 60;
 	this.intervalWhenFoundOnline = 20000;
 	this.intervalWhenNotFound = 2000;
 
@@ -22,7 +22,7 @@ function DevicePresence(options){
 		return this.deviceIsPresent;
 	}
 
-	this.lastTimeSeenOnline = new moment().subtract(60 * 3 + 15, this.unit);
+	this.lastTimeSeenOnline = new moment().subtract(60 * 5 + 15, this.unit);
 	this.deviceIsPresent = true;
 
 	this.ping = function(){
@@ -51,7 +51,7 @@ function DevicePresence(options){
 		// Ping did not work. Next ping will be done in 4 seconds
 		setTimeout(this.ping.bind(this), this.intervalWhenNotFound);
 
-		var momentsAgo = new moment().subtract(60 * 2, this.unit);
+		var momentsAgo = new moment().subtract(60 * 4, this.unit);
 		if(
 			code === 1 && 				// Not pong
 			this.deviceIsPresent &&		// I think it should pong!
