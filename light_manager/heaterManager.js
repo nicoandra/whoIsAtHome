@@ -41,7 +41,7 @@ function HeaterManager(eventEmitter){
 		// Loop through all heaters and call parseResponse(message, networkInfo)
 		Object.keys(this.heaters).forEach(function(heaterName){
 			if(this.heaters[heaterName].parseResponse(message, networkInfo)){
-				debug("Heater matched:", heaterName);
+				// debug("Heater matched:", heaterName);
 				return this.eventEmitter.emit("heaterUpdated",  { name: this.heaters[heaterName].name });
 			};
 		}.bind(this))
@@ -59,7 +59,7 @@ function HeaterManager(eventEmitter){
 		}
 
 		if(message[0] == 0x11 && message[1] == 0x00){
-			debug("Movement detected: ", ip);
+			// debug("Movement detected: ", ip);
 			return this.handleMovementDetectedResponse(message, networkInfo);
 		}
 

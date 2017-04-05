@@ -44,6 +44,14 @@ internalEventEmitter.on("lightsSwitchProgramRequested", function(data) {
 
 
 
+internalEventEmitter.on("personMovementDetected", function(data){
+	homeStatus = peopleTracker.getHomeStatus();
+	if(homeStatus.home.isAlone){
+		actionScheduler.personMovementHasBeenDetected(data);
+		notificationEventEmitter.emit("movement", data);
+	}
+})
+
 internalEventEmitter.on("movementDetected", function(data){
 	homeStatus = peopleTracker.getHomeStatus();
 
@@ -51,11 +59,7 @@ internalEventEmitter.on("movementDetected", function(data){
 		if(presencePhone.isPresent()){
 			peopleTracker.setAsAtHome("nico");
 			changeEventEmitter.emit("message", data);
-		} else {
-			actionScheduler.movementWasDetected(data);
-			notificationEventEmitter.emit("movement", data);
-		}
-		
+		}		
 	}
 })
 
@@ -191,11 +195,11 @@ notificationEventEmitter.on('movement', function(data){
 
 /**/
 // this.addHeater = function(name, descriptiveName, id, ip, port, options){
-heaterManager.addHeater('dev', 'Dev', 1, '192.168.1.113', 8888, { eventEmitter : notificationEventEmitter });
-heaterManager.addHeater('living', 'Living', 1, '192.168.1.130', 8888, { eventEmitter : notificationEventEmitter });
+heaterManager.addHeater('dev', 'Dev', 1, '192.168.1.113', 8888, { eventEmitter : internalEventEmitter });
+heaterManager.addHeater('living', 'Living', 1, '192.168.1.130', 8888, { eventEmitter : internalEventEmitter });
 
-heaterManager.addHeater('livingDual', 'Living Dual', 1, '192.168.1.128', 8888, { eventEmitter : notificationEventEmitter });
-heaterManager.addHeater('officeDual', 'Office Dual', 2, '192.168.1.128', 8888, { eventEmitter : notificationEventEmitter });
+heaterManager.addHeater('livingDual', 'Living Dual', 1, '192.168.1.128', 8888, { eventEmitter : internalEventEmitter });
+heaterManager.addHeater('officeDual', 'Office Dual', 2, '192.168.1.128', 8888, { eventEmitter : internalEventEmitter });
 
 
 lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));

@@ -52,6 +52,41 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		}		
 	}
 
+
+	this.personMovementHasBeenDetected = function(data){
+		homeStatus = this.peopleTracker.getHomeStatus();
+		debug("eventHandler Person has been detected", data);
+
+
+		if(homeStatus.home.isAlone){
+			var nodemailer = require('nodemailer');
+			var smtpTransport = require('nodemailer-smtp-transport');
+			var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
+			var message = {
+				from: cfg.email.fromFields,
+				to:  cfg.email.whoToContact
+			};
+
+
+			debug("eventHandler movementWasDetected", data);
+			try {
+				name = data.name;
+			} catch (exception){
+				name = "(Unknown)";	
+			}
+
+			message.subject = "Alert: A PERSON has been detected in " + name;
+			message.text = message.subject;
+			message.html = message.subject;
+
+			transporter.sendMail(message, function(err, info){
+				console.log('send', err, info);
+			})
+
+		}		
+	}
+
+
 	this.getTimeWhenLightsGoOff = function(){
 		dayNumber = moment().day(); // Get the day number
 

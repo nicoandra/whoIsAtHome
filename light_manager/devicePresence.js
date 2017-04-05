@@ -4,7 +4,7 @@ var Debug = require('debug');
 
 function DevicePresence(options){
 
-	this.failureCounter = 60;
+	this.failureCounter = 22;
 	this.intervalWhenFoundOnline = 20000;
 	this.intervalWhenNotFound = 2000;
 
@@ -23,15 +23,15 @@ function DevicePresence(options){
 	}
 
 	this.lastTimeSeenOnline = new moment().subtract(60 * 5 + 15, this.unit);
-	this.deviceIsPresent = true;
+	this.deviceIsPresent = false;
 
 	this.ping = function(){
 		var code = shell.exec('ping ' + this.address + ' -c1 -W1', { silent : 1 }).code;
 		
-		debug('Pinging...', code, this.failureCounter);
+		debug('Pinging...', code, 'Try: ', this.failureCounter);
 
 		if(code === 0){
-			this.failureCounter = 20;
+			this.failureCounter = 20 ;
 			// Ping worked. Next ping will be done in 20 seconds
 
 			setTimeout(this.ping.bind(this), this.intervalWhenFoundOnline);

@@ -24,19 +24,18 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	this.power = 0;
 	this.lastResponseTime = 0;
 	this.lastTimeMovementWasDetected = moment().subtract(20, 'seconds');
+	this.accumulatedMovements = 0;
+
+	this.decreaseAccumulatedMovements = function(){
+		console.log(this.name, this.accumulatedMovements)
+		if(this.accumulatedMovements > 0){
+			this.accumulatedMovements = Math.round(this.accumulatedMovements * 10) / 10 - .1;
+		}
+	}
+	setInterval(this.decreaseAccumulatedMovements.bind(this), 1000);
+
 
 	this.getStatusPayload = [0x30, 0xFF, Math.floor(this.serverPort / 256),  Math.floor(this.serverPort % 256)] ; //  Requests for status to be sen back to port
-
-	this.movementNeedsToBeNotified = function(){
-		fiveMinutesAgo = moment().subtract(20, 'seconds');
-
-		if(this.lastTimeMovementWasDetected.isBefore(fiveMinutesAgo)){
-			this.lastTimeMovementWasDetected = moment();
-			return true;
-		}
-
-		return false;
-	}
 
 	this.sendRawPayload = function(payload){
 		var buffer = new Buffer(payload);
@@ -59,10 +58,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 		var payload = [ 0x10 , this.id, temperatureInteger, temperatureDecimal];
 
 		debug("setHeaterTemperature", name, desiredTemperature, payload);
-
 		var buffer = new Buffer(payload);
-
-
 		this.sendRawPayload(payload);
 
 	}
@@ -79,7 +75,6 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 
 		this.currentTemperature = currentTemperature;
 		this.desiredTemperature = desiredTemperature;
-		debug("desiredTemperature set to", desiredTemperature);
 		this.humidity = humidity;
 		this.power = heaterPower;
 		this.lastResponseTime = moment();
@@ -90,6 +85,13 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	this.parseMovementResponse = function(response, networkInfo){
 		try {
 			if(response[3] == this.id){
+
+				this.accumulatedMovements += .5;
+				if(this.accumulatedMovements > 1){
+					this.accumulatedMovements = 0; // Once the notification is sent, reset the counter;
+					// HAY UNA PERSONA
+					this.eventEmitter.emit("personMovementDetected", { name : this.name })
+				}
 				return true;
 			}
 			return false;
@@ -102,12 +104,12 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 		ip = networkInfo.address;
 
 		if(this.ip !== ip){
-			debug(this.name , "ip Mismatch", this.ip, ip);
+			// debug(this.name , "ip Mismatch", this.ip, ip);
 			return false;
 		}
 
 		if(message[0] == 0x11){
-			debug(this.name , "Movement");
+			// debug(this.name , "Movement");
 			return this.parseMovementResponse(message, networkInfo);
 		}
 
@@ -119,7 +121,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 		var humidity = parseInt(message[indexToRead++]) + parseInt(message[indexToRead++]) / 256;
 		var powerOutlet = 0;
 
-		debug("In the response from",ip,"the heaterPower is", heaterPower, desiredTemperature);
+		// debug("In the response from",ip,"the heaterPower is", heaterPower, desiredTemperature);
 
 		if(temperature < 10 || temperature > 35){
 			var nodemailer = require('nodemailer');
@@ -156,7 +158,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 
 	this.requestStatus = function(){
 		this.dgramClient.send(new Buffer(this.getStatusPayload), 0, 4, this.heaterPort, this.ip, function(err,res){
-			debug("Sent status request to ", this.name)
+			// debug("Sent status request to ", this.name)
 		}.bind(this));
 	}
 
