@@ -97,7 +97,7 @@ var peopleTracker = function(lightManager, internalEventEmitter){
 
             this.peopleAtHome[name] = this.people[name].status
 
-            debug("decideIfHomeIsAloneOrNot", name, this.people[name].status);
+            // debug("decideIfHomeIsAloneOrNot", name, this.people[name].status);
 
         }, this)
 
