@@ -27,7 +27,6 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	this.accumulatedMovements = 0;
 
 	this.decreaseAccumulatedMovements = function(){
-		console.log(this.name, this.accumulatedMovements)
 		if(this.accumulatedMovements > 0){
 			this.accumulatedMovements = Math.round(this.accumulatedMovements * 10) / 10 - .1;
 		}
