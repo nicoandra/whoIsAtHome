@@ -23,7 +23,7 @@ function DevicePresence(options){
 	}
 
 	this.lastTimeSeenOnline = new moment().subtract(15, this.unit);
-	this.deviceIsPresent = false;
+	this.deviceIsPresent = true;
 
 	this.ping = function(){
 		var code = shell.exec('ping ' + this.address + ' -c1 -W1', { silent : 1 }).code;
