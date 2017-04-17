@@ -235,12 +235,25 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 		var now = moment();
 		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2]);
-		if(now.isAfter(dayTimeEnds) && now.isBefore(this.getTimeWhenLightsGoOff())){
+		var getTimeWhenLightsGoOff = this.getTimeWhenLightsGoOff();
 
-			// We're facing the night time now
-			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. Between dayTimeEnds and getTimeWhenLightsGoOff");
-			return false;
+
+
+		if(getTimeWhenLightsGoOff.isAfter(dayTimeEnds)){
+			if(now.isAfter(dayTimeEnds) || now.isBefore(this.getTimeWhenLightsGoOff())){
+				debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. Between dayTimeEnds and getTimeWhenLightsGoOff #1");
+				return false;
+			}
+
+		} else {
+			if(now.isAfter(dayTimeEnds) || now.isBefore(this.getTimeWhenLightsGoOff())){
+				// We're facing the night time now
+				debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. Between dayTimeEnds and getTimeWhenLightsGoOff #2");
+				return false;
+			}
 		}
+
+
 
 		/* 
 		if(now.isBefore(this.getTimeWhenLightsGoOff())) {

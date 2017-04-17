@@ -22,7 +22,7 @@ function DevicePresence(options){
 		return this.deviceIsPresent;
 	}
 
-	this.lastTimeSeenOnline = new moment().subtract(60 * 5 + 15, this.unit);
+	this.lastTimeSeenOnline = new moment().subtract(15, this.unit);
 	this.deviceIsPresent = false;
 
 	this.ping = function(){
@@ -51,7 +51,7 @@ function DevicePresence(options){
 		// Ping did not work. Next ping will be done in 4 seconds
 		setTimeout(this.ping.bind(this), this.intervalWhenNotFound);
 
-		var momentsAgo = new moment().subtract(60 * 4, this.unit);
+		var momentsAgo = new moment().subtract(10, this.unit);
 		if(
 			code === 1 && 				// Not pong
 			this.deviceIsPresent &&		// I think it should pong!
