@@ -7,7 +7,7 @@ var env = process.env.NODE_ENV || 'development'
 
 function actionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter){
 
-	this.checkCycleDuration = 2; // 60; // In seconds
+	this.checkCycleDuration = 10; // 60; // In seconds
 
 	this.internalEventEmitter = internalEventEmitter;
 	this.peopleTracker = peopleTracker;
@@ -87,6 +87,8 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 
 	this.getTimeWhenLightsGoOff = function(){
+		return moment().hour(0).minute(30).seconds(0);
+
 		dayNumber = moment().day(); // Get the day number
 
 		if(dayNumber >= 5){
@@ -96,6 +98,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 		// During the week, turn them off much earlier
 		return moment().hour(0).minute(30).seconds(0);
+		
 	}
 
 	this.isHomeAlone = function() {
@@ -131,7 +134,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 	this.verifyIfNightStartedOrEnded = function(){
 		// If the status did not change, do nothing
 		if(this.wasNightOnLastCheck === this.isNightTime()){
-			debug("Night Status did not change. Return.")
+			// debug("Night Status did not change. Return.")
 			return ;
 		}
 
@@ -144,8 +147,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		}
 
 		this.runActionBasedOnHomeStatus();
-
-		debug("Is Home Alone in verifyIfNightStartedOrEnded?", this.isHomeAlone());
 	}
 
 	this.homeStartedToBeAlone = function(){
@@ -221,31 +222,36 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 	this.turnOffLightsWhenHomeIsAloneAndItIsTooLate = function(){
 		if(!this.isHomeAlone()){
+			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. There's someone at home. Do nothing.");
 			// If there's someone at home, don't do anything
 			return false;
 		}
 
 		if(!this.isNightTime()){
 			// If it is not night time, don't do anything
+			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. It's not night time. Do nothing.");
 			return false;
 		}
 
 		var now = moment();
 		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2]);
-		if(now.isAfter(dayTimeEnds)){
+		if(now.isAfter(dayTimeEnds) && now.isBefore(this.getTimeWhenLightsGoOff())){
+
 			// We're facing the night time now
+			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. Between dayTimeEnds and getTimeWhenLightsGoOff");
 			return false;
 		}
 
+		/* 
 		if(now.isBefore(this.getTimeWhenLightsGoOff())) {
 			// If it's too early to turn the lights off, don't do anything
+			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. The day is over.");
 			return false;
 		}
-
-
+		*/
 
 		// Do not turn on the lights when it's too late.
-		debugTime("The home is alone, but it is too late to turn the lights on.");
+		debugTime("The home is alone, but it is too late to turn the lights on. Turn them off.");
 		this.lightManager.setStatus({ lightName: 'officeLamp', onOff : false })
 		this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : false })
 		this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : false })
