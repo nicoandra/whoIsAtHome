@@ -17,7 +17,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 	this.dayTimeStarts = [7, 0, 0];
 	this.dayTimeEnds = [17, 0, 0];
 
-	debug("enabled");
 
 	this.movementWasDetected = function(data){
 		homeStatus = this.peopleTracker.getHomeStatus();
@@ -163,9 +162,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 			}
 
 			debugTime("It's night and the home is alone, turning lights on");
-			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 60 })
-			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 60 })
-			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 60 })
+			this.lightManager.useScene("homeIsAloneAtNight");
 		} else {
 			debug("It's day")
 			debugTime("It's DAY and the home is alone, turning lights off");
@@ -182,13 +179,28 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		if(this.isDayTime()){
 			return false;
 		}
-		this.lightManager.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100 })
-		this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 })
-		this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 100 })
+
+		this.lightManager.useScene("welcomeHome");
 
 	}
 
+
+	this.nightTimeCounter = 10;
+
 	this.isNightTime = function(){
+
+		if(false){
+			if(this.nightTimeCounter-- > 0){
+				return false;
+			}
+
+
+			if(this.nightTimeCounter < -30){
+				this.nightTimeCounter = 10;
+				return true;
+			}
+		}
+
 		var dayTimeStarts = moment().hour(this.dayTimeStarts[0]).minute(this.dayTimeStarts[1]).seconds(this.dayTimeStarts[2]);
 		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2]);
 		var now = moment();
@@ -244,9 +256,14 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
 		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), this.checkCycleDuration * 1000);
+		debug("enabled");
 	}
 
 	this.start();
+
+	this.forceDayTime = function(){
+
+	}
 }
 
 module.exports = actionScheduler;
