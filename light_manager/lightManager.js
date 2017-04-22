@@ -195,6 +195,38 @@ function LightManager(){
 		callback;
 	}
 
+	this.useScene = function(sceneName){
+
+		if(sceneName === "homeIsAloneAtNight"){
+			debug("Loading scene homeIsAloneAtNight");
+			this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 60 })
+			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 60 })
+			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 60 })
+
+			setTimeout(function(){
+				this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 60 })
+				this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 60 })
+				this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 60 })
+			}.bind(this), 2000)
+			return ;
+		}
+
+		if(sceneName === "welcomeHome"){
+			debug("Loading scene welcomeHome");
+			this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 })
+			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 100 })
+			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100 })
+			return ;
+		}
+
+		if(sceneName === "welcomeHomeLow"){
+			debug("Loading scene welcomeHomeLow");
+			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 40 })
+			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 10 })
+			return ;
+		}		
+	}
+
 	this.getStatus = function(){
 		// debug(this.lights);
 
