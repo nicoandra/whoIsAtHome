@@ -181,8 +181,13 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 			return false;
 		}
 
-		this.lightManager.useScene("welcomeHome");
-
+		if(this.isItTooLateToTurnOnLights()){
+			// When coming back home late at night, ligths go on dimmed
+			this.lightManager.useScene("welcomeHomeLow");
+		} else {
+			// When it's not late, lights go on full power
+			this.lightManager.useScene("welcomeHome");
+		}
 	}
 
 
@@ -220,7 +225,8 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 	}
 
 
-	this.turnOffLightsWhenHomeIsAloneAndItIsTooLate = function(){
+
+	this.isItTooLateToTurnOnLights = function(){
 		if(!this.isHomeAlone()){
 			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. There's someone at home. Do nothing.");
 			// If there's someone at home, don't do anything
@@ -253,15 +259,13 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 			}
 		}
 
+		return true;		
+	}
 
-
-		/* 
-		if(now.isBefore(this.getTimeWhenLightsGoOff())) {
-			// If it's too early to turn the lights off, don't do anything
-			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. The day is over.");
+	this.turnOffLightsWhenHomeIsAloneAndItIsTooLate = function(){
+		if(!this.isItTooLateToTurnOnLights()){
 			return false;
 		}
-		*/
 
 		// Do not turn on the lights when it's too late.
 		debugTime("The home is alone, but it is too late to turn the lights on. Turn them off.");

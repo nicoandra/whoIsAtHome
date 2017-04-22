@@ -217,8 +217,14 @@ function LightManager(){
 			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 100 })
 			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100 })
 			return ;
-
 		}
+
+		if(sceneName === "welcomeHomeLow"){
+			debug("Loading scene welcomeHomeLow");
+			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 40 })
+			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 10 })
+			return ;
+		}		
 	}
 
 	this.getStatus = function(){
