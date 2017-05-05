@@ -1,3 +1,5 @@
+"use strict"
+
 var env = process.env.NODE_ENV || 'development'
 	, cfg = require(__dirname + '/config/config.'+env+'.js')
 	, dgram = require('dgram')
@@ -45,7 +47,7 @@ internalEventEmitter.on("lightsSwitchProgramRequested", function(data) {
 
 
 internalEventEmitter.on("personMovementDetected", function(data){
-	homeStatus = peopleTracker.getHomeStatus();
+	var homeStatus = peopleTracker.getHomeStatus();
 	if(homeStatus.home.isAlone){
 		actionScheduler.personMovementHasBeenDetected(data);
 		notificationEventEmitter.emit("movement", data);
@@ -53,7 +55,7 @@ internalEventEmitter.on("personMovementDetected", function(data){
 })
 
 internalEventEmitter.on("movementDetected", function(data){
-	homeStatus = peopleTracker.getHomeStatus();
+	var homeStatus = peopleTracker.getHomeStatus();
 
 	if(homeStatus.home.isAlone){
 		if(presencePhone.isPresent()){
@@ -87,16 +89,16 @@ presencePhone.begin();
 
 var LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
-LightManager = require("./lightManager.js");
+var lightManager = require("./lightManager.js");
 lightManager = new LightManager();	// With a LightManager, add lights
 
 var peopleTracker = new PeopleTracker(lightManager, internalEventEmitter)
 
 /** Prepare heaters */
-HeaterManager = require('./heaterManager.js');
-heaterManager = new HeaterManager(internalEventEmitter);
+var HeaterManager = require('./heaterManager.js');
+var heaterManager = new HeaterManager(internalEventEmitter);
 
-ActionScheduler = require('./actionScheduler.js');
+var ActionScheduler = require('./actionScheduler.js');
 var actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter );
 
 
@@ -105,28 +107,28 @@ lightManager.addLight("officeLamp", "Office Lamp", /*ReceiverId */ 0,  /* GroupI
 lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* GroupId */ 2, /* hasRgb */ true, /* hasDimmer */ true);
 lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */ true);
 
-normalOptions = new LightProgram("Normal", "normal");
+var normalOptions = new LightProgram("Normal", "normal");
 
-normalNight = new LightProgram("Night", "normal-night");
+var normalNight = new LightProgram("Night", "normal-night");
 normalNight.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 0  });
 normalNight.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 0 });
 normalNight.addStatus({lightName: 'officeBoards', onOff : false });
 normalNight.addStatus({lightName: 'officeLamp', onOff : false });
 
-normalLow = new LightProgram("Low", "normal-low");
+var normalLow = new LightProgram("Low", "normal-low");
 normalLow.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 30  });
 normalLow.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 40 });
 normalLow.addStatus({lightName: 'officeBoards', onOff : false });
 normalLow.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 40  });
 
 
-normalMed = new LightProgram("Med", "normal-med");
+var normalMed = new LightProgram("Med", "normal-med");
 normalMed.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 70  });
 normalMed.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 70 });
 normalMed.addStatus({lightName: 'officeBoards', onOff : false });
 normalMed.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 70  });
 
-normalHigh = new LightProgram("High", "normal-high");
+var normalHigh = new LightProgram("High", "normal-high");
 normalHigh.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 100  });
 normalHigh.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 });
 normalHigh.addStatus({lightName: 'officeBoards', onOff : false });
@@ -141,13 +143,13 @@ lightManager.addProgramInstance(normalOptions);
 delete normalOptions;
 
 
-allRed = new LightProgram("All Red", "all red");
+var allRed = new LightProgram("All Red", "all red");
 ["officeLamp","kitchenLamp", "officeBoards"].forEach(function(lightName){
 	allRed.addStatus({lightName: lightName, onOff : true, color: "red" , brightness: 100});	
 })
 lightManager.addProgramInstance(allRed);
 
-romantic = new LightProgram("Romantic", "romantic");
+var romantic = new LightProgram("Romantic", "romantic");
 romantic.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", brightness: 20 });
 romantic.addStatus({lightName: 'kitchenCountertop', onOff : false });
 romantic.addStatus({lightName: 'officeBoards', onOff : false });
@@ -159,7 +161,8 @@ lightManager.addProgramInstance(romantic)
 
 notificationEventEmitter.on('heaters', function(data){
 	
-	type = "normal";
+	var type = "normal";
+	var message;
 	switch(data.type){
 		case 'heaters:heater:wentDown': type = 'danger'; message = data.ref + " heater went down"; break;
 		case 'heaters:heater:cameBack': type = 'success'; message = data.ref + " heater came back"; break;
@@ -171,7 +174,8 @@ notificationEventEmitter.on('heaters', function(data){
 })
 
 notificationEventEmitter.on('strips', function(data){
-	type = "normal";
+	var type = "normal";
+	var message;
 	switch(data.type){
 		case 'strips:strip:notReachable': type = 'danger'; message = data.ref + " strip went down"; break;
 		case 'strips:strip:cameBack': type = 'success'; message = data.ref + " strip came back"; break;
@@ -183,7 +187,6 @@ notificationEventEmitter.on('strips', function(data){
 })
 
 notificationEventEmitter.on('movement', function(data){
-	type = "normal";
 	var toSend = { date : new Date(), type: "alert", title:"Movement detected", text: "Movement detected in " + data.name }
 	notificationQueue.unshift(toSend);
 })
@@ -229,17 +232,15 @@ app.get('/commands/', function(req, res){
 });
 
 app.get("/angular", function(req,res){
-	themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
-	theme = req.cookies.theme ? req.cookies.theme : 'light';
-	theme = theme.toLowerCase().trim();
+	var themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
+	var theme = (req.cookies.theme ? req.cookies.theme : 'light').toLowerCase().trim();
 	res.render('index', { title : "HomeOwn", lights : lightManager.getStatus(), 'theme' : theme , 'themes' : themes})
 })
 
 
 app.get("/angular/lights/getInterfaceOptions", function(req, res){
-	lights = lightManager.getInterfaceOptions();
-	people = peopleTracker.getHomeStatus();
-
+	var lights = lightManager.getInterfaceOptions();
+	var people = peopleTracker.getHomeStatus();
 	res.send({'lights' : lights.lights , 'people' : people, 'programs' : lights.programs});
 })
 
@@ -249,8 +250,8 @@ app.get("/angular/lights/getStatus", function(req, res){
 
 app.get("/angular/lights/getAvailablePrograms", function(req, res){
 
-	availablePrograms = lightManager.getAvailablePrograms();
-	response = [];
+	var availablePrograms = lightManager.getAvailablePrograms();
+	var response = [];
 
 	Object.keys(availablePrograms).forEach(function(key, value){
 		value = availablePrograms[key];
@@ -272,9 +273,8 @@ app.get("/angular/socketSimulator", function(req,res){
 })
 
 app.get("/switchInterface", function(req, res){
-	if(!req.query.theme){
-		theme = "darkly";
-	} else {
+	var theme = "darkly";
+	if(req.query.theme){
 		theme = req.query.theme.toLowerCase().trim();
 	}
 
@@ -292,8 +292,8 @@ app.get("/switchInterface", function(req, res){
 })
 
 app.get("/angular/system/getNotifications", function(req,res){
-	uptime = moment.duration(process.uptime(), 'seconds').asMinutes();
-	type = "success";
+	var uptime = moment.duration(process.uptime(), 'seconds').asMinutes();
+	var type = "success";
 	if(uptime < 10){
 		type = "danger";
 	}
@@ -319,8 +319,7 @@ app.post("/angular/heathers/set", function(req,res){
 })
 
 app.get("/angular/heaters/getStatus", function(req, res){
-	response = heaterManager.getStatus();
-	res.send(response);
+	res.send(heaterManager.getStatus());
 })
 
 app.post("/angular/runProgram", function(req, res){
@@ -356,7 +355,7 @@ app.get("/lights/allOff", function(req,res){
 })
 
 app.post("/lights/iterateBetweenChildPrograms", function(req,res){
-	programKey = req.body.programKey;
+	var programKey = req.body.programKey;
 	lightManager.iterateBetweenChildPrograms(programKey);
 
 	[1, 500, 1000].forEach(function(delay){
@@ -384,9 +383,10 @@ app.get("/cameras/watch/:cameraName", function(req, res){
 	res.send("Not implemented yet");
 	return ;
 
-	cameraConfig = require("./config/restricted/cameras.js"),
-	cameraName = parseInt(req.params.cameraName);
-	availableMonitors = [2,3,6,7]
+	/*
+	var cameraConfig = require("./config/restricted/cameras.js"),
+	var cameraName = parseInt(req.params.cameraName);
+	var availableMonitors = [2,3,6,7]
 
 	if(availableMonitors.indexOf(cameraName) != -1){
 
@@ -406,7 +406,7 @@ app.get("/cameras/watch/:cameraName", function(req, res){
 	}
 	res.send(cameraName + "Invalid camera");
 	return;
-
+	*/
 })
 
 
@@ -450,42 +450,3 @@ httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
 
 
 /** END OF HTTP SERVER **/
-
-
-// return ;
-
-/*
-let smtpConfig = {
-	host: 'smtp.gmail.com',
-	port: 587,
-	secure: false, // upgrade later with STARTTLS
-	auth: {
-		user: 'user@gmail.com',
-		pass: 'pass'
-	}
-};
-
-var message = {
-	from: 'sender@server.com',
-	to: 'receiver@sender.com',
-	subject: 'Message title',
-	text: 'Plaintext version of the message',
-	html: '<p>HTML version of the message</p>'
-};
-
-
-var nodemailer = require('nodemailer');
-var smtpTransport = require('nodemailer-smtp-transport');
-var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
-var message = {
-	from: {name: 'HomeOwn', address: 'proliant@nmac.com.ar'},
-	to: 'nico@nmac.com.ar',
-	subject: 'toda adentro',
-	text: ' text message',
-	html: '<b>html</b> message'
-};
-
-transporter.sendMail(message, function(err, info){
-	console.log('send', err, info);
-})
-*/

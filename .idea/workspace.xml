@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0bd71bc8-f7e7-4d09-bd2e-c1e9620f9611" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/light_manager/lightStatus.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/devicePresence.js" afterPath="$PROJECT_DIR$/light_manager/devicePresence.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/lightManager.js" afterPath="$PROJECT_DIR$/light_manager/lightManager.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/server.js" afterPath="$PROJECT_DIR$/light_manager/server.js" />
     </list>
     <ignored path="lightManager.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,11 +26,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="server.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="server.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/light_manager/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="524">
-              <caret line="354" column="29" selection-start-line="354" selection-start-column="17" selection-end-line="354" selection-end-column="29" />
+            <state relative-caret-position="731">
+              <caret line="409" column="0" selection-start-line="409" selection-start-column="0" selection-end-line="409" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -55,11 +56,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="devicePresence.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="devicePresence.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/light_manager/devicePresence.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="21" column="87" selection-start-line="21" selection-start-column="87" selection-end-line="21" selection-end-column="87" />
+            <state relative-caret-position="306">
+              <caret line="18" column="39" selection-start-line="18" selection-start-column="39" selection-end-line="18" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -80,8 +81,8 @@
       <file leaf-file-name="lightManager.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/light_manager/lightManager.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="456">
-              <caret line="233" column="21" selection-start-line="233" selection-start-column="21" selection-end-line="233" selection-end-column="21" />
+            <state relative-caret-position="864">
+              <caret line="257" column="17" selection-start-line="257" selection-start-column="17" selection-end-line="257" selection-end-column="17" />
               <folding>
                 <element signature="e#755#1675#0" expanded="false" />
                 <element signature="e#1735#1805#0" expanded="false" />
@@ -117,16 +118,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="51">
               <caret line="3" column="17" selection-start-line="3" selection-start-column="9" selection-end-line="3" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.proliant.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/light_manager/config/config.proliant.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -195,10 +186,10 @@
         <option value="$PROJECT_DIR$/light_manager/actionScheduler.js" />
         <option value="$PROJECT_DIR$/light_manager/lightProgram.js" />
         <option value="$PROJECT_DIR$/light_manager/package.json" />
-        <option value="$PROJECT_DIR$/light_manager/server.js" />
-        <option value="$PROJECT_DIR$/light_manager/lightManager.js" />
         <option value="$PROJECT_DIR$/light_manager/tests/ipRegExp.js" />
         <option value="$PROJECT_DIR$/light_manager/devicePresence.js" />
+        <option value="$PROJECT_DIR$/light_manager/lightManager.js" />
+        <option value="$PROJECT_DIR$/light_manager/server.js" />
       </list>
     </option>
   </component>
@@ -398,14 +389,7 @@
       <workItem from="1487352004168" duration="334000" />
       <workItem from="1488997749721" duration="4093000" />
       <workItem from="1491340960155" duration="1406000" />
-      <workItem from="1493996923241" duration="7422000" />
-    </task>
-    <task id="LOCAL-00006" summary="Test with color picker">
-      <created>1476714172618</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1476714172618</updated>
+      <workItem from="1493996923241" duration="9838000" />
     </task>
     <task id="LOCAL-00007" summary="Socket simulator now">
       <created>1476722606985</created>
@@ -743,11 +727,18 @@
       <option name="project" value="LOCAL" />
       <updated>1494004923152</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="Since I'm using shell to do pings, I'd like the IP to be kind of safe. I don't need to have the perfect IP validation. Ensuring no command is passed along the IP is enough for my concerns.">
+      <created>1494006733335</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1494006733335</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="202918000" />
+    <option name="totallyTimeSpent" value="205334000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1924" y="-4" width="1928" height="1088" extended-state="6" />
@@ -806,7 +797,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="Adding bootstrap tabs" />
     <MESSAGE value="Angular version has dimmer POC, on/off switches, notifications, tabbed browsing and a refresh button" />
     <MESSAGE value="Adding some programs with different formats&#10;&#10;I need to do a cleanup here! It's starting to get messy.&#10;&#10;Adding Bootstrap Themes as well :)" />
     <MESSAGE value="Start heaters page&#10;Icons&#10;Formatting tables&#10;Adding new programs" />
@@ -831,7 +821,8 @@
     <MESSAGE value="TIme issues" />
     <MESSAGE value="Home being alone will trigger an event.&#10;ActionScheduler will listen to the event, instead of looping to run an action based on the change." />
     <MESSAGE value="Little cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="Little cleanup" />
+    <MESSAGE value="Since I'm using shell to do pings, I'd like the IP to be kind of safe. I don't need to have the perfect IP validation. Ensuring no command is passed along the IP is enough for my concerns." />
+    <option name="LAST_COMMIT_MESSAGE" value="Since I'm using shell to do pings, I'd like the IP to be kind of safe. I don't need to have the perfect IP validation. Ensuring no command is passed along the IP is enough for my concerns." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -846,13 +837,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/lightPrograms.js" />
-    <entry file="file://$PROJECT_DIR$/light_manager/lightStatus.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="25" column="22" selection-start-line="25" selection-start-column="22" selection-end-line="25" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/bower.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
@@ -1074,14 +1058,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/heaterManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="764">
-          <caret line="128" column="40" selection-start-line="128" selection-start-column="40" selection-end-line="128" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/views/index.ejs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="277">
@@ -1162,27 +1138,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="524">
-          <caret line="354" column="29" selection-start-line="354" selection-start-column="17" selection-end-line="354" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/lightManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="233" column="21" selection-start-line="233" selection-start-column="21" selection-end-line="233" selection-end-column="21" />
-          <folding>
-            <element signature="e#755#1675#0" expanded="false" />
-            <element signature="e#1735#1805#0" expanded="false" />
-            <element signature="e#4644#4992#0" expanded="false" />
-            <element signature="e#5944#7216#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/cli.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1201,10 +1156,47 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/lightStatus.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="20" selection-start-line="0" selection-start-column="9" selection-end-line="0" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/heaterManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="609">
+          <caret line="199" column="0" selection-start-line="199" selection-start-column="0" selection-end-line="199" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/devicePresence.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="21" column="87" selection-start-line="21" selection-start-column="87" selection-end-line="21" selection-end-column="87" />
+        <state relative-caret-position="306">
+          <caret line="18" column="39" selection-start-line="18" selection-start-column="39" selection-end-line="18" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/lightManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="864">
+          <caret line="257" column="17" selection-start-line="257" selection-start-column="17" selection-end-line="257" selection-end-column="17" />
+          <folding>
+            <element signature="e#755#1675#0" expanded="false" />
+            <element signature="e#1735#1805#0" expanded="false" />
+            <element signature="e#4644#4992#0" expanded="false" />
+            <element signature="e#5944#7216#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="731">
+          <caret line="409" column="0" selection-start-line="409" selection-start-column="0" selection-end-line="409" selection-end-column="0" />
           <folding />
         </state>
       </provider>

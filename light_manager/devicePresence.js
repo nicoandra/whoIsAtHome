@@ -8,6 +8,7 @@ function DevicePresence(options){
 	this.intervalWhenFoundOnline = 20000;
 	this.intervalWhenNotFound = 2000;
 
+	ipRegularExpression = /([0-9]{1,3}\.){3}([0-9]{1,3})/
 	if(!options.address.match(ipRegularExpression)){
 		throw new Error("The Address parameter is not a valid / safe IP");
 	}
@@ -15,10 +16,7 @@ function DevicePresence(options){
 	this.unit = 'seconds';
 	try {
 		this.name = options.name ;
-
-		ipRegularExpression = /([0-9]{1,3}\.){3}([0-9]{1,3})/
 		this.address = options.address;
-
 		this.eventEmitter = options.eventEmitter !== undefined ? options.eventEmitter : new EventEmitter;
 		var debug = Debug('presence:' + this.name);
 	} catch(exception){
