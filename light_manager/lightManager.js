@@ -165,7 +165,6 @@ function LightManager(){
 
 	this.setMultipleStatus = function(lightNames, status, callback){
 		lightNames.forEach(function(lightName){
-
 			if(typeof lightName == 'string') {
 				// Handling first case
 				this.setStatus(lightName, status, function () {
@@ -198,9 +197,7 @@ function LightManager(){
 
 		debug("Loading scene ", sceneName);
 		if(sceneName === "allLightsOff"){
-			this.setStatus({ lightName: 'officeLamp', onOff : false })
-			this.setStatus({ lightName: 'kitchenLamp', onOff : false })
-			this.setStatus({ lightName: 'kitchenCountertop', onOff : false })
+			this.allLightsOff();
 			return ;
 		}
 
@@ -229,8 +226,6 @@ function LightManager(){
 	}
 
 	this.getStatus = function(){
-		// debug(this.lights);
-
 		result = new Object();
 		result.lights = new Object();
 
@@ -244,16 +239,13 @@ function LightManager(){
 		return result;
 	}
 
-
 	this.getInterfaceOptions = function(){
 		result = new Object();
 		result.lights = new Object();
 
 		Object.keys(this.lights).forEach(function(lightName, index){
-
 			result.lights[lightName] = this.lights[lightName].getStatus();
 			result.lights[lightName].interface = this.lights[lightName].getInterfaceOptions();
-
 		}.bind(this))
 
 		result.programs = new Object();

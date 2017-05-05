@@ -4,14 +4,21 @@ var Debug = require('debug');
 
 function DevicePresence(options){
 
-	this.failureCounter = 22;
+	this.failureCounter = 25;
 	this.intervalWhenFoundOnline = 20000;
 	this.intervalWhenNotFound = 2000;
+
+	if(!options.address.match(ipRegularExpression)){
+		throw new Error("The Address parameter is not a valid / safe IP");
+	}
 
 	this.unit = 'seconds';
 	try {
 		this.name = options.name ;
+
+		ipRegularExpression = /([0-9]{1,3}\.){3}([0-9]{1,3})/
 		this.address = options.address;
+
 		this.eventEmitter = options.eventEmitter !== undefined ? options.eventEmitter : new EventEmitter;
 		var debug = Debug('presence:' + this.name);
 	} catch(exception){
@@ -31,7 +38,7 @@ function DevicePresence(options){
 		debug('Pinging...', code, 'Try: ', this.failureCounter);
 
 		if(code === 0){
-			this.failureCounter = 20 ;
+			this.failureCounter = 25 ;
 			// Ping worked. Next ping will be done in 20 seconds
 
 			setTimeout(this.ping.bind(this), this.intervalWhenFoundOnline);
