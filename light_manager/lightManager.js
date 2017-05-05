@@ -112,23 +112,18 @@ function LightManager(){
 			return false;
 		}
 
-
 		if(this.allKnownPrograms[hash].statusToApply && this.allKnownPrograms[hash].statusToApply.length > 0){
-
 			// Here are the statuses to apply
 			debug("runProgram", this.allKnownPrograms[hash].statusToApply);
 			this.allKnownPrograms[hash].statusToApply.forEach(function(status){
-
 				debug("runProgram", "One Status", status);
 				this.setStatus(status, function(){});
-
 			}.bind(this));
 			this.activeProgram = hash;
 			return;
 		}
 
 		this.allKnownPrograms[hash].lights.forEach(function(lightName, index) {
-
 			if (typeof lightName == "object") {
 				status = lightName;
 				lightName = lightName.lightName;
@@ -140,7 +135,6 @@ function LightManager(){
 			debug("Setting ", lightName, " with status ", status);
 			this.lights[lightName].setManualStatus(status);
 			return true;
-
 		}.bind(this))
 		this.activeProgram = hash;
 
@@ -151,7 +145,6 @@ function LightManager(){
 	}
 
 	this.setStatus = function(lightName, status, callback){
-
 		if(typeof lightName != "string"){
 			// Lightname is an object. Obtain the light name from it.
 			callback = status;
@@ -163,7 +156,6 @@ function LightManager(){
 		callback = (typeof callback === 'function') ? callback : function() {};
 		this.lights[lightName].setManualStatus(status, callback);
 	}
-
 
 	/*
 	This method supports two formats:
@@ -195,24 +187,31 @@ function LightManager(){
 		callback;
 	}
 
-	this.useScene = function(sceneName){
+	this.useScene = function(sceneName, isTheSecondCall){
+
+		// Call this function again
+		if(isTheSecondCall !== true) {
+			setTimeout(function () {
+				this.useScene(sceneName, true)
+			}.bind(this), 1000);
+		}
+
+		debug("Loading scene ", sceneName);
+		if(sceneName === "allLightsOff"){
+			this.setStatus({ lightName: 'officeLamp', onOff : false })
+			this.setStatus({ lightName: 'kitchenLamp', onOff : false })
+			this.setStatus({ lightName: 'kitchenCountertop', onOff : false })
+			return ;
+		}
 
 		if(sceneName === "homeIsAloneAtNight"){
-			debug("Loading scene homeIsAloneAtNight");
 			this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 60 })
 			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 60 })
 			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 60 })
-
-			setTimeout(function(){
-				this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 60 })
-				this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 60 })
-				this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 60 })
-			}.bind(this), 2000)
 			return ;
 		}
 
 		if(sceneName === "welcomeHome"){
-			debug("Loading scene welcomeHome");
 			this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 })
 			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 100 })
 			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100 })
@@ -220,11 +219,13 @@ function LightManager(){
 		}
 
 		if(sceneName === "welcomeHomeLow"){
-			debug("Loading scene welcomeHomeLow");
 			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 40 })
 			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 10 })
 			return ;
-		}		
+		}
+
+		debug("Scene ", sceneName, "not found.");
+
 	}
 
 	this.getStatus = function(){

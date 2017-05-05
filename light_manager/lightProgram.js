@@ -15,7 +15,6 @@ function LightProgram(name, id){
     this.childPrograms = [];
     this.statusToApply = [];
 
-
     this.addChildProgram = function(lightProgram){
         lightProgram.id = this.hash([this.id, lightProgram.id].join('-'));
         this.childPrograms.push(lightProgram);

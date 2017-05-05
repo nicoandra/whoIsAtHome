@@ -116,26 +116,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		}
 	}
 
-
-	/*
-
-	this.verifyStatus = function(){
-		homeStatus = this.peopleTracker.getHomeStatus().home;
-
-		now = moment().unix();
-		lastStatusChange = moment(homeStatus.sinceWhen).add(this.checkCycleDuration, 'seconds').unix();
-
-		if(now - lastStatusChange < this.checkCycleDuration){
-			// If the change was done in the last cycle, consider the actual status as the "new" status
-			// and trigger an action
-			//console.log("Home status changed to ", homeStatus)
-
-			this.runActionBasedOnHomeStatus();
-		}
-	}
-
-
-	*/
 	this.verifyIfNightStartedOrEnded = function(){
 		// If the status did not change, do nothing
 		if(this.wasNightOnLastCheck === this.isNightTime()){
@@ -270,9 +250,7 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 
 		// Do not turn on the lights when it's too late.
 		debugTime("The home is alone, but it is too late to turn the lights on. Turn them off.");
-		this.lightManager.setStatus({ lightName: 'officeLamp', onOff : false })
-		this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : false })
-		this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : false })
+		this.lightManager.useScene("allLightsOff");
 		return true;
 	}
 

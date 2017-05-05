@@ -155,9 +155,6 @@ romantic.addStatus({lightName: 'officeLamp', onOff : true, color: "white", brigh
 lightManager.addProgramInstance(romantic)
 
 
-
-
-
 /** Prepare heaters */
 
 notificationEventEmitter.on('heaters', function(data){
@@ -174,7 +171,6 @@ notificationEventEmitter.on('heaters', function(data){
 })
 
 notificationEventEmitter.on('strips', function(data){
-	
 	type = "normal";
 	switch(data.type){
 		case 'strips:strip:notReachable': type = 'danger'; message = data.ref + " strip went down"; break;
@@ -187,7 +183,6 @@ notificationEventEmitter.on('strips', function(data){
 })
 
 notificationEventEmitter.on('movement', function(data){
-
 	type = "normal";
 	var toSend = { date : new Date(), type: "alert", title:"Movement detected", text: "Movement detected in " + data.name }
 	notificationQueue.unshift(toSend);
@@ -217,7 +212,6 @@ app.use(cookieParser());
 
 var httpServer = require('http').Server(app);
 
-
 app.use('/static', express.static(path.join(__dirname, 'webroot')));
 app.use('/bower_components', express.static(path.join(__dirname,'bower_components')));
 app.use('/static/angular-ui-switch', express.static(path.join(__dirname, 'bower_components', 'angular-ui-switch' )));
@@ -233,18 +227,6 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 app.get('/commands/', function(req, res){
 	new HttpResponses().receiveCommands(req, res);
 });
-
-app.get('/plot/', function(req, res){
-	cityPlotter.servePlot(req, res);
-});
-
-app.get('/plot/json', function(req, res){
-	cityPlotter.json(req, res);
-});
-
-app.get("/heaters", function(req, res){
-
-})
 
 app.get("/angular", function(req,res){
 	themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
@@ -282,18 +264,14 @@ app.get("/angular/lights/getAvailablePrograms", function(req, res){
 var changeEventEmitter = new EventEmitter()
 changeEventEmitter.setMaxListeners(100)
 app.get("/angular/socketSimulator", function(req,res){
-
 	changeEventEmitter.on('message', function(data){
-
 		try {
 			res.send(true)
 		} catch(exception){}
 	})
-
 })
 
 app.get("/switchInterface", function(req, res){
-
 	if(!req.query.theme){
 		theme = "darkly";
 	} else {
@@ -312,8 +290,6 @@ app.get("/switchInterface", function(req, res){
 	}
 	res.send("OK");
 })
-
-
 
 app.get("/angular/system/getNotifications", function(req,res){
 	uptime = moment.duration(process.uptime(), 'seconds').asMinutes();
@@ -342,12 +318,10 @@ app.post("/angular/heathers/set", function(req,res){
 	})
 })
 
-
 app.get("/angular/heaters/getStatus", function(req, res){
 	response = heaterManager.getStatus();
 	res.send(response);
 })
-
 
 app.post("/angular/runProgram", function(req, res){
 	if(req.body.programKey){
