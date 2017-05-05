@@ -7,7 +7,7 @@ var env = process.env.NODE_ENV || 'development'
 
 function actionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter){
 
-	this.checkCycleDuration = 10; // 60; // In seconds
+	this.checkCycleDuration = 1; // 60; // In seconds
 
 	this.internalEventEmitter = internalEventEmitter;
 	this.peopleTracker = peopleTracker;
@@ -116,6 +116,9 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		}
 	}
 
+
+	/*
+
 	this.verifyStatus = function(){
 		homeStatus = this.peopleTracker.getHomeStatus().home;
 
@@ -131,6 +134,8 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		}
 	}
 
+
+	*/
 	this.verifyIfNightStartedOrEnded = function(){
 		// If the status did not change, do nothing
 		if(this.wasNightOnLastCheck === this.isNightTime()){
@@ -224,8 +229,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		return !this.isNightTime();
 	}
 
-
-
 	this.isItTooLateToTurnOnLights = function(){
 		if(!this.isHomeAlone()){
 			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. There's someone at home. Do nothing.");
@@ -242,8 +245,6 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 		var now = moment();
 		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2]);
 		var getTimeWhenLightsGoOff = this.getTimeWhenLightsGoOff();
-
-
 
 		if(getTimeWhenLightsGoOff.isAfter(dayTimeEnds)){
 			if(now.isAfter(dayTimeEnds) || now.isBefore(this.getTimeWhenLightsGoOff())){
@@ -276,7 +277,8 @@ function actionScheduler(peopleTracker, lightManager, heaterManager, internalEve
 	}
 
 	this.start = function(){
-		setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);
+		// setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);
+		this.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus);
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
 		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), this.checkCycleDuration * 1000);
 		debug("enabled");

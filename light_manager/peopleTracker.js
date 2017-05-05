@@ -11,8 +11,6 @@ var peopleTracker = function(lightManager, internalEventEmitter){
     var lightManager = lightManager;
     var internalEventEmitter = internalEventEmitter;
 
-    this.enableDetectionByPing = false;
-
     this.home = {
         isAlone: true,
         sinceWhen: new Date()
@@ -76,62 +74,26 @@ var peopleTracker = function(lightManager, internalEventEmitter){
 
 
     this.decideIfHomeIsAloneOrNot = function() {
-
-        var homeIsAlone = true;
         var someoneAtHome = false;
 
         Object.keys(this.people).forEach(function (name) {
 
             if (['online', 'atHome', 'sleeping'].indexOf(this.people[name].status) > -1) {
-                result = false;
                 someoneAtHome = true;
-            }
-
-            if (this.people[name].status == 'away') {
-                result = true;
-            }
-
-            if (this.people[name].status == 'comingBack') {
-                result = true;
             }
 
             this.peopleAtHome[name] = this.people[name].status
 
             debug("decideIfHomeIsAloneOrNot", name, this.people[name].status);
-
         }, this)
 
-        
-        homeIsAlone = !someoneAtHome;
+        var homeIsAlone = !someoneAtHome;
 
         if(this.home.isAlone != homeIsAlone){
             this.home.sinceWhen = new Date();
             this.home.isAlone = homeIsAlone ? true : false;
-            internalEventEmitter.emit("home:statusChange", this.home);
+            internalEventEmitter.emit("home:presence:statusChange", this.home);
         }
-    }
-
-
-    this.findPersonByIpAddress = function(ipAddress){
-        var ipAddress = ipAddress;
-        var nameFound = false;
-
-        Object.keys(this.people).forEach(function(name){
-
-            if(nameFound){
-                return ;
-            }
-
-            this.people[name].ips.forEach(function(ip){
-                if(nameFound){
-                    return ;
-                }
-                nameFound = nameFound || ip == ipAddress;
-            })
-
-        }.bind(this));
-
-        return nameFound;
     }
 
     this.getHomeStatus = function(){
