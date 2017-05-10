@@ -1,3 +1,4 @@
+"use strict"
 var dgram = require('dgram');
 
 function ReceiverSocket(params){
@@ -15,18 +16,17 @@ function ReceiverSocket(params){
         stuff.push(this.CLOSE_BYTE);
         this.buffer.push(stuff);
         this.buffer.push(stuff);
-        this.buffer.push(stuff);
     }
 
     this.sendQueuedStuff = function(){
         var queueSize = self.buffer.length;
 
         if(queueSize == 0){
-            setTimeout(self.sendQueuedStuff.bind(self), this.delayBetweenCommands);
+            setTimeout(self.sendQueuedStuff.bind(self), 0);
             return false;
         }
 
-        toSend = self.buffer.shift();
+        var toSend = self.buffer.shift();
 
         if(toSend.length > 3){
             /*
@@ -39,11 +39,11 @@ function ReceiverSocket(params){
 
              Because of this, some commands need to be sent together */
 
-            buffer1 = [toSend[0],toSend[1], toSend[2]];
-            buffer2 = [toSend[3],toSend[4], toSend[5]];
+            var buffer1 = [toSend[0],toSend[1], toSend[2]];
+            var buffer2 = [toSend[3],toSend[4], toSend[5]];
 
-            var buffer1 = new Buffer(buffer1.concat(), 'hex');
-            var buffer2 = new Buffer(buffer2.concat(), 'hex');
+            buffer1 = new Buffer(buffer1.concat(), 'hex');
+            buffer2 = new Buffer(buffer2.concat(), 'hex');
 
             // console.log('[>Buffer1] ', buffer1);
             this.client.send(
@@ -51,15 +51,14 @@ function ReceiverSocket(params){
                 this.host,
                 function(err){
                     setTimeout(function(){
-
                         this.client.send(
                             buffer2, 0, buffer2.length, this.port,
                             self.host,
                             function(err){
                                 // calls itelf again
-                                setTimeout(this.sendQueuedStuff.bind(this), this.delayBetweenCommands);	// @@TODO@@ USE THE SETTING VALUE
+                                setTimeout(this.sendQueuedStuff.bind(this), this.delayBetweenCommands);
                             }.bind(this)
-                        )}.bind(this), this.delayBetweenCommands);	// @@TODO@@ USE THE SETTING VALUE
+                        )}.bind(this), this.delayBetweenCommands);
                 }.bind(this)
             );
 

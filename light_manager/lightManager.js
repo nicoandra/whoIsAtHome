@@ -1,3 +1,5 @@
+"use strict"
+
 var env = process.env.NODE_ENV || 'development'
 	, cfg = require(__dirname + '/config/config.'+env+'.js'),
 	Light = require("./light.js"),
@@ -30,13 +32,13 @@ function LightManager(){
 			return false;
 		}
 
-		parentProgram = this.programs[parentProgramKey];
+		var parentProgram = this.programs[parentProgramKey];
 		if(parentProgram.childPrograms.length < 1){
 			debug("The selected program does not have child programs. Fallback to parent");
 			this.runProgram(parentProgramKey);
 		}
 	   
-		indexOfProgramToRun = parentProgram.childPrograms.map(function(childProgram, index){
+		var indexOfProgramToRun = parentProgram.childPrograms.map(function(childProgram, index){
 			debug("iterateBetweenPrograms", childProgram.id , this.activeProgram, index);
 			return childProgram.id == this.activeProgram ? index : 0;
 		}.bind(this)).reduce(function(prev, current){
@@ -62,8 +64,8 @@ function LightManager(){
 			this.receiverSockets[socketNumber] = new ReceiverSocket(cfg.milight[socketNumber]);
 		}
 
-		lightSocket = new LightSocket("name", groupNumber, this.receiverSockets[socketNumber]);
-		light = new Light(name, displayName, lightSocket).hasRgb(hasRgb).hasDimmer(hasDimmer);
+		var lightSocket = new LightSocket("name", groupNumber, this.receiverSockets[socketNumber]);
+		var light = new Light(name, displayName, lightSocket).hasRgb(hasRgb).hasDimmer(hasDimmer);
 		this.lights[name] = light;
 	}
 
@@ -82,7 +84,7 @@ function LightManager(){
 		// This method will store a program in memory
 		// So it can be matched when a command is executed with "executeProgram"
 
-		programToAdd = new Object();
+		var programToAdd = new Object();
 		programToAdd.name = name;
 		programToAdd.command = command.toLowerCase().trim();
 
@@ -102,10 +104,8 @@ function LightManager(){
 		return this.programs;
 	}
 
-	this.runProgram = function(command){
+	this.runProgram = function(hash){
 		// hash = this.hash(command);
-		hash = command;
-
 		if(typeof this.allKnownPrograms[hash] != "object"){
 			throw new Error("Program not found");
 			// Discard if the invoked command did not match any known program
@@ -124,6 +124,7 @@ function LightManager(){
 		}
 
 		this.allKnownPrograms[hash].lights.forEach(function(lightName, index) {
+			var status;
 			if (typeof lightName == "object") {
 				status = lightName;
 				lightName = lightName.lightName;
@@ -136,6 +137,7 @@ function LightManager(){
 			this.lights[lightName].setManualStatus(status);
 			return true;
 		}.bind(this))
+
 		this.activeProgram = hash;
 
 	}
@@ -226,7 +228,7 @@ function LightManager(){
 	}
 
 	this.getStatus = function(){
-		result = new Object();
+		var result = new Object();
 		result.lights = new Object();
 
 		Object.keys(this.lights).forEach(function(lightName, index){
@@ -240,7 +242,7 @@ function LightManager(){
 	}
 
 	this.getInterfaceOptions = function(){
-		result = new Object();
+		var result = new Object();
 		result.lights = new Object();
 
 		Object.keys(this.lights).forEach(function(lightName, index){
