@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0bd71bc8-f7e7-4d09-bd2e-c1e9620f9611" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/light_manager/lightStatus.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/devicePresence.js" afterPath="$PROJECT_DIR$/light_manager/devicePresence.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/server.js" afterPath="$PROJECT_DIR$/light_manager/server.js" />
     </list>
     <ignored path="lightManager.iws" />
@@ -29,8 +27,8 @@
       <file leaf-file-name="server.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/light_manager/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="731">
-              <caret line="409" column="0" selection-start-line="409" selection-start-column="0" selection-end-line="409" selection-end-column="0" />
+            <state relative-caret-position="306">
+              <caret line="384" column="2" selection-start-line="384" selection-start-column="2" selection-end-line="384" selection-end-column="2" />
               <folding />
             </state>
           </provider>
@@ -81,7 +79,7 @@
       <file leaf-file-name="lightManager.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/light_manager/lightManager.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="864">
+            <state relative-caret-position="3026">
               <caret line="257" column="17" selection-start-line="257" selection-start-column="17" selection-end-line="257" selection-end-column="17" />
               <folding>
                 <element signature="e#755#1675#0" expanded="false" />
@@ -389,14 +387,8 @@
       <workItem from="1487352004168" duration="334000" />
       <workItem from="1488997749721" duration="4093000" />
       <workItem from="1491340960155" duration="1406000" />
-      <workItem from="1493996923241" duration="9838000" />
-    </task>
-    <task id="LOCAL-00007" summary="Socket simulator now">
-      <created>1476722606985</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1476722606985</updated>
+      <workItem from="1493996923241" duration="11544000" />
+      <workItem from="1494426883544" duration="22000" />
     </task>
     <task id="LOCAL-00008" summary="Socket simulator now">
       <created>1476724692689</created>
@@ -734,11 +726,18 @@
       <option name="project" value="LOCAL" />
       <updated>1494006733335</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="Use strict. Let's make things strict here.">
+      <created>1494009777420</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1494009777420</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="205334000" />
+    <option name="totallyTimeSpent" value="207062000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1924" y="-4" width="1928" height="1088" extended-state="6" />
@@ -748,7 +747,6 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13104838" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16935484" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -760,6 +758,7 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13104838" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -797,7 +796,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="Angular version has dimmer POC, on/off switches, notifications, tabbed browsing and a refresh button" />
     <MESSAGE value="Adding some programs with different formats&#10;&#10;I need to do a cleanup here! It's starting to get messy.&#10;&#10;Adding Bootstrap Themes as well :)" />
     <MESSAGE value="Start heaters page&#10;Icons&#10;Formatting tables&#10;Adding new programs" />
     <MESSAGE value="Some people status tracker&#10;@@TODO@@&#10;Read people from config file&#10;Let people add their names through the interface&#10;Let people remove their names through the interface" />
@@ -822,7 +820,8 @@
     <MESSAGE value="Home being alone will trigger an event.&#10;ActionScheduler will listen to the event, instead of looping to run an action based on the change." />
     <MESSAGE value="Little cleanup" />
     <MESSAGE value="Since I'm using shell to do pings, I'd like the IP to be kind of safe. I don't need to have the perfect IP validation. Ensuring no command is passed along the IP is enough for my concerns." />
-    <option name="LAST_COMMIT_MESSAGE" value="Since I'm using shell to do pings, I'd like the IP to be kind of safe. I don't need to have the perfect IP validation. Ensuring no command is passed along the IP is enough for my concerns." />
+    <MESSAGE value="Use strict. Let's make things strict here." />
+    <option name="LAST_COMMIT_MESSAGE" value="Use strict. Let's make things strict here." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1038,7 +1037,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="765">
           <caret line="45" column="0" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1046,7 +1044,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
           <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1054,7 +1051,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="4" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1062,7 +1058,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="277">
           <caret line="300" column="138" selection-start-line="300" selection-start-column="138" selection-end-line="300" selection-end-column="138" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1070,7 +1065,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="472">
           <caret line="94" column="12" selection-start-line="94" selection-start-column="12" selection-end-line="94" selection-end-column="79" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1078,7 +1072,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="765">
           <caret line="253" column="0" selection-start-line="253" selection-start-column="0" selection-end-line="253" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1086,7 +1079,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1094,7 +1086,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
           <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1102,7 +1093,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
           <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1156,19 +1146,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/lightStatus.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="20" selection-start-line="0" selection-start-column="9" selection-end-line="0" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/lightStatus.js" />
     <entry file="file://$PROJECT_DIR$/light_manager/heaterManager.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="609">
           <caret line="199" column="0" selection-start-line="199" selection-start-column="0" selection-end-line="199" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1182,7 +1164,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/lightManager.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="864">
+        <state relative-caret-position="3026">
           <caret line="257" column="17" selection-start-line="257" selection-start-column="17" selection-end-line="257" selection-end-column="17" />
           <folding>
             <element signature="e#755#1675#0" expanded="false" />
@@ -1195,8 +1177,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="409" column="0" selection-start-line="409" selection-start-column="0" selection-end-line="409" selection-end-column="0" />
+        <state relative-caret-position="306">
+          <caret line="384" column="2" selection-start-line="384" selection-start-column="2" selection-end-line="384" selection-end-column="2" />
           <folding />
         </state>
       </provider>

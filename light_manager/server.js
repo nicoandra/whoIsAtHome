@@ -382,31 +382,6 @@ app.get('/jquery-1.8.3.min.js', function(req, res){
 app.get("/cameras/watch/:cameraName", function(req, res){
 	res.send("Not implemented yet");
 	return ;
-
-	/*
-	var cameraConfig = require("./config/restricted/cameras.js"),
-	var cameraName = parseInt(req.params.cameraName);
-	var availableMonitors = [2,3,6,7]
-
-	if(availableMonitors.indexOf(cameraName) != -1){
-
-		res.writeHead(200, { 
-			"Cache-control": "no-cache", 
-			"Content-Type":"multipart/x-mixed-replace;boundary=ZoneMinderFrame"
-		});
-
-		try {
-			res.send("Not Implemented");
-			request.get("http://"+cameraConfig.host+"/cgi-bin/nph-zms?mode=jpeg&scale=100&maxfps=10&monitor="+cameraName+"&connkey=574247&rand=1477156808").pipe(res)
-			return ;
-		} catch(excp){
-			console.log("Cameras::ExceptionCaught", excp)
-		}
-
-	}
-	res.send(cameraName + "Invalid camera");
-	return;
-	*/
 })
 
 
