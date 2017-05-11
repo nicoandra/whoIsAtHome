@@ -1,17 +1,18 @@
-var stmModule = function(){};
+var stmModule = function(howOftenToUpdate){
+	var metroStatus = {};
+	var lastUpdate = new Date();
+};
 
 var request = require('request');
 var cheerio = require('cheerio');
 
-stmModule.prototype.getMetroStatus = function(callback) {
+
+stmModule.prototype.pullMetroStatus = function(){
 	request.get("http://www.stm.info/en/info/networks/metro", function (a, b, c) {
-
 		var metroStatus = {};
-
 		// console.log(b);
-		parser = cheerio.load(b.body, {normalizeWhitespace: true});
-		delete b;
-		nodes = parser("aside#aside-sidebar div#status-services div.line div.block");
+		var parser = cheerio.load(b.body, {normalizeWhitespace: true});
+		var nodes = parser("aside#aside-sidebar div#status-services div.line div.block");
 
 		// console.log(nodes);
 
@@ -24,11 +25,14 @@ stmModule.prototype.getMetroStatus = function(callback) {
 			}
 
 			metroStatus[line] = status;
-			callback(status);
 		})
 
-		callback(metroStatus)
-	})
+		this.metroStatus = metroStatus;
+		this.lastUpdate = new Date();
+}
+
+stmModule.prototype.getMetroStatus = function() {
+
 }
 
 module.exports = new stmModule();

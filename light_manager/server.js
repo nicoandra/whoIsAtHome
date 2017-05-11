@@ -139,10 +139,6 @@ normalOptions.addChildProgram(normalMed);
 normalOptions.addChildProgram(normalHigh);
 lightManager.addProgramInstance(normalOptions);
 
-
-delete normalOptions;
-
-
 var allRed = new LightProgram("All Red", "all red");
 ["officeLamp","kitchenLamp", "officeBoards"].forEach(function(lightName){
 	allRed.addStatus({lightName: lightName, onOff : true, color: "red" , brightness: 100});	

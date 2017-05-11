@@ -156,8 +156,6 @@ function Light(name, displayName, socket){
 
 	this.queueOff = function(){
 		this.commandQueue.push(this.socket.commandOff);
-		this.commandQueue.push(this.socket.commandOff);
-		this.commandQueue.push(this.socket.commandOff);
 	}
 
 	this.queueColor = function(color){
@@ -168,14 +166,7 @@ function Light(name, displayName, socket){
 	this.sendQueue = function(){
 		if(this.socket && this.commandQueue.length){
 			toSend = this.commandQueue.shift();
-
 			this.socket.queueStuff(toSend);
-
-			if(this.name == 'kitchenCountertop'){
-				// For Kitchen Countertop, queue commands many times!
-				this.socket.queueStuff(toSend);
-				this.socket.queueStuff(toSend);
-			}
 		}
 	}
 
@@ -270,12 +261,12 @@ function Light(name, displayName, socket){
 	}
 
 	this.fade = function(colorFrom, colorTo, maxSteps){
-		colorFrom = Array.isArray(colorFrom) ? colorFrom : this.colorCodes[colorFrom];
+		var colorFrom = Array.isArray(colorFrom) ? colorFrom : this.colorCodes[colorFrom];
 		colorFrom = colorFrom[1];
-		colorTo = Array.isArray(colorTo) ? colorTo : this.colorCodes[colorTo];
+		var colorTo = Array.isArray(colorTo) ? colorTo : this.colorCodes[colorTo];
 		colorTo = colorTo[1];
 
-		step = colorFrom < colorTo ? 1 : -1;
+		var step = colorFrom < colorTo ? 1 : -1;
 
 		step = Math.max(1, Math.abs(colorFrom - colorTo) / maxSteps) * step;
 
