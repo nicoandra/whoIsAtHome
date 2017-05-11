@@ -1,18 +1,15 @@
 "use strict"
 
-var env = process.env.NODE_ENV || 'development'
+const env = process.env.NODE_ENV || 'development'
 	, cfg = require(__dirname + '/config/config.'+env+'.js')
-	, dgram = require('dgram')
 	, debug = require('debug')("app:server")
 	, debugEvents = require('debug')('app:events')
 	, moment = require('moment')
-	, bodyParser = require('body-parser')
 	, PeopleTracker = require('./peopleTracker.js')
 	, DevicePresence = require('./devicePresence.js')
-	, notificationQueue = [];
+var notificationQueue = [];
 
 
-var request = require('request');
 
 var EventEmitter = require('events').EventEmitter
 const path = require('path');
@@ -89,8 +86,8 @@ presencePhone.begin();
 
 var LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
-var lightManager = require("./lightManager.js");
-lightManager = new LightManager();	// With a LightManager, add lights
+const LightManager = require("./lightManager.js");
+var lightManager = new LightManager();	// With a LightManager, add lights
 
 var peopleTracker = new PeopleTracker(lightManager, internalEventEmitter)
 
@@ -102,10 +99,8 @@ var ActionScheduler = require('./actionScheduler.js');
 var actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter );
 
 
-lightManager.addLight("kitchenCountertop", "Kitchen Countertop", /*ReceiverId */ 0, /* GroupId */ 4, /* hasRgb */ true, /* hasDimmer */ true);
-lightManager.addLight("officeLamp", "Office Lamp", /*ReceiverId */ 0,  /* GroupId */ 1, /* hasRgb */ true, /* hasDimmer */ true);
-lightManager.addLight("kitchenLamp", "Kitchen Lamp", /*ReceiverId */ 0, /* GroupId */ 2, /* hasRgb */ true, /* hasDimmer */ true);
-lightManager.addLight("officeBoards", "Office Boards", /*ReceiverId */ 0, /* GroupId */ 3, /* hasRgb */ true, /* hasDimmer */ true);
+const devices = require("./devices/lights");
+lightManager.addLightsFromObject(devices.lights);
 
 var normalOptions = new LightProgram("Normal", "normal");
 
@@ -195,33 +190,13 @@ heaterManager.addHeater('living', 'Living', 1, '192.168.1.130', 8888, { eventEmi
 heaterManager.addHeater('livingDual', 'Living Dual', 1, '192.168.1.128', 8888, { eventEmitter : internalEventEmitter });
 heaterManager.addHeater('officeDual', 'Office Dual', 2, '192.168.1.128', 8888, { eventEmitter : internalEventEmitter });
 
-
 lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
 
 
 /** HTTP SERVER **/
-var express = require('express'),
-app = express(),
-port = cfg.httpPort;
-app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views')
+var app = require('./express.js')(cfg)
 
-var cookieParser = require('cookie-parser');
-app.use(cookieParser());
-
-var httpServer = require('http').Server(app);
-
-app.use('/static', express.static(path.join(__dirname, 'webroot')));
-app.use('/bower_components', express.static(path.join(__dirname,'bower_components')));
-app.use('/static/angular-ui-switch', express.static(path.join(__dirname, 'bower_components', 'angular-ui-switch' )));
-app.use('/bower_components/bootstrap', express.static(path.join(__dirname, 'bower_components', 'bootstrap', 'dist')));
-app.use('/bower_components/jquery', express.static(path.join(__dirname, 'bower_components', 'jQuery', 'dist')));
-app.use('/fonts/', express.static(path.join(__dirname, 'webroot', 'fonts')));
-
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-	extended: true
-}));
+console.log(typeof app);
 
 app.get('/commands/', function(req, res){
 	new HttpResponses().receiveCommands(req, res);
@@ -413,11 +388,6 @@ app.post("/people/setAsSleeping", function(req,res){
 app.use('/', function(req, res, next){
 	res.redirect("/angular");
 });
-
-httpServer.listen({ port : cfg.httpPort, host : cfg.httpHost } , function(){
-	console.log('http interface listening on port '+port);	
-});
-
 
 
 /** END OF HTTP SERVER **/

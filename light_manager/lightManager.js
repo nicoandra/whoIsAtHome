@@ -16,6 +16,14 @@ function LightManager(){
 	this.allKnownPrograms = {}
 	this.activeProgram = false;
 
+	this.addLightsFromObject = function(lights){
+		lights.forEach(function(lightDefinition){
+			if(lightDefinition.type == 'milight'){
+				this.addLight(lightDefinition.id, lightDefinition.alias, lightDefinition.receiverId, lightDefinition.groupId, lightDefinition.hasRgb, lightDefinition.hasDimmer);
+			}
+		}.bind(this));
+	}
+
 	this.allLightsOff = function(){
 		debug("allLightsOff: Turning all lights off")
 		Object.keys(this.lights).forEach(function(key){
