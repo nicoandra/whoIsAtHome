@@ -2,14 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0bd71bc8-f7e7-4d09-bd2e-c1e9620f9611" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/light_manager/devices/lights.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/light_manager/devices/read.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/light_manager/express.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/config/config.mindgeek.js" afterPath="$PROJECT_DIR$/light_manager/config/config.mindgeek.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/lightManager.js" afterPath="$PROJECT_DIR$/light_manager/lightManager.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/devices/read.js" afterPath="$PROJECT_DIR$/light_manager/devices/read.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/server.js" afterPath="$PROJECT_DIR$/light_manager/server.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/light_manager/views/index.ejs" afterPath="$PROJECT_DIR$/light_manager/views/index.ejs" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/light_manager/devices/lights.js" afterPath="$PROJECT_DIR$/light_manager/devices/devices.js" />
     </list>
     <ignored path="lightManager.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -33,8 +29,8 @@
       <file leaf-file-name="server.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/light_manager/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="415">
-              <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+            <state relative-caret-position="119">
+              <caret line="102" column="0" selection-start-line="102" selection-start-column="0" selection-end-line="102" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -80,11 +76,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="lights.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/light_manager/devices/lights.js">
+      <file leaf-file-name="devices.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/light_manager/devices/devices.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="14" selection-start-line="0" selection-start-column="14" selection-end-line="0" selection-end-column="14" />
+            <state relative-caret-position="34">
+              <caret line="2" column="56" selection-start-line="2" selection-start-column="56" selection-end-line="2" selection-end-column="56" />
               <folding />
             </state>
           </provider>
@@ -198,8 +194,9 @@
         <option value="$PROJECT_DIR$/light_manager/devices/read.js" />
         <option value="$PROJECT_DIR$/light_manager/lightManager.js" />
         <option value="$PROJECT_DIR$/light_manager/views/index.ejs" />
-        <option value="$PROJECT_DIR$/light_manager/server.js" />
         <option value="$PROJECT_DIR$/light_manager/express.js" />
+        <option value="$PROJECT_DIR$/light_manager/devices/devices.js" />
+        <option value="$PROJECT_DIR$/light_manager/server.js" />
       </list>
     </option>
   </component>
@@ -313,6 +310,24 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lightManager" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lightManager" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="light_manager" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="devices" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
@@ -416,14 +431,7 @@
       <workItem from="1491340960155" duration="1406000" />
       <workItem from="1493996923241" duration="11544000" />
       <workItem from="1494426883544" duration="8245000" />
-      <workItem from="1494534950892" duration="3244000" />
-    </task>
-    <task id="LOCAL-00011" summary="Adding bootstrap tabs">
-      <created>1476726664618</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1476726664618</updated>
+      <workItem from="1494534950892" duration="4035000" />
     </task>
     <task id="LOCAL-00012" summary="Angular version has dimmer POC, on/off switches, notifications, tabbed browsing and a refresh button">
       <created>1476738229903</created>
@@ -761,11 +769,18 @@
       <option name="project" value="LOCAL" />
       <updated>1494520025448</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="Starting a nice cleanup of things.... starting with the main server file!">
+      <created>1494539820327</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1494539820327</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="218529000" />
+    <option name="totallyTimeSpent" value="219320000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1924" y="-4" width="1928" height="1088" extended-state="6" />
@@ -824,7 +839,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="Change to update the Home Status when updating lights" />
     <MESSAGE value="For some lights, send commands many times.&#10;&#10;ToDo, put this in the constructor of the Lights (ie a parameter called &quot;retries&quot; or something)" />
     <MESSAGE value="Reverting back some changes." />
     <MESSAGE value="Line ending." />
@@ -849,7 +863,8 @@
     <MESSAGE value="Removing unwanted lines" />
     <MESSAGE value="Strict&#10;Faster light response." />
     <MESSAGE value="Cleanup.&#10;Not finished. Might be unstable." />
-    <option name="LAST_COMMIT_MESSAGE" value="Cleanup.&#10;Not finished. Might be unstable." />
+    <MESSAGE value="Starting a nice cleanup of things.... starting with the main server file!" />
+    <option name="LAST_COMMIT_MESSAGE" value="Starting a nice cleanup of things.... starting with the main server file!" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1031,6 +1046,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
           <caret line="18" column="39" selection-start-line="18" selection-start-column="39" selection-end-line="18" selection-end-column="39" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1059,6 +1075,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
           <caret line="17" column="34" selection-start-line="17" selection-start-column="34" selection-end-line="17" selection-end-column="34" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1066,6 +1083,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
           <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1172,14 +1190,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/light_manager/devices/lights.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="14" selection-start-line="0" selection-start-column="14" selection-end-line="0" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/views/index.ejs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="271">
@@ -1196,10 +1206,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/light_manager/devices/devices.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="56" selection-start-line="2" selection-start-column="56" selection-end-line="2" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/light_manager/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="415">
-          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+        <state relative-caret-position="119">
+          <caret line="102" column="0" selection-start-line="102" selection-start-column="0" selection-end-line="102" selection-end-column="0" />
           <folding />
         </state>
       </provider>

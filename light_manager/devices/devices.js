@@ -1,4 +1,7 @@
 module.exports = {
+	"portableDevices" : [
+		{ name : "Nic phone", address : "192.168.1.141" }
+	],
 	"receivers" : [],
 	"lights" : [
 		{

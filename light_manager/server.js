@@ -99,8 +99,9 @@ var ActionScheduler = require('./actionScheduler.js');
 var actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter );
 
 
-const devices = require("./devices/lights");
+const devices = require("./devices/devices");
 lightManager.addLightsFromObject(devices.lights);
+
 
 var normalOptions = new LightProgram("Normal", "normal");
 

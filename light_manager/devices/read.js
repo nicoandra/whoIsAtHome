@@ -1,2 +1,2 @@
-var a = require("./lights.js");
+var a = require("./devices.js");
 console.log(a.lights);
