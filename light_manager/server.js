@@ -153,18 +153,8 @@ lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
 
 
 /** HTTP SERVER **/
-var app = require('./includes/express.js')(cfg)
-
-app.get('/commands/', function(req, res){
-	new HttpResponses().receiveCommands(req, res);
-});
-
-app.get("/angular", function(req,res){
-	var themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
-	var theme = (req.cookies.theme ? req.cookies.theme : 'light').toLowerCase().trim();
-	res.render('index', { title : "HomeOwn", lights : lightManager.getStatus(), 'theme' : theme , 'themes' : themes})
-})
-
+var app = require('./includes/express.js')(cfg);
+app.addComponent('heaterManager', heaterManager);
 
 app.get("/angular/lights/getInterfaceOptions", function(req, res){
 	var lights = lightManager.getInterfaceOptions();
@@ -217,17 +207,6 @@ app.get("/angular/system/getNotifications", function(req,res){
 })
 
 
-app.post("/angular/heathers/set", function(req,res){
-	heaterManager.setMultipleStatus(req.body, function(){
-		heaterManager.getStatus(function(err, response){
-			res.send(response);
-		});
-	})
-})
-
-app.get("/angular/heaters/getStatus", function(req, res){
-	res.send(heaterManager.getStatus());
-})
 
 app.post("/angular/runProgram", function(req, res){
 	if(req.body.programKey){

@@ -2,6 +2,11 @@ const path = require('path'),
 	bodyParser = require('body-parser')
 
 module.exports = function(cfg) {
+
+	if(typeof cfg == "undefined"){
+		return this.app.initTime;
+	}
+
 	var express = require('express'),
 		app = express(),
 		port = cfg.httpPort;
@@ -9,6 +14,8 @@ module.exports = function(cfg) {
 	app.set('views', __dirname + '/../views')
 
 	var cookieParser = require('cookie-parser');
+
+	app.initTime = new Date();
 	app.use(cookieParser());
 
 	var httpServer = require('http').Server(app);
@@ -29,7 +36,22 @@ module.exports = function(cfg) {
 		console.log('HTTP interface listening on port '+port);
 	});
 
+	app.addComponent = function(identifier, component){
+		app[identifier] = component;
+	}
+
+	app.getComponent = function(identifier){
+		return app[identifier];
+	}
+
+
 	/* Basic Routes */
+	app.get("/", function(req,res){
+		var themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
+		var theme = (req.cookies.theme ? req.cookies.theme : 'light').toLowerCase().trim();
+		res.render('index', { title : "HomeOwn", 'theme' : theme , 'themes' : themes})
+	})
+
 	app.get("/switchInterface", function(req, res){
 		var theme = "darkly";
 		if(req.query.theme){
@@ -48,7 +70,23 @@ module.exports = function(cfg) {
 		res.send("OK");
 	})
 
-	return app;
+
+
+
+	app.get("/angular/heaters/getStatus", function(req, res){
+		res.send(app.getComponent('heaterManager').getStatus());
+	})
+
+	app.post("/angular/heathers/set", function(req,res){
+		app.getComponent('heaterManager').setMultipleStatus(req.body, function(){
+			app.getComponent('heaterManager').getStatus(function(err, response){
+				res.send(response);
+			});
+		})
+	})
+
+	this.app = app;
+	return this.app;
 }
 
 
