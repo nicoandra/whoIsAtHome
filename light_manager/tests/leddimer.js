@@ -2,20 +2,12 @@ const dgram = require('dgram');
 
 var server = dgram.createSocket('udp4');
 
-const setDimPayload = [0xF3, 0x58];
-
-
-var payload = setDimPayload;
-
 server.bind(8888, function(){
 	server.setBroadcast(true);	
 });
 
-
-
 function send(payload){
 	server.send(new Buffer(payload), 0, 2, 8888, "192.168.1.146", function(err,res){
-		// console.log(err, res);
 	});
 }
 
@@ -23,7 +15,7 @@ function breath(){
 	setInterval(function(){
 
 		// Dim UP
-		for(i = 0; i < 16; i++){
+		for(var i = 0; i < 16; i++){
 			let v = i * 16;
 			console.log("+Queuing", v);
 
@@ -64,8 +56,6 @@ function warning(){
 	send([0xF3, 100]);
 	send([0xF1, 0]);
 }
-
-
 
 function off(){
 	send([0xF2, 0]);

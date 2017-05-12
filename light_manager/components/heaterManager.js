@@ -1,4 +1,6 @@
-Heater = require('./../heater.js');
+"use strict"
+
+var Heater = require('./../heater.js');
 var dgram = require('dgram')
 	, debug = require("debug")("app:heaterManager")
 	, debugConnection = require("debug")("app:heaterConnection");
@@ -10,7 +12,6 @@ function HeaterManager(cfg, eventEmitter){
 	this.heaters = {};
 	this.heatersByIpAndId = {};
 	this.eventEmitter = eventEmitter;
-	this.globalTemperature = -1;
 
 	this.pollInterval = 60000;
 	this.externalWeatherPollInterval = 15 * 60 * 1000; // Every 15 minutes
@@ -25,7 +26,6 @@ function HeaterManager(cfg, eventEmitter){
 	this.currentWeatherAtHome = {};
 
 	this.handleMovementDetectedResponse = function(message, networkInfo){
-		ip = networkInfo.address;
 
 		// Loop through all heaters and call parseResponse(message, networkInfo)
 		Object.keys(this.heaters).forEach(function(heaterName){
@@ -48,9 +48,7 @@ function HeaterManager(cfg, eventEmitter){
 
 	// this.client.on('message', this.handleIncomingPackets.bind(this));
 	this.client.on('message', function(message, networkInfo){
-
-
-		ip = networkInfo.address;
+		var ip = networkInfo.address;
 		if(message[0] == 0x31 && message[1] == 0xFF && (message.length === 20 || message.length === 12)) {
 			// debug("Status received from ", ip);
 			return this.handleHeaterStatusResponse(message, networkInfo);
@@ -89,17 +87,17 @@ function HeaterManager(cfg, eventEmitter){
 			this.heatersByIpAndId[ip] = {};
 		}
 
-		newHeater = new Heater(descriptiveName, id, ip, port, this.client, this.localPort, options);
+		var newHeater = new Heater(descriptiveName, id, ip, port, this.client, this.localPort, options);
 		this.heaters[name] = newHeater;
 		this.heatersByIpAndId[ip][id] = newHeater;
 	}
 
 	this.getStatus = function(callback){
 
-		momentsAgo = moment().subtract(5, 'minutes');
+		var momentsAgo = moment().subtract(5, 'minutes');
 		try {
 
-			response = { heaters : { }}
+			var response = { heaters : { }}
 			Object.keys(this.heaters).forEach( function(name) {
 				response.heaters[name] = this.heaters[name].getStatus();
 				response.heaters[name].name = name;
@@ -147,9 +145,9 @@ function HeaterManager(cfg, eventEmitter){
 	}
 
 	this.queryAllHeaters = function(){
-		Object.keys(this.heaters).forEach( (name) => {
+		Object.keys(this.heaters).forEach(function(name){
 			this.heaters[name].requestStatus();
-		})
+		}.bind(this))
 	}
 
 	this.setMultipleStatus = function(statuses, callback){
@@ -159,8 +157,8 @@ function HeaterManager(cfg, eventEmitter){
 
 		statuses.forEach(function(status){
 			try {
-				heatherName = Object.keys(status)[0];
-				temperature = status[heatherName];
+				var heatherName = Object.keys(status)[0];
+				var temperature = status[heatherName];
 				this.setTemperature(heatherName, temperature);
 				debug("Updating", heatherName, temperature);
 			} catch(exception){
@@ -205,8 +203,6 @@ function HeaterManager(cfg, eventEmitter){
 	setInterval(this.queryCurrentWeatherAtHome.bind(this), this.externalWeatherPollInterval);
 	this.queryCurrentWeatherAtHome();
 
-
 }
-
 
 module.exports = HeaterManager

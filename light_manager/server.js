@@ -7,15 +7,13 @@ const env = process.env.NODE_ENV || 'development'
 	, moment = require('moment')
 	, PeopleTracker = require('./peopleTracker.js')
 	, DevicePresence = require('./devicePresence.js')
-var notificationQueue = [];
 
 
 
 var EventEmitter = require('events').EventEmitter
 const path = require('path');
 
-var notificationEventEmitter = new EventEmitter()
-notificationEventEmitter.setMaxListeners(100);
+var notificationEventEmitter = require("./components/notificationEventEmitter.js");
 
 var internalEventEmitter = new EventEmitter()
 internalEventEmitter.setMaxListeners(100);
@@ -151,36 +149,6 @@ lightManager.addProgramInstance(romantic);
 
 /** Prepare heaters */
 
-notificationEventEmitter.on('heaters', function(data){
-	var type = "normal";
-	var message;
-	switch(data.type){
-		case 'heaters:heater:wentDown': type = 'danger'; message = data.ref + " heater went down"; break;
-		case 'heaters:heater:cameBack': type = 'success'; message = data.ref + " heater came back"; break;
-		default: return;
-	}
-
-	var toSend = { date : new Date(), type: type, title:"Heaters", text: message }
-	notificationQueue.unshift(toSend);
-})
-
-notificationEventEmitter.on('strips', function(data){
-	var type = "normal";
-	var message;
-	switch(data.type){
-		case 'strips:strip:notReachable': type = 'danger'; message = data.ref + " strip went down"; break;
-		case 'strips:strip:cameBack': type = 'success'; message = data.ref + " strip came back"; break;
-		default: return;
-	}
-
-	var toSend = { date : new Date(), type: type, title:"Light Strips", text: message }
-	notificationQueue.unshift(toSend);
-})
-
-notificationEventEmitter.on('movement', function(data){
-	var toSend = { date : new Date(), type: "alert", title:"Movement detected", text: "Movement detected in " + data.name }
-	notificationQueue.unshift(toSend);
-})
 
 /**/
 // this.addHeater = function(name, descriptiveName, id, ip, port, options){
@@ -272,11 +240,7 @@ app.get("/angular/system/getNotifications", function(req,res){
 	var toSend = [
 		{ date : new Date(), type: type, title:"Uptime", text: "Uptime is " + moment.duration(uptime, 'minutes').humanize()}
 	];
-
-	notificationQueue.forEach(function(a){
-		toSend.push(a);
-	})
-
+	toSend = toSend.concat(notificationEventEmitter.getNotificationsToSend());
 	res.send(toSend)
 })
 
