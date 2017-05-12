@@ -148,16 +148,7 @@ lightManager.addProgramInstance(romantic);
 
 
 /** Prepare heaters */
-
-
-/**/
-// this.addHeater = function(name, descriptiveName, id, ip, port, options){
-heaterManager.addHeater('dev', 'Dev', 1, '192.168.1.113', 8888, { eventEmitter : internalEventEmitter });
-heaterManager.addHeater('living', 'Living', 1, '192.168.1.130', 8888, { eventEmitter : internalEventEmitter });
-
-heaterManager.addHeater('livingDual', 'Living Dual', 1, '192.168.1.128', 8888, { eventEmitter : internalEventEmitter });
-heaterManager.addHeater('officeDual', 'Office Dual', 2, '192.168.1.128', 8888, { eventEmitter : internalEventEmitter });
-
+heaterManager.addHeatersFromObject(devices.heaters);
 lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
 
 

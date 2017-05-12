@@ -25,6 +25,13 @@ function HeaterManager(cfg, eventEmitter){
 
 	this.currentWeatherAtHome = {};
 
+
+	this.addHeatersFromObject = function(heaters){
+		heaters.forEach(function(heater){
+			this.addHeater(heater.id, heater.alias, heater.slot, heater.ip, heater.port, { eventEmitter : this.eventEmitter });
+		}.bind(this));
+	}
+
 	this.handleMovementDetectedResponse = function(message, networkInfo){
 
 		// Loop through all heaters and call parseResponse(message, networkInfo)
