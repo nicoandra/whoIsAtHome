@@ -5,8 +5,8 @@ const env = process.env.NODE_ENV || 'development'
 	, debug = require('debug')("app:server")
 	, debugEvents = require('debug')('app:events')
 	, moment = require('moment')
-	, PeopleTracker = require('./peopleTracker.js')
-	, DevicePresence = require('./devicePresence.js')
+	, PeopleTracker = require('./components/peopleTracker.js')
+	, DevicePresence = require('./components/devicePresence.js')
 
 
 
@@ -87,7 +87,7 @@ var LightProgram = require("./lightProgram.js")
 const LightManager = require("./components/lightManager.js");
 var lightManager = new LightManager(cfg);	// With a LightManager, add lights
 
-var peopleTracker = new PeopleTracker(lightManager, internalEventEmitter)
+var peopleTracker = new PeopleTracker(cfg, lightManager, internalEventEmitter)
 
 /** Prepare heaters */
 var HeaterManager = require('./components/heaterManager.js');
@@ -162,9 +162,7 @@ lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
 
 
 /** HTTP SERVER **/
-var app = require('./express.js')(cfg)
-
-console.log(typeof app);
+var app = require('./includes/express.js')(cfg)
 
 app.get('/commands/', function(req, res){
 	new HttpResponses().receiveCommands(req, res);
@@ -203,6 +201,7 @@ app.get("/angular/lights/getAvailablePrograms", function(req, res){
 
 var changeEventEmitter = new EventEmitter()
 changeEventEmitter.setMaxListeners(100)
+
 app.get("/angular/socketSimulator", function(req,res){
 	changeEventEmitter.on('message', function(data){
 		try {
@@ -211,24 +210,6 @@ app.get("/angular/socketSimulator", function(req,res){
 	})
 })
 
-app.get("/switchInterface", function(req, res){
-	var theme = "darkly";
-	if(req.query.theme){
-		theme = req.query.theme.toLowerCase().trim();
-	}
-
-	switch(theme){
-		case 'darkly':
-		case 'light':
-		case 'reddish':
-		case 'cyborg':
-			res.cookie("theme", theme);
-			break;
-		default:
-			res.cookie("theme", 'light');
-	}
-	res.send("OK");
-})
 
 app.get("/angular/system/getNotifications", function(req,res){
 	var uptime = moment.duration(process.uptime(), 'seconds').asMinutes();

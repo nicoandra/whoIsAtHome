@@ -1,6 +1,6 @@
 "use strict"
 
-var Heater = require('./../heater.js');
+var Heater = require('./../devices/drivers/nHeatersV1/heater.js');
 var dgram = require('dgram')
 	, debug = require("debug")("app:heaterManager")
 	, debugConnection = require("debug")("app:heaterConnection");
@@ -87,7 +87,7 @@ function HeaterManager(cfg, eventEmitter){
 			this.heatersByIpAndId[ip] = {};
 		}
 
-		var newHeater = new Heater(descriptiveName, id, ip, port, this.client, this.localPort, options);
+		var newHeater = new Heater(descriptiveName, id, ip, port, this.client, this.localPort, options, cfg);
 		this.heaters[name] = newHeater;
 		this.heatersByIpAndId[ip][id] = newHeater;
 	}

@@ -3,9 +3,7 @@ var dgram = require('dgram');
 const debug = require("debug")("app:heater");
 var moment = require('moment');
 
-var env = process.env.NODE_ENV || 'development'
-
-function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
+function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg){
 	this.pollInterval = 60000;
 
 	this.name = name;
@@ -16,14 +14,11 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	this.dgramClient = dgramClient;
 	this.eventEmitter = options.eventEmitter;
 
-	var cfg = options.cfg;
-
 	this.currentTemperature = 999;
 	this.humidity = 999;
 	this.desiredTemperature = 14;
 	this.power = 0;
 	this.lastResponseTime = 0;
-	this.lastTimeMovementWasDetected = moment().subtract(20, 'seconds');
 	this.accumulatedMovements = 0;
 
 	this.decreaseAccumulatedMovements = function(){
@@ -63,9 +58,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	}
 
 	this.setValues = function(currentTemperature, desiredTemperature, humidity, heaterPower, powerOutlet){
-
-		result = false;
-
+		var result = false;
 
 		if(this.currentTemperature != currentTemperature) result = true;
 		if(this.desiredTemperature != desiredTemperature) result = true;
@@ -81,7 +74,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options){
 	}
 
 
-	this.parseMovementResponse = function(response, networkInfo){
+	this.parseMovementResponse = function(response){
 		try {
 			if(response[3] == this.id){
 

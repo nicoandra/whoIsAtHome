@@ -3,10 +3,8 @@
  */
 var ping = require ("ping");
 const debug = require('debug')("app:peopleTracker");
-var env = process.env.NODE_ENV || 'development'
-    , cfg = require(__dirname + '/config/config.'+env+'.js');
 
-var peopleTracker = function(lightManager, internalEventEmitter){
+var peopleTracker = function(cfg, lightManager, internalEventEmitter){
 
     var lightManager = lightManager;
     var internalEventEmitter = internalEventEmitter;
