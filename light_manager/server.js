@@ -86,17 +86,17 @@ presencePhone.begin();
 
 var LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
-const LightManager = require("./lightManager.js");
-var lightManager = new LightManager();	// With a LightManager, add lights
+const LightManager = require("./components/lightManager.js");
+var lightManager = new LightManager(cfg);	// With a LightManager, add lights
 
 var peopleTracker = new PeopleTracker(lightManager, internalEventEmitter)
 
 /** Prepare heaters */
-var HeaterManager = require('./heaterManager.js');
-var heaterManager = new HeaterManager(internalEventEmitter);
+var HeaterManager = require('./components/heaterManager.js');
+var heaterManager = new HeaterManager(cfg, internalEventEmitter);
 
-var ActionScheduler = require('./actionScheduler.js');
-var actionScheduler = new ActionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter );
+var ActionScheduler = require('./components/actionScheduler.js');
+var actionScheduler = new ActionScheduler(cfg, peopleTracker, lightManager, heaterManager, internalEventEmitter );
 
 
 const devices = require("./devices/devices");
@@ -146,13 +146,12 @@ romantic.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", brig
 romantic.addStatus({lightName: 'kitchenCountertop', onOff : false });
 romantic.addStatus({lightName: 'officeBoards', onOff : false });
 romantic.addStatus({lightName: 'officeLamp', onOff : true, color: "white", brightness: 20 });
-lightManager.addProgramInstance(romantic)
+lightManager.addProgramInstance(romantic);
 
 
 /** Prepare heaters */
 
 notificationEventEmitter.on('heaters', function(data){
-	
 	var type = "normal";
 	var message;
 	switch(data.type){

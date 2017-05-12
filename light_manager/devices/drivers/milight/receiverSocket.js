@@ -17,8 +17,6 @@ function ReceiverSocket(params){
 
         this.buffer.push(stuff);
         this.buffer.push(stuff);
-
-
     }
 
     this.sendQueuedStuff = function(){

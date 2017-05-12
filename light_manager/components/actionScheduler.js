@@ -2,10 +2,7 @@ var moment = require('moment');
 const debug = require('debug')("app:actionScheduler");
 const debugTime = require('debug')("app:actionScheduler:time");
 
-var env = process.env.NODE_ENV || 'development'
-	, cfg = require(__dirname + '/config/config.'+env+'.js')
-
-function actionScheduler(peopleTracker, lightManager, heaterManager, internalEventEmitter){
+function actionScheduler(cfg, peopleTracker, lightManager, heaterManager, internalEventEmitter){
 
 	this.checkCycleDuration = 1; // 60; // In seconds
 

@@ -1,15 +1,13 @@
 "use strict"
 
-var env = process.env.NODE_ENV || 'development'
-	, cfg = require(__dirname + '/config/config.'+env+'.js'),
-	Light = require("./light.js"),
-	LightSocket = require("./lightSocket.js"),
-	ReceiverSocket = require("./receiverSocket.js"),
+var Light = require("./../light.js"),
+	LightSocket = require("./../devices/drivers/milight/lightSocket.js"),
+	ReceiverSocket = require("./../devices/drivers/milight/receiverSocket.js"),
 	crypto = require('crypto'),
 	debug = require('debug')("app:lightManager"),
-	HeaterLight = require("./heaterLight");
+	HeaterLight = require("./../devices/drivers/nHeatersV1/heaterLight.js");
 
-function LightManager(){
+function LightManager(cfg){
 	this.lights = {};
 	this.receiverSockets = [];
 	this.programs = {}

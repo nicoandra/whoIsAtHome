@@ -1,14 +1,12 @@
-Heater = require('./heater.js');
-var env = process.env.NODE_ENV || 'development'
-	, dgram = require('dgram')
-	, cfg = require(__dirname + '/config/config.'+env+'.js')
+Heater = require('./../heater.js');
+var dgram = require('dgram')
 	, debug = require("debug")("app:heaterManager")
 	, debugConnection = require("debug")("app:heaterConnection");
 
 var moment = require('moment');
 var request = require("request");
 
-function HeaterManager(eventEmitter){
+function HeaterManager(cfg, eventEmitter){
 	this.heaters = {};
 	this.heatersByIpAndId = {};
 	this.eventEmitter = eventEmitter;
