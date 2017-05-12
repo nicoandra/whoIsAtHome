@@ -12,6 +12,7 @@ module.exports = function(cfg) {
 		port = cfg.httpPort;
 	app.set('view engine', 'ejs');
 	app.set('views', __dirname + '/../views')
+	app.components = {};
 
 	var cookieParser = require('cookie-parser');
 
@@ -37,11 +38,11 @@ module.exports = function(cfg) {
 	});
 
 	app.addComponent = function(identifier, component){
-		app[identifier] = component;
+		app.components[identifier] = component;
 	}
 
 	app.getComponent = function(identifier){
-		return app[identifier];
+		return app.components[identifier];
 	}
 
 
@@ -71,6 +72,24 @@ module.exports = function(cfg) {
 	})
 
 
+	app.get("/angular/lights/getInterfaceOptions", function(req, res){
+		res.send(app.getStatus());
+	})
+
+
+	app.getStatus = function(){
+		var result = {};
+		Object.keys(app.components).forEach(function(componentName){
+			component = app.components[componentName];
+			try {
+				result[component.getDeviceClassName()] = component.getStatus();
+			} catch(ex){
+				console.log("Failed for", componentName);
+			}
+		});
+
+		return result;
+	}
 
 
 	app.get("/angular/heaters/getStatus", function(req, res){

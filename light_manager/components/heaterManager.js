@@ -178,6 +178,10 @@ function HeaterManager(cfg, eventEmitter){
 	}
 
 
+	this.getDeviceClassName = function(){
+		return 'heaters';
+	}
+
 	this.queryCurrentWeatherAtHome = function(){
 		var url = "http://api.openweathermap.org/data/2.5/weather?id=" + cfg.secrets.openWeatherMap.cityId + "&units=metric&APPID=" + cfg.secrets.openWeatherMap.apiKey;
 		request.get(url, function(err, res, body){

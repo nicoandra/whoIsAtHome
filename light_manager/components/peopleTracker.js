@@ -94,6 +94,14 @@ var peopleTracker = function(cfg, lightManager, internalEventEmitter){
         }
     }
 
+    this.getStatus = function(){
+        return this.getHomeStatus();
+    }
+
+    this.getDeviceClassName = function(){
+        return 'people';
+    }
+
     this.getHomeStatus = function(){
         this.decideIfHomeIsAloneOrNot();
         result = { 

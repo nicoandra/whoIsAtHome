@@ -237,8 +237,9 @@ function LightManager(cfg){
 		var result = new Object();
 		result.lights = new Object();
 
-		Object.keys(this.lights).forEach(function(lightName, index){
+		Object.keys(this.lights).forEach(function(lightName){
 			result.lights[lightName] = this.lights[lightName].getStatus()
+			result.lights[lightName].interface = this.lights[lightName].getInterfaceOptions();
 		}.bind(this))
 
 		result.programs = new Object();
@@ -248,18 +249,11 @@ function LightManager(cfg){
 	}
 
 	this.getInterfaceOptions = function(){
-		var result = new Object();
-		result.lights = new Object();
+		return this.getStatus();
+	}
 
-		Object.keys(this.lights).forEach(function(lightName, index){
-			result.lights[lightName] = this.lights[lightName].getStatus();
-			result.lights[lightName].interface = this.lights[lightName].getInterfaceOptions();
-		}.bind(this))
-
-		result.programs = new Object();
-		result.programs.activeProgram = this.activeProgram;
-
-		return result;
+	this.getDeviceClassName = function(){
+		return 'lights';
 	}
 }
 

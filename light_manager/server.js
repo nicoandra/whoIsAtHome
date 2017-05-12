@@ -155,12 +155,18 @@ lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
 /** HTTP SERVER **/
 var app = require('./includes/express.js')(cfg);
 app.addComponent('heaterManager', heaterManager);
+app.addComponent('lightManager', lightManager);
+app.addComponent('peopleTracker', peopleTracker);
 
+
+/*
 app.get("/angular/lights/getInterfaceOptions", function(req, res){
 	var lights = lightManager.getInterfaceOptions();
 	var people = peopleTracker.getHomeStatus();
+	var heaters = heaterManager.getHomeStatus();
 	res.send({'lights' : lights.lights , 'people' : people, 'programs' : lights.programs});
 })
+*/
 
 app.get("/angular/lights/getStatus", function(req, res){
 	res.send(lightManager.getStatus())
