@@ -196,12 +196,11 @@ function LightManager(cfg){
 
 	this.useScene = function(sceneName, isTheSecondCall){
 
-		// Call this function again
-		if(isTheSecondCall !== true) {
-			setTimeout(function () {
-				this.useScene(sceneName, true)
-			}.bind(this), 1000);
+		if(this.currentScene == sceneName){
+			return false;
 		}
+
+		this.currentScene = sceneName;
 
 		debug("Loading scene ", sceneName);
 		if(sceneName === "allLightsOff"){
@@ -230,23 +229,33 @@ function LightManager(cfg){
 		}
 
 		debug("Scene ", sceneName, "not found.");
-
 	}
+
 
 	this.getStatus = function(){
 		var result = new Object();
 		result.lights = new Object();
+		var allLightsOff = true;
+		var allLightsOn = true;
 
 		Object.keys(this.lights).forEach(function(lightName){
-			result.lights[lightName] = this.lights[lightName].getStatus()
+
+			var status = this.lights[lightName].getStatus()
+			allLightsOn = allLightsOn && status.status;
+			allLightsOff = allLightsOff && !status.status;
+			result.lights[lightName] = status
 			result.lights[lightName].interface = this.lights[lightName].getInterfaceOptions();
 		}.bind(this))
 
+		// use allLightsOff to set the program all off
 		result.programs = new Object();
 		result.programs.activeProgram = this.activeProgram;
 
 		return result;
 	}
+
+
+
 
 	this.getInterfaceOptions = function(){
 		return this.getStatus();

@@ -162,24 +162,13 @@ function HeaterManager(cfg, eventEmitter){
 			callback = function(){};
 		}
 
-		statuses.forEach(function(status){
-			try {
-				var heatherName = Object.keys(status)[0];
-				var temperature = status[heatherName];
-				this.setTemperature(heatherName, temperature);
-				debug("Updating", heatherName, temperature);
-			} catch(exception){
-				debug("ERRRRR", exception);
-			}
-		}.bind(this))
+		Object.keys(statuses).forEach(function(alias){
+			var temperature = statuses[alias].desiredTemperature;
+			this.setTemperature(alias, temperature);
+		}.bind(this));
 
-		callback();
-
-	}
-
-
-	this.getDeviceClassName = function(){
-		return 'heaters';
+		callback();		
+		return ;
 	}
 
 	this.queryCurrentWeatherAtHome = function(){

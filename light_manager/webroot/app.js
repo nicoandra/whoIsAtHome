@@ -30,15 +30,12 @@ $scope.requestStatus = false;
 $scope.setAllHeaters = function(desiredTemperature){
 	Object.keys($scope.heaters).forEach(function(heaterName){
 		$scope.heaters[heaterName].desiredTemperature = desiredTemperature;
-		$scope.heaterChanged(heaterName);
 	});
-
-	
+	$scope.heaterChanged();
 }
 
-$scope.heaterChanged = function(name){
-	var toSend = name !== undefined ? [{ [name] : $scope.heaters[name].desiredTemperature }] : {}
-	$http.post("/angular/heathers/set", toSend)
+$scope.heaterChanged = function(){
+	$http.post("/angular/heathers/set", $scope.heaters)
 }
 
 $scope.requestStarted = function(){
