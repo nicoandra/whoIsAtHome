@@ -2,14 +2,18 @@ const dgram = require('dgram');
 
 var server = dgram.createSocket('udp4');
 
-server.bind(8888, function(){
+/*server.bind(8888, function(){
 	server.setBroadcast(true);	
-});
+});*/
 
 function send(payload){
 	server.send(new Buffer(payload), 0, 2, 8888, "192.168.1.146", function(err,res){
 	});
 }
+
+const R = 0xF1;
+const G = 0xF2;
+const B = 0xF3;
 
 function breath(){
 	setInterval(function(){
@@ -45,35 +49,35 @@ function breath(){
 }
 
 function alert(){
-	send([0xF2, 255]);
-	send([0xF3, 0]);
-	send([0xF1, 0]);
+	send([R, 2550]);
+	send([G, 0]);
+	send([B, 0]);
 }
 
 
 function warning(){
-	send([0xF2, 200]);
-	send([0xF3, 100]);
-	send([0xF1, 0]);
+	send([R, 200]);
+	send([G, 100]);
+	send([B, 0]);
 }
 
 function off(){
-	send([0xF2, 0]);
-	send([0xF3, 0]);
-	send([0xF1, 0]);
+	send([R, 0]);
+	send([G, 0]);
+	send([B, 0]);
 }
 
 
 function halogen(){
-	send([0xF2, 255]);
-	send([0xF3, 241]);
-	send([0xF1, 224]);
+	send([R, 255]);
+	send([G, 241]);
+	send([B, 224]);
 }
 
 function white(){
-	send([0xF2, 255]);
-	send([0xF3, 255]);
-	send([0xF1, 255]);
+	send([R, 255]);
+	send([G, 255]);
+	send([B, 255]);
 }
 
-alert();
+off();

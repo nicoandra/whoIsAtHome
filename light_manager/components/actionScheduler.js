@@ -253,7 +253,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager, intern
 
 	this.start = function(){
 		// setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);
-		this.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus);
+		this.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus.bind(this));
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
 		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), this.checkCycleDuration * 1000);
 		debug("enabled");

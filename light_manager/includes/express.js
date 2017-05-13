@@ -37,12 +37,13 @@ module.exports = function(cfg) {
 		console.log('HTTP interface listening on port '+port);
 	});
 
-	app.addComponent = function(identifier, component){
-		app.components[identifier] = component;
+	app.addComponent = function(alias, component){
+		app.components[alias] = component;
+		app.components[alias].alias = alias;
 	}
 
-	app.getComponent = function(identifier){
-		return app.components[identifier];
+	app.getComponent = function(alias){
+		return app.components[alias];
 	}
 
 
@@ -79,12 +80,12 @@ module.exports = function(cfg) {
 
 	app.getStatus = function(){
 		var result = {};
-		Object.keys(app.components).forEach(function(componentName){
-			component = app.components[componentName];
+		Object.keys(app.components).forEach(function(alias){
+			var component = app.getComponent(alias)
 			try {
-				result[component.getDeviceClassName()] = component.getStatus();
+				result[alias] = component.getStatus();
 			} catch(ex){
-				console.log("Failed for", componentName);
+				console.log("Failed for", alias, Object.keys(app.components).toString(), ex);
 			}
 		});
 

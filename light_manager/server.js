@@ -152,9 +152,15 @@ heaterManager.addHeatersFromObject(devices.heaters);
 lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
 
 
+
+var LocalWeather = require('./components/localWeather.js');
+var localWeather = new LocalWeather(cfg, internalEventEmitter);
+
+
 /** HTTP SERVER **/
 var app = require('./includes/express.js')(cfg);
 app.addComponent('heaterManager', heaterManager);
+app.addComponent('localWeather', localWeather);
 app.addComponent('lightManager', lightManager);
 app.addComponent('peopleTracker', peopleTracker);
 

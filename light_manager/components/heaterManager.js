@@ -211,8 +211,8 @@ function HeaterManager(cfg, eventEmitter){
 	this.client.bind(this.localPort);
 	this.client.on("listening", this.queryAllHeaters.bind(this));
 	setInterval(this.queryAllHeaters.bind(this), this.pollInterval);
-	setInterval(this.queryCurrentWeatherAtHome.bind(this), this.externalWeatherPollInterval);
-	this.queryCurrentWeatherAtHome();
+	// setInterval(this.queryCurrentWeatherAtHome.bind(this), this.externalWeatherPollInterval);
+	// this.queryCurrentWeatherAtHome();
 
 }
 
