@@ -36,7 +36,6 @@ internalEventEmitter.on("lightsSwitchProgramRequested", function(data) {
 		return;
 	}
 
-	changeEventEmitter.emit("message", data);
 });
 
 
@@ -159,6 +158,8 @@ var localWeather = new LocalWeather(cfg, internalEventEmitter);
 
 /** HTTP SERVER **/
 var app = require('./includes/express.js')(cfg);
+
+
 app.addComponent('heaterManager', heaterManager);
 app.addComponent('localWeather', localWeather);
 app.addComponent('lightManager', lightManager);
@@ -195,11 +196,62 @@ app.get("/angular/lights/getAvailablePrograms", function(req, res){
 var changeEventEmitter = new EventEmitter()
 changeEventEmitter.setMaxListeners(100)
 
-app.get("/angular/socketSimulator", function(req,res){
-	changeEventEmitter.on('message', function(data){
+
+
+app.post('/app/components/lightManager/runProgram', function(req, res){
+
+	var lightManager = app.getComponent('lightManager');
+
+	changeEventEmitter.emit("majorChange", req.body)
+	if(req.body.programKey){
 		try {
-			res.send(true)
-		} catch(exception){}
+			lightManager.runProgram(req.body.programKey);
+		} catch(exception){
+			console.log(exception)
+		}
+	} else if(typeof req.body.lightName == "string") {
+		lightManager.setStatus(req.body, function () {
+			// Emit message only after the change has been applied
+		});
+	} else {
+		lightManager.setMultipleStatus(req.body.lightName, req.body, function () {
+			// Emit message only after the change has been applied
+		});
+	}
+
+	[100, 250, 500].forEach(function(delay){
+		setTimeout(function() {
+			changeEventEmitter.emit("majorChange", req.body)
+		}, delay);
+	})
+
+
+	res.send(
+		lightManager.getStatus()
+	);
+
+});
+
+
+
+app.get("/app/sock", function(req,res){
+
+	var sendResponseOnChange = function(){
+		try {
+			res.send(app.getStatus())
+			res.end();
+		} catch(exception){
+			console.log(exception);
+		}
+	}
+
+	// var responseTimeout = setTimeout(sendResponseOnChange, 50 * 1000);
+
+	console.log("SOCKETSIM HIT");
+	changeEventEmitter.on('majorChange', function(data){
+		// clearTimeout(responseTimeout);
+		sendResponseOnChange();
+		changeEventEmitter.removeListener("majorChange", sendResponseOnChange);
 	})
 })
 
@@ -218,35 +270,6 @@ app.get("/angular/system/getNotifications", function(req,res){
 	res.send(toSend)
 })
 
-
-
-app.post("/angular/runProgram", function(req, res){
-	if(req.body.programKey){
-		try {
-			lightManager.runProgram(req.body.programKey);
-		} catch(exception){
-			console.log(exception)
-		}
-	} else if(typeof req.body.lightName == "string") {
-		lightManager.setStatus(req.body, function () {
-			// Emit message only after the change has been applied
-		});
-	} else {
-		lightManager.setMultipleStatus(req.body.lightName, req.body, function () {
-			// Emit message only after the change has been applied
-		});
-	}
-
-	[1, 500, 1000].forEach(function(delay){
-		setTimeout(function() {
-			changeEventEmitter.emit("message", req.body)
-		}, delay);
-	})
-
-	res.send(
-		lightManager.getStatus()
-	);
-})
 
 app.get("/lights/allOff", function(req,res){
 	lightManager.allLightsOff();
@@ -293,28 +316,23 @@ app.post("/people/setAsAway", function(req,res){
 app.post("/people/setAsAtHome", function(req,res){
 	debug("Requested", req.url)
 	peopleTracker.setAsAtHome("nico");
-	changeEventEmitter.emit("message", req.body)
+	changeEventEmitter.emit("majorChange", req.body)
 	res.send(peopleTracker.getHomeStatus());
 })
 
 app.post("/people/setAsComingBack", function(req,res){
 	debug("Requested", req.url)
 	peopleTracker.setAsComingBack("nico", 20);
-	changeEventEmitter.emit("message", req.body)
+	changeEventEmitter.emit("majorChange", req.body)
 	res.send(peopleTracker.getHomeStatus());
 })
 
 app.post("/people/setAsSleeping", function(req,res){
 	peopleTracker.setAsSleeping("nico");
-	changeEventEmitter.emit("message", req.body)
+	changeEventEmitter.emit("majorChange", req.body)
 	res.send(peopleTracker.getHomeStatus());
 })
 
-
-
-app.use('/', function(req, res, next){
-	res.redirect("/angular");
-});
 
 
 /** END OF HTTP SERVER **/

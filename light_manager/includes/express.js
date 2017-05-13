@@ -48,11 +48,22 @@ module.exports = function(cfg) {
 
 
 	/* Basic Routes */
+	var root = function(req,res, next){
+		var themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
+		var theme = (req.cookies.theme ? req.cookies.theme : 'light').toLowerCase().trim();
+		res.render('index', { title : "HomeOwn", 'theme' : theme , 'themes' : themes})
+	}
+
+	// app.use('/', root);
+	app.get("/", root);
+
+/*
 	app.get("/", function(req,res){
 		var themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
 		var theme = (req.cookies.theme ? req.cookies.theme : 'light').toLowerCase().trim();
 		res.render('index', { title : "HomeOwn", 'theme' : theme , 'themes' : themes})
 	})
+	*/
 
 	app.get("/switchInterface", function(req, res){
 		var theme = "darkly";
@@ -73,7 +84,7 @@ module.exports = function(cfg) {
 	})
 
 
-	app.get("/angular/lights/getInterfaceOptions", function(req, res){
+	app.get("/app/getInterfaceOptions", function(req, res){
 		res.send(app.getStatus());
 	})
 

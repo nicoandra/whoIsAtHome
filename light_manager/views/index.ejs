@@ -1,79 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><%= title %></title>
-	<script type="text/javascript" src="/static/angular.min.js"></script>
-
-	<% if(theme == "darkly" || theme == "cyborg" || theme == "reddish"){ %>
-		<link rel="stylesheet" type="text/css" href="/static/bootstrap.<%= theme %>.css">
-	<% } else { %>
-		<link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/css/bootstrap.css">
-	<% } %>
-
-	<link rel="stylesheet" type="text/css" href="/static/custom.css">
-	<script src="/bower_components/jquery/jquery.min.js"></script>
-	<script src="/bower_components/bootstrap/js/bootstrap.js"></script>
-	<script src="/bower_components/angular-number-picker/dist/angular-number-picker.js"></script>
+	<%- include partials/head.ejs %>
 </head>
 
 <body ng-app="LightManagerApp">
 	<div ng-controller="LightManagerController" class="container-fluid">
 		<div class="panel panel-default">
-			<div class="panel-heading">
-				<ul class="nav nav-pills">
-					<li><a href="#lightsTab" data-toggle="tab"><span class="glyphicon glyphicon-lamp"></span></a></li>
-					<li class="active"><a href="#programsTab" data-toggle="tab"><span class="glyphicon glyphicon-picture"></span></a></li>
-					<li><a href="#heatersTab" data-toggle="tab"><span class="glyphicon glyphicon-fire"></span></a></li>
-					<li><a href="#camerasTab" data-toggle="tab"><span class="glyphicon glyphicon-eye-open"></span></a></li>
-					<li><a href="#notificationsTab" data-toggle="tab"><span class="glyphicon glyphicon-alert"></span></a></li>
 
-					<li role="presentation" class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-							<span class="glyphicon glyphicon-text-size"></span> <span class="caret"></span>
-						</a>
-							<ul class="dropdown-menu">
-								<% for (var i=0; i < themes.length; i++){ %>
-									<li ng-click="changeTheme('<%= themes[i] %>')"><a><%= themes[i] %></a></li>
-								<% } %>
-							</ul>
-					</li>
-
-
-					<li role="presentation" class="dropdown">
-						<a 
-						ng-class="{'btn-success' : !homeStatus.home.isAlone , 'btn-warning' : homeStatus.home.isAlone}"
-						class="dropdown-toggle" 
-						data-toggle="dropdown" 
-						href="#" 
-						role="button" aria-haspopup="true" aria-expanded="false">
-							<span 
-								class="glyphicon glyphicon-user" 
-								ng-class="{'glyphicon-user' : !homeStatus.home.isAlone , 'glyphicon-home' : homeStatus.home.isAlone}"></span>
-							<span class="caret">
-							</span>
-						</a>
-							<ul class="dropdown-menu">
-								<li ng-click="setPersonStatusAs('atHome')"><a>At home</a></li>
-								<li ng-click="setPersonStatusAs('away')"><a>Away</a></li>
-								<li ng-click="setPersonStatusAs('sleeping')"><a>Sleeping</a></li>
-								<li ng-click="setPersonStatusAs('getBackIn', 10)"><a>Get back in 10</a></li>
-							</ul>
-					</li>
-
-					<li class="pull-right">
-						<a 
-						ng-click="buildInterface()"
-						class="glyphicon glyphicon-refresh refreshButton" 
-						ng-class="{
-							spinning : (requestStatus === true), 
-							'glyphicon-thumbs-up' : (requestStatus == 200), 
-							'glyphicon-thumbs-down' : (requestStatus !== true && requestStatus !== false && requestStatus != 200)  }
-						"></a>
-					</li>
-				</ul>
-			 </div>
+		<%- include partials/menu.ejs %>
 
 			<div class="panel-body">
 				<div class="tab-content">
@@ -110,6 +45,7 @@
 							</div>
 						</div>
 
+
 						<ul class="list-group">
 							<li class="row list-group-item" ng-repeat="light in lights">
 								<div class="col-md-3 col-xs-4" >
@@ -139,8 +75,6 @@
 
 								</div>
 
-
-
 								<div class="col-md-2 col-xs-2" >
 									<select
 										ng-model="light.actualStatus.brightness"
@@ -150,19 +84,14 @@
 										ng-change="sendLightCommand(light.name , {brightness : light.actualStatus.brightness})">
 									></select>
 								</div>
-
-								<!--
-								<span ng-repeat="interfaceOption in light.interface">
-									<div class="col-md-3 col-xs-4" ng-if="interfaceOption.type == 'slider'">
-									</div>
-								</span>
-								-->
 							</li>
 						</ul>
+
 					</div> <!-- End of id="lightsTab" -->
 
-					<div class="tab-pane fade active in" id="programsTab">
 
+
+					<div class="tab-pane fade active in" id="programsTab">
 						<div class="panel-body">
 							<div class="row">
 								<div class="col-md-3 col-xs-9" >
@@ -194,6 +123,9 @@
 								</div>
 							</li>
 
+							{{ availablePrograms }}
+
+							<script>/* 
 
 							<ng-repeat ng-repeat="program in availablePrograms">
 								<li class="row list-group-item">
@@ -218,6 +150,7 @@
 									</ng-if>
 								</li>
 							</ng-repeat>
+							<script>/* */</script>
 						</ul>
 					</div>
 
@@ -307,210 +240,11 @@
 			</div>
 
 			<div class="panel-footer">
-				Home is {{ homeStatus.home.isAlone ? 'alone' : 'occupied' }} since {{ homeStatus.home.sinceWhen | date: 'medium' }}. Now: {{ localWeather.main}}, {{ localWeather.currentTemperature }}&deg; Min {{ localWeather.minimumTemperature }}&deg; Max {{ localWeather.maximumTemperature}} &deg; 
+				Home is {{ home.isAlone ? 'alone' : 'occupied' }} since {{ home.sinceWhen | date: 'medium' }}. Now: {{ localWeather.main}}, {{ localWeather.currentTemperature }}&deg; Min {{ localWeather.minimumTemperature }}&deg; Max {{ localWeather.maximumTemperature}} &deg; 
 			</div>
 
 		</div><!-- Closing panel panel-default -->
 	</div><!-- End ng-controller LightManagerController -->
 </body>
 
-<script type="text/javascript">
-	angular.module("LightManagerApp", [  ])
-		.controller("LightManagerController", function($scope, $http, $timeout){
-
-			$scope.homeStatus = {
-				people: { nico : { status : 'away'}},
-
-			}
-
-			$scope.setPersonStatusAs = function(statusName, time){
-				switch(statusName){
-					case "atHome": url = '/people/setAsAtHome'; break;
-					case "away": url = '/people/setAsAway'; break;
-					case "sleeping": url = '/people/setAsSleeping'; break;
-					case "getBackIn": url = '/people/setAsComingBack'; break;
-					default: return;
-				}
-
-				$http.post(url).success(function(response){
-					$scope.homeStatus = response;
-				})
-			}
-
-			$scope.allLights = {
-				onOff : true,
-				brightness : 100
-			}
-			$scope.requestStatus = false;
-
-
-			$scope.setAllHeaters = function(desiredTemperature){
-				Object.keys($scope.heaters).forEach(function(heaterName){
-					$scope.heaters[heaterName].desiredTemperature = desiredTemperature;
-					$scope.heaterChanged(heaterName);
-				});
-
-				
-			}
-
-			$scope.heaterChanged = function(name){
-				var toSend = name !== undefined ? [{ [name] : $scope.heaters[name].desiredTemperature }] : {}
-				$http.post("/angular/heathers/set", toSend)
-			}
-
-			$scope.requestStarted = function(){
-				$scope.requestStatus = true;
-			}
-
-			$scope.requestEnded = function(httpStatus){
-				$scope.requestStatus = httpStatus;
-
-				$timeout(function(){
-					if(parseInt($scope.requestStatus) != 0){
-						$scope.requestStatus = false;    
-					}
-				}, httpStatus > 0 ? 1000 : 5000)
-			}
-
-			$scope.dimChange = function(a,b,c){ console.log(a,b,c) };
-
-			$scope.updateInterfaceWithResponse = function(response){
-				$scope.lights = response.lights;
-				$scope.homeStatus = response.people;
-
-				isAnyLightOn = Object.keys($scope.lights).reduce(function(prevVal,currVal,c,d){
-					currVal = $scope.lights[currVal]
-					return prevVal || currVal.status.onOff;
-				}, false)
-
-				$scope.allLights.onOff = isAnyLightOn;
-
-				console.log(response)
-
-				$scope.activeProgram = response.programs.activeProgram;
-			}
-
-			$scope.buildInterface = function(){
-				$scope.requestStarted();
-				$http.get("/angular/lights/getInterfaceOptions").success(function(response,httpStatus){
-					$scope.updateInterfaceWithResponse(response)
-					$scope.getNotifications();
-					$scope.getHeaters();
-					$scope.requestEnded(httpStatus);
-				}).error(function(response,httpStatus){
-					console.log("SOMETHING HAPPENED")
-					$scope.requestEnded(httpStatus);
-				});
-			}
-
-			$scope.getNotifications = function(){
-				$http.get("/angular/system/getNotifications").success(function(response){
-					console.log(response);
-					$scope.notifications = response;
-				});
-			}
-
-			$scope.allLights = function(statusObject){
-				console.log("going to send", statusObject);
-				statusToSend = statusObject;
-
-				Object.keys(statusObject).forEach(function(key){
-					$scope.allLights[key] = statusObject[key];
-				})
-				
-				$scope.sendLightCommand(Object.keys($scope.lights), statusToSend)
-			}
-
-
-			$scope.toggleLightProgramByKey = function(programKey, element){
-
-				console.log(element);
-
-				if(programKey == $scope.activeProgram){
-					return $scope.allLights({ onOff : false});
-				}
-				$scope.sendLightProgramByKey(programKey);
-			}
-
-
-			$scope.sendLightProgramByKey = function(programKey){
-				$scope.loadingRequest = true;
-				$http.post(
-					"/angular/runProgram",
-					{programKey}
-				).success(function(){
-					this.loadingRequest = false;
-					this.buildInterface
-				}.bind($scope)).error(function(){
-					this.loadingRequest = false;
-				}.bind($scope))
-			}
-
-			$scope.sendLightCommand = function(element, status){
-				if(typeof element == "string" || typeof element == "object"){
-					status.lightName = element;
-				} else {
-					status.lightName = element.light.name;
-				}
-
-				$http.post(
-					"/angular/runProgram",
-					status
-				).success(
-					 $scope.buildInterface
-				)
-			}
-
-			$scope.socketSimulator = function(){
-				$http.get("/angular/socketSimulator", { timeout: 60000 })
-					.success(function(response){
-						$scope.buildInterface();
-						$scope.socketSimulator()
-					})
-					.error(function(){
-						$timeout($scope.socketSimulator, 1000)
-						// If error is "CONN REFUSED, call again in 5 minutes"
-						// If error is "TIMEOUT", call again in
-						// $scope.socketSimulator()
-					}
-				)
-			}
-
-			$scope.getAvailablePrograms = function(){
-				$http.get("/angular/lights/getAvailablePrograms").success(function(response){
-					$scope.availablePrograms = response;
-				})
-			}
-
-			$scope.getCameras = function(){
-				$http.get("/cameras/getList").success(
-					function(response){
-						$scope.cameras = response;
-					}
-				);
-			}
-
-			$scope.buildInterface();
-			$scope.socketSimulator();
-			$scope.getAvailablePrograms();
-			$scope.getCameras();
-
-			$scope.changeTheme = function(theme){
-				$http.get("/switchInterface?theme="+ theme).success(function(){
-					window.location = window.location;
-				})
-			}
-
-			$scope.getHeaters = function(){
-				$http.get("/angular/heaters/getStatus").success(function(response){
-					$scope.heaters = response.heaters;
-					$scope.localWeather = response.localWeather;
-				})
-			}
-			$scope.getHeaters();
-
-
-		});
-
-</script>
 </html>

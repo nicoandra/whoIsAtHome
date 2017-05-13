@@ -4,7 +4,6 @@ var Heater = require('./../devices/drivers/nHeatersV1/heater.js');
 var dgram = require('dgram')
 	, debug = require("debug")("app:localWeather")
 
-var moment = require('moment');
 var request = require("request");
 
 function HeaterManager(cfg, eventEmitter){
@@ -33,15 +32,12 @@ function HeaterManager(cfg, eventEmitter){
 			}
 
 			try {
-				// body = JSON.parse(res.toJSON().body); 
-
 				this.currentWeather = body.weather[0];
 				this.currentWeather.cityName = body.name;
 				this.currentWeather.currentTemperature = body.main.temp;
 				this.currentWeather.humidity 			 = body.main.humidity;
 				this.currentWeather.minimumTemperature = body.main.temp_min;
 				this.currentWeather.maximumTemperature = body.main.temp_max;
-
 			} catch(exception){
 				debug("Getting weather", exception);
 			}
