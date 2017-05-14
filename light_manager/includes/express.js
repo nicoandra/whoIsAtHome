@@ -1,5 +1,6 @@
 const path = require('path'),
-	bodyParser = require('body-parser')
+	bodyParser = require('body-parser');
+
 
 module.exports = function(cfg) {
 
@@ -13,6 +14,9 @@ module.exports = function(cfg) {
 	app.set('view engine', 'ejs');
 	app.set('views', __dirname + '/../views')
 	app.components = {};
+
+	app.internalEventEmitter = new require(path.join(__dirname, '..', 'components','core','internalEventEmitter.js'));
+	app.notificationEventEmitter = new require(path.join(__dirname, '..', 'components','core','notificationEventEmitter.js'));
 
 	var cookieParser = require('cookie-parser');
 
@@ -40,12 +44,18 @@ module.exports = function(cfg) {
 	app.addComponent = function(alias, component){
 		app.components[alias] = component;
 		app.components[alias].alias = alias;
+		app.components[alias].app = app;
 	}
 
 	app.getComponent = function(alias){
 		return app.components[alias];
 	}
 
+	app.notify = function(eventName, data){
+		console.log("NOTIFY", eventName, data);
+		// console.log(app.notificationEventEmitter);
+		app.notificationEventEmitter.emit(eventName, data);
+	}
 
 	/* Basic Routes */
 	var root = function(req,res, next){

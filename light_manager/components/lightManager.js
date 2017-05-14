@@ -13,6 +13,7 @@ function LightManager(cfg){
 	this.programs = {}
 	this.allKnownPrograms = {}
 	this.activeProgram = false;
+	this.app = require('../includes/express.js')
 
 	this.addLightsFromObject = function(lights){
 		lights.forEach(function(lightDefinition){
@@ -65,6 +66,8 @@ function LightManager(cfg){
 	}
 
 	this.addLight = function(name, displayName, socketNumber, groupNumber, hasRgb, hasDimmer){
+		// this.app.notify('lights', {message: "added one"});
+		
 
 		if(this.receiverSockets[socketNumber] == undefined){
 			this.receiverSockets[socketNumber] = new ReceiverSocket(cfg.milight[socketNumber]);

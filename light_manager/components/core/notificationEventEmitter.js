@@ -1,13 +1,23 @@
 var EventEmitter = require('events').EventEmitter
 
 function NotificationEventEmitter() {
+	this.__proto__ = new EventEmitter;
+	
 
+	
+	this.setMaxListeners(100);
 	this.notifications = [];
 
-	this.prototype = EventEmitter.prototype;
-	this.prototype.setMaxListeners(100);
+	this.on('lights', function(data){
+		var type = "system";
+		var message = data.message;
+		var toSend = { date : new Date(), type: type, title:"System", text: message }
+		this.notifications.unshift(toSend);
+	}.bind(this))
 
-	this.prototype.on('heaters', function(data){
+	
+
+	this.on('heaters', function(data){
 		var type = "normal";
 		var message;
 		switch(data.type){
@@ -20,7 +30,7 @@ function NotificationEventEmitter() {
 		this.notifications.unshift(toSend);
 	}.bind(this))
 
-	this.prototype.on('movement', function(data){
+	this.on('movement', function(data){
 		var toSend = { date : new Date(), type: "alert", title:"Movement detected", text: "Movement detected in " + data.name }
 		this.notifications.unshift(toSend);
 	}.bind(this))
@@ -44,10 +54,7 @@ function NotificationEventEmitter() {
 		})
 	}
 
-	this.prototype.emit("heaters", { type: 'heaters:heater:wentDown', ref: "Uno por ahi random"});
-
 	this.getNotificationsToSend = function(){
-
 		return this.notifications.slice();
 	}
 

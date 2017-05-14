@@ -13,10 +13,11 @@ const env = process.env.NODE_ENV || 'development'
 var EventEmitter = require('events').EventEmitter
 const path = require('path');
 
-var notificationEventEmitter = require("./components/notificationEventEmitter.js");
 
 var internalEventEmitter = new EventEmitter()
 internalEventEmitter.setMaxListeners(100);
+
+
 internalEventEmitter.on("heaterUpdated", function(data) {
 	// When a heater changes, emit a changeEvent so the interfaces are updated
 	debugEvents("heaterUpdated", data);
@@ -44,7 +45,7 @@ internalEventEmitter.on("personMovementDetected", function(data){
 	var homeStatus = peopleTracker.getHomeStatus();
 	if(homeStatus.home.isAlone){
 		actionScheduler.personMovementHasBeenDetected(data);
-		notificationEventEmitter.emit("movement", data);
+		app.notify("movement", data);
 	}
 })
 
@@ -97,7 +98,7 @@ var actionScheduler = new ActionScheduler(cfg, peopleTracker, lightManager, heat
 
 
 const devices = require("./devices/devices");
-lightManager.addLightsFromObject(devices.lights);
+
 
 
 var normalOptions = new LightProgram("Normal", "normal");
@@ -163,6 +164,8 @@ var app = require('./includes/express.js')(cfg);
 app.addComponent('heaterManager', heaterManager);
 app.addComponent('localWeather', localWeather);
 app.addComponent('lightManager', lightManager);
+lightManager.addLightsFromObject(devices.lights);
+
 app.addComponent('peopleTracker', peopleTracker);
 
 
@@ -246,8 +249,6 @@ app.get("/app/sock", function(req,res){
 	}
 
 	// var responseTimeout = setTimeout(sendResponseOnChange, 50 * 1000);
-
-	console.log("SOCKETSIM HIT");
 	changeEventEmitter.on('majorChange', function(data){
 		// clearTimeout(responseTimeout);
 		sendResponseOnChange();
@@ -266,7 +267,7 @@ app.get("/angular/system/getNotifications", function(req,res){
 	var toSend = [
 		{ date : new Date(), type: type, title:"Uptime", text: "Uptime is " + moment.duration(uptime, 'minutes').humanize()}
 	];
-	toSend = toSend.concat(notificationEventEmitter.getNotificationsToSend());
+	toSend = toSend.concat(app.notificationEventEmitter.getNotificationsToSend());
 	res.send(toSend)
 })
 

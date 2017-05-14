@@ -75,6 +75,7 @@ $scope.buildInterface = function(){
 	$scope.requestStarted();
 	$http.get("/app/getInterfaceOptions").success(function(response,httpStatus){
 		$scope.updateInterfaceWithResponse(response)
+		$scope.getNotifications();
 		// $scope.getNotifications();
 		// $scope.getHeaters();
 		$scope.requestEnded(httpStatus);
@@ -85,12 +86,10 @@ $scope.buildInterface = function(){
 }
 
 $scope.getNotifications = function(){
-	/*
-	$http.get("/app/getNotifications").success(function(response){
+	$http.get("/angular/system/getNotifications").success(function(response){
 		console.log(response);
 		$scope.notifications = response;
 	});
-	*/
 }
 
 $scope.allLights = function(statusObject){
