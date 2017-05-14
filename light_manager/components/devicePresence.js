@@ -3,7 +3,7 @@ var moment = require('moment');
 var Debug = require('debug');
 
 function DevicePresence(options){
-
+	
 	this.failureCounter = 25;
 	this.intervalWhenFoundOnline = 20000;
 	this.intervalWhenNotFound = 2000;
@@ -17,7 +17,6 @@ function DevicePresence(options){
 	try {
 		this.name = options.name ;
 		this.address = options.address;
-		this.eventEmitter = options.eventEmitter !== undefined ? options.eventEmitter : new EventEmitter;
 		var debug = Debug('presence:' + this.name);
 	} catch(exception){
 		throw exception;
@@ -79,18 +78,19 @@ function DevicePresence(options){
 
 		this.deviceIsPresent = false;
 		debug("Device left...")
-		this.eventEmitter.emit("presenceMessage", { event : "left" , ref: this});
+		this.app.internalEventEmitter.emit("presenceMessage", { event : "left" , ref: this});
 	}
 
 	this.deviceIsBack = function(){
 		this.lastTimeSeenOnline = new moment();
 		debug("Device is back")
-		this.eventEmitter.emit("presenceMessage", { event : "back" , ref: this});
+		this.app.internalEventEmitter.emit("presenceMessage", { event : "back" , ref: this});
 		this.deviceIsPresent = true;
 		
 	}
 
-	this.begin = function(){
+	this.begin = function(app){
+		this.app = app;
 		debug("Begin")
 
 		setTimeout(this.ping.bind(this), 4000);

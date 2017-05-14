@@ -16,6 +16,9 @@ module.exports = function(cfg) {
 	app.components = {};
 
 	app.internalEventEmitter = new require(path.join(__dirname, '..', 'components','core','internalEventEmitter.js'));
+
+	app.internalEventEmitter.emit("loaded");
+	
 	app.notificationEventEmitter = new require(path.join(__dirname, '..', 'components','core','notificationEventEmitter.js'));
 
 	var cookieParser = require('cookie-parser');

@@ -1,6 +1,6 @@
 var moment = require('moment');
-const debug = require('debug')("app:actionScheduler");
-const debugTime = require('debug')("app:actionScheduler:time");
+const debug = require('debug')("app:component:actionScheduler");
+const debugTime = require('debug')("app:component:actionScheduler:time");
 
 function actionScheduler(cfg, peopleTracker, lightManager, heaterManager, internalEventEmitter){
 

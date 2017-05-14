@@ -2,19 +2,18 @@
 
 var Heater = require('./../devices/drivers/nHeatersV1/heater.js');
 var dgram = require('dgram')
-	, debug = require("debug")("app:heaterManager")
+	, debug = require("debug")("app:component:heaterManager")
 	, debugConnection = require("debug")("app:heaterConnection");
 
 var moment = require('moment');
 var request = require("request");
 
-function HeaterManager(cfg, eventEmitter){
+function HeaterManager(cfg){
 	this.heaters = {};
 	this.heatersByIpAndId = {};
-	this.eventEmitter = eventEmitter;
+	this.app = require('../includes/express.js')
 
 	this.pollInterval = 60000;
-	this.externalWeatherPollInterval = 15 * 60 * 1000; // Every 15 minutes
 
 	this.client = dgram.createSocket('udp4');
 	this.localPort = 8888;
@@ -23,12 +22,9 @@ function HeaterManager(cfg, eventEmitter){
 		return this.heaters[name];
 	}
 
-	this.currentWeatherAtHome = {};
-
-
 	this.addHeatersFromObject = function(heaters){
 		heaters.forEach(function(heater){
-			this.addHeater(heater.id, heater.alias, heater.slot, heater.ip, heater.port, { eventEmitter : this.eventEmitter });
+			this.addHeater(heater.id, heater.alias, heater.slot, heater.ip, heater.port, { eventEmitter : this.app.internalEventEmitter });
 		}.bind(this));
 	}
 
@@ -37,7 +33,7 @@ function HeaterManager(cfg, eventEmitter){
 		// Loop through all heaters and call parseResponse(message, networkInfo)
 		Object.keys(this.heaters).forEach(function(heaterName){
 			if(this.heaters[heaterName].parseResponse(message, networkInfo)){
-				this.eventEmitter.emit("movementDetected", { name: this.heaters[heaterName].name });
+				return this.app.internalEventEmitter.emit("movementDetected", { name: this.heaters[heaterName].name });
 			};
 		}.bind(this))
 	}
@@ -47,11 +43,10 @@ function HeaterManager(cfg, eventEmitter){
 		Object.keys(this.heaters).forEach(function(heaterName){
 			if(this.heaters[heaterName].parseResponse(message, networkInfo)){
 				// debug("Heater matched:", heaterName);
-				return this.eventEmitter.emit("heaterUpdated",  { name: this.heaters[heaterName].name });
+				return this.app.internalEventEmitter.emit("heaterUpdated",  { name: this.heaters[heaterName].name });
 			};
 		}.bind(this))
 	}
-
 
 	// this.client.on('message', this.handleIncomingPackets.bind(this));
 	this.client.on('message', function(message, networkInfo){
@@ -99,8 +94,9 @@ function HeaterManager(cfg, eventEmitter){
 		this.heatersByIpAndId[ip][id] = newHeater;
 	}
 
-	this.getStatus = function(callback){
 
+
+	this.getStatus = function(callback){
 		var momentsAgo = moment().subtract(5, 'minutes');
 		try {
 
@@ -136,7 +132,12 @@ function HeaterManager(cfg, eventEmitter){
 			callback(true, null);
 		}
 	}
-	
+
+	this.queryAllHeaters = function(){
+		Object.keys(this.heaters).forEach(function(name){
+			this.heaters[name].requestStatus();
+		}.bind(this))
+	}
 
 	this.setTemperature = function(name, temperature){
 		temperature = Math.round(temperature * 10) / 10; 	// Round to 1 decimal
@@ -149,12 +150,6 @@ function HeaterManager(cfg, eventEmitter){
 			debug("Err with ", name);
 			debug("setTemperature", exception);
 		}
-	}
-
-	this.queryAllHeaters = function(){
-		Object.keys(this.heaters).forEach(function(name){
-			this.heaters[name].requestStatus();
-		}.bind(this))
 	}
 
 	this.setMultipleStatus = function(statuses, callback){
@@ -171,37 +166,13 @@ function HeaterManager(cfg, eventEmitter){
 		return ;
 	}
 
-	this.queryCurrentWeatherAtHome = function(){
-		var url = "http://api.openweathermap.org/data/2.5/weather?id=" + cfg.secrets.openWeatherMap.cityId + "&units=metric&APPID=" + cfg.secrets.openWeatherMap.apiKey;
-		request.get(url, function(err, res, body){
-			if(err){
-				return false;
-			}
 
-			try {
-				body = JSON.parse(res.toJSON().body); 
 
-				this.currentWeatherAtHome = body.weather[0];
-				this.currentWeatherAtHome.cityName = body.name;
-				this.currentWeatherAtHome.currentTemperature = body.main.temp;
-				this.currentWeatherAtHome.humidity 			 = body.main.humidity;
-				this.currentWeatherAtHome.minimumTemperature = body.main.temp_min;
-				this.currentWeatherAtHome.maximumTemperature = body.main.temp_max;
-
-			} catch(exception){
-				debug("Getting weather", exception);
-			}
-
-		}.bind(this))
-
-	}
 
 
 	this.client.bind(this.localPort);
 	this.client.on("listening", this.queryAllHeaters.bind(this));
 	setInterval(this.queryAllHeaters.bind(this), this.pollInterval);
-	// setInterval(this.queryCurrentWeatherAtHome.bind(this), this.externalWeatherPollInterval);
-	// this.queryCurrentWeatherAtHome();
 
 }
 

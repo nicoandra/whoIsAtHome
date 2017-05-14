@@ -2,13 +2,11 @@
 
 var Heater = require('./../devices/drivers/nHeatersV1/heater.js');
 var dgram = require('dgram')
-	, debug = require("debug")("app:localWeather")
+	, debug = require("debug")("app:component:localWeather")
 
 var request = require("request");
 
-function HeaterManager(cfg, eventEmitter){
-	this.eventEmitter = eventEmitter;
-
+function HeaterManager(cfg){
 	this.pollInterval = 15 * 60 * 1000;
 	this.currentWeather = {};
 

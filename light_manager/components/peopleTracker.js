@@ -2,12 +2,12 @@
  * Created by n_andrade on 10/27/2016.
  */
 var ping = require ("ping");
-const debug = require('debug')("app:peopleTracker");
+const debug = require('debug')("app:component:peopleTracker");
 
-var peopleTracker = function(cfg, lightManager, internalEventEmitter){
+var peopleTracker = function(cfg){
 
-    var lightManager = lightManager;
-    var internalEventEmitter = internalEventEmitter;    // @@TODO@@ USE APP.INTERNALEVENTEMITTER
+    this.app = require('../includes/express.js')
+    this.internalEventEmitter = this.app.internalEventEmitter;
 
     this.home = {
         isAlone: true,
@@ -72,6 +72,7 @@ var peopleTracker = function(cfg, lightManager, internalEventEmitter){
 
 
     this.decideIfHomeIsAloneOrNot = function() {
+
         var someoneAtHome = false;
 
         Object.keys(this.people).forEach(function (name) {
@@ -90,7 +91,7 @@ var peopleTracker = function(cfg, lightManager, internalEventEmitter){
         if(this.home.isAlone != homeIsAlone){
             this.home.sinceWhen = new Date();
             this.home.isAlone = homeIsAlone ? true : false;
-            internalEventEmitter.emit("home:presence:statusChange", this.home);
+            this.app.internalEventEmitter.emit("home:presence:statusChange", this.home);
         }
     }
 

@@ -4,7 +4,7 @@ var Light = require("./../light.js"),
 	LightSocket = require("./../devices/drivers/milight/lightSocket.js"),
 	ReceiverSocket = require("./../devices/drivers/milight/receiverSocket.js"),
 	crypto = require('crypto'),
-	debug = require('debug')("app:lightManager"),
+	debug = require('debug')("app:component:lightManager"),
 	HeaterLight = require("./../devices/drivers/nHeatersV1/heaterLight.js");
 
 function LightManager(cfg){
@@ -67,7 +67,6 @@ function LightManager(cfg){
 
 	this.addLight = function(name, displayName, socketNumber, groupNumber, hasRgb, hasDimmer){
 		// this.app.notify('lights', {message: "added one"});
-		
 
 		if(this.receiverSockets[socketNumber] == undefined){
 			this.receiverSockets[socketNumber] = new ReceiverSocket(cfg.milight[socketNumber]);

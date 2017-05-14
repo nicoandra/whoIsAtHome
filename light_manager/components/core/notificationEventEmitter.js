@@ -1,9 +1,14 @@
 var EventEmitter = require('events').EventEmitter
+var debug = require('debug')('app:core:NotificationEventEmitter');
 
 function NotificationEventEmitter() {
 	this.__proto__ = new EventEmitter;
 	
 
+	this.emit = function(event, data){
+		debug("Emitting: ", event, data);
+		this.__proto__.emit(event, data)
+	}	
 	
 	this.setMaxListeners(100);
 	this.notifications = [];
@@ -15,7 +20,7 @@ function NotificationEventEmitter() {
 		this.notifications.unshift(toSend);
 	}.bind(this))
 
-	
+
 
 	this.on('heaters', function(data){
 		var type = "normal";

@@ -18,76 +18,12 @@ var internalEventEmitter = new EventEmitter()
 internalEventEmitter.setMaxListeners(100);
 
 
-internalEventEmitter.on("heaterUpdated", function(data) {
-	// When a heater changes, emit a changeEvent so the interfaces are updated
-	debugEvents("heaterUpdated", data);
-	changeEventEmitter.emit("message", data);
-});
-
-internalEventEmitter.on("lightsSwitchProgramRequested", function(data) {
-	if(data.program === "switch"){
-		lightManager.iterateBetweenChildPrograms("13aa6f8804c24f132573b221c93f0e87");
-		debugEvents("lightsSwitchProgramRequested", data);
-		return;
-	}
-
-	if(data.program === "off"){
-		lightManager.allLightsOff();
-		debugEvents("lightsSwitchProgramRequested", data);
-		return;
-	}
-
-});
-
-
-
-internalEventEmitter.on("personMovementDetected", function(data){
-	var homeStatus = peopleTracker.getHomeStatus();
-	if(homeStatus.home.isAlone){
-		actionScheduler.personMovementHasBeenDetected(data);
-		app.notify("movement", data);
-	}
-})
-
-internalEventEmitter.on("movementDetected", function(data){
-	var homeStatus = peopleTracker.getHomeStatus();
-
-	if(homeStatus.home.isAlone){
-		if(presencePhone.isPresent()){
-			peopleTracker.setAsAtHome("nico");
-			changeEventEmitter.emit("message", data);
-		}		
-	}
-})
-
-var presencePhone = new DevicePresence({ name : "Nic phone", address : "192.168.1.141", eventEmitter : internalEventEmitter});
-internalEventEmitter.on("presenceMessage", function(data){
-
-	try {
-		if(data.event === 'back'){
-			peopleTracker.setAsAtHome("nico");
-			changeEventEmitter.emit("message", data);
-			return ;
-		}
-
-		if(data.event === 'left'){
-			peopleTracker.setAsAway("nico");
-			changeEventEmitter.emit("message", data);
-			return ;
-		}
-	} catch(excp){
-		debug(excp);
-	}
-})
-presencePhone.begin();
-
-
 var LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
 const LightManager = require("./components/lightManager.js");
 var lightManager = new LightManager(cfg);	// With a LightManager, add lights
 
-var peopleTracker = new PeopleTracker(cfg, lightManager, internalEventEmitter)
+var peopleTracker = new PeopleTracker(cfg)
 
 /** Prepare heaters */
 var HeaterManager = require('./components/heaterManager.js');
@@ -154,7 +90,7 @@ lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
 
 
 var LocalWeather = require('./components/localWeather.js');
-var localWeather = new LocalWeather(cfg, internalEventEmitter);
+var localWeather = new LocalWeather(cfg);
 
 
 /** HTTP SERVER **/
@@ -168,6 +104,71 @@ lightManager.addLightsFromObject(devices.lights);
 
 app.addComponent('peopleTracker', peopleTracker);
 
+
+
+var presencePhone = new DevicePresence({ name : "Nic phone", address : "192.168.1.141"});
+internalEventEmitter.on("presenceMessage", function(data){
+
+	try {
+		if(data.event === 'back'){
+			peopleTracker.setAsAtHome("nico");
+			changeEventEmitter.emit("message", data);
+			return ;
+		}
+
+		if(data.event === 'left'){
+			peopleTracker.setAsAway("nico");
+			changeEventEmitter.emit("message", data);
+			return ;
+		}
+	} catch(excp){
+		debug(excp);
+	}
+})
+presencePhone.begin(app);
+/*
+
+app.internalEventEmitter.on("heaterUpdated", function(data) {
+	// When a heater changes, emit a changeEvent so the interfaces are updated
+	debugEvents("heaterUpdated", data);
+	changeEventEmitter.emit("message", data);
+});
+
+app.internalEventEmitter.on("lightsSwitchProgramRequested", function(data) {
+	if(data.program === "switch"){
+		lightManager.iterateBetweenChildPrograms("13aa6f8804c24f132573b221c93f0e87");
+		debugEvents("lightsSwitchProgramRequested", data);
+		return;
+	}
+
+	if(data.program === "off"){
+		lightManager.allLightsOff();
+		debugEvents("lightsSwitchProgramRequested", data);
+		return;
+	}
+
+});
+
+*/
+
+app.internalEventEmitter.on("personMovementDetected", function(data){
+	var homeStatus = peopleTracker.getHomeStatus();
+	if(homeStatus.home.isAlone){
+		actionScheduler.personMovementHasBeenDetected(data);
+		app.notify("movement", data);
+	}
+})
+
+app.internalEventEmitter.on("movementDetected", function(data){
+	var homeStatus = peopleTracker.getHomeStatus();
+
+	if(homeStatus.home.isAlone){
+		if(presencePhone.isPresent()){
+			peopleTracker.setAsAtHome("nico");
+			changeEventEmitter.emit("message", data);
+		}		
+	}
+})
 
 /*
 app.get("/angular/lights/getInterfaceOptions", function(req, res){
