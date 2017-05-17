@@ -96,12 +96,12 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 		ip = networkInfo.address;
 
 		if(this.ip !== ip){
-			// debug(this.name , "ip Mismatch", this.ip, ip);
+			debug(this.name , "ip Mismatch", this.ip, ip);
 			return false;
 		}
 
 		if(message[0] == 0x11){
-			// debug(this.name , "Movement");
+			debug(this.name , "Movement");
 			return this.parseMovementResponse(message, networkInfo);
 		}
 

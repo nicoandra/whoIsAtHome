@@ -5,8 +5,6 @@ const debugTime = require('debug')("app:component:actionScheduler:time");
 function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 	this.checkCycleDuration = 1; // 60; // In seconds
-
-	this.internalEventEmitter = internalEventEmitter;
 	this.peopleTracker = peopleTracker;
 	this.lightManager = lightManager;
 	this.heaterManager = heaterManager;
