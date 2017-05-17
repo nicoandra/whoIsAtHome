@@ -81,7 +81,6 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 				this.accumulatedMovements += .5;
 				if(this.accumulatedMovements > 1){
 					this.accumulatedMovements = 0; // Once the notification is sent, reset the counter;
-					// HAY UNA PERSONA
 					this.eventEmitter.emit("personMovementDetected", { name : this.name })
 				}
 				return true;

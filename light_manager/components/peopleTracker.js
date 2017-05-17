@@ -51,26 +51,6 @@ var peopleTracker = function(cfg){
         this.people[name].arrivesIn = arrivalDate;
     }
 
-    this.wasUserOfflineLongTime = function(name){
-        return false;
-
-        if(this.people[name].lastTimeSeen === false){
-            // I dont' know
-            return false;
-        }
-
-        now = new Date();
-        oneHourAgo = new Date(now - 60 * 60 * 1000);
-        then = this.people[name].lastTimeSeen;
-
-        if(then < oneHourAgo){
-            return true;
-        }
-        return false;
-
-    }
-
-
     this.decideIfHomeIsAloneOrNot = function() {
 
         var someoneAtHome = false;

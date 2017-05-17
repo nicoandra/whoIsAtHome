@@ -6,7 +6,8 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager, intern
 
 	this.checkCycleDuration = 1; // 60; // In seconds
 
-	this.internalEventEmitter = internalEventEmitter;
+	this.app = require('../includes/express.js');
+	this.internalEventEmitter = this.app.internalEventEmitter;
 	this.peopleTracker = peopleTracker;
 	this.lightManager = lightManager;
 	this.heaterManager = heaterManager;
@@ -236,8 +237,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager, intern
 				return false;
 			}
 		}
-
-		return true;		
+		return true;
 	}
 
 	this.turnOffLightsWhenHomeIsAloneAndItIsTooLate = function(){
