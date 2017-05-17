@@ -14,6 +14,12 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	this.dayTimeStarts = [7, 0, 0];
 	this.dayTimeEnds = [17, 0, 0];
 
+
+	this.getStatus = function(){
+
+		return {};
+	}
+
 	this.movementWasDetected = function(data){
 		homeStatus = this.peopleTracker.getHomeStatus();
 		debug("eventHandler movementWasDetected", data);
