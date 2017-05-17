@@ -6,8 +6,7 @@ const debug = require('debug')("app:component:peopleTracker");
 
 var peopleTracker = function(cfg){
 
-    this.app = require('../includes/express.js')
-    this.internalEventEmitter = this.app.internalEventEmitter;
+    this.pollInterval = 300;
 
     this.home = {
         isAlone: true,
@@ -80,10 +79,6 @@ var peopleTracker = function(cfg){
         return this.getHomeStatus();
     }
 
-    this.getDeviceClassName = function(){
-        return 'people';
-    }
-
     this.getHomeStatus = function(){
         this.decideIfHomeIsAloneOrNot();
         result = { 
@@ -93,11 +88,16 @@ var peopleTracker = function(cfg){
         return result;
     }
 
-    // Test home alone state every 5 minutes
-    if(true) setInterval(function(){
-        this.decideIfHomeIsAloneOrNot()
-    }.bind(this), 3000) // 60 * 5 * 1000
 
+    this.start = function(app){
+        if(this.app !== undefined){
+            return this;
+        }
+        this.app = app;
+        setInterval(this.decideIfHomeIsAloneOrNot.bind(this), this.pollInterval);
+        this.app.internalEventEmitter.emit("componentStarted", "peopleTracker");
+        return this;
+    }
 }
 
 module.exports = peopleTracker;

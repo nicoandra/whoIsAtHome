@@ -97,16 +97,15 @@ var localWeather = new LocalWeather(cfg);
 var app = require('./includes/express.js')(cfg);
 
 
-app.addComponent('heaterManager', heaterManager);
-app.addComponent('localWeather', localWeather);
-app.addComponent('lightManager', lightManager);
 lightManager.addLightsFromObject(devices.lights);
 
-app.addComponent('peopleTracker', peopleTracker);
+app.addComponent('heaterManager', heaterManager.start(app));
+app.addComponent('localWeather', localWeather.start(app));
+app.addComponent('lightManager', lightManager.start(app));
+
+
+app.addComponent('peopleTracker', peopleTracker.start(app));
 app.addComponent('actionScheduler', actionScheduler.start(app));
-
-
-
 
 var presencePhone = new DevicePresence({ name : "Nic phone", address : "192.168.1.141"});
 internalEventEmitter.on("presenceMessage", function(data){
@@ -127,7 +126,7 @@ internalEventEmitter.on("presenceMessage", function(data){
 		debug(excp);
 	}
 })
-presencePhone.begin(app);
+presencePhone.start(app);
 /*
 
 app.internalEventEmitter.on("heaterUpdated", function(data) {

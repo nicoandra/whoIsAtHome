@@ -13,7 +13,6 @@ function LightManager(cfg){
 	this.programs = {}
 	this.allKnownPrograms = {}
 	this.activeProgram = false;
-	this.app = require('../includes/express.js')
 
 	this.addLightsFromObject = function(lights){
 		lights.forEach(function(lightDefinition){
@@ -256,7 +255,14 @@ function LightManager(cfg){
 		return result;
 	}
 
-
+	this.start = function(app){
+		if(this.app !== undefined){
+			return this;
+		}
+		this.app = app;
+		this.app.internalEventEmitter.emit("componentStarted", "lightManager");
+		return this;
+	}
 
 
 	this.getInterfaceOptions = function(){

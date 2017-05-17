@@ -1,7 +1,6 @@
-var request = require('request');
-var dgram = require('dgram');
+const dgram = require('dgram');
 const debug = require("debug")("app:heater");
-var moment = require('moment');
+const moment = require('moment');
 
 function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg){
 	this.pollInterval = 60000;
@@ -77,12 +76,12 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 	this.parseMovementResponse = function(response){
 		try {
 			if(response[3] == this.id){
-				debug("Mov ", this.displayName, this.accumulatedMovements)
+				debug("Mov", this.name, this.accumulatedMovements)
 
 				this.accumulatedMovements += .5;
 				if(this.accumulatedMovements > 1){
 					this.accumulatedMovements = 0; // Once the notification is sent, reset the counter;
-					this.eventEmitter.emit("personMovementDetected", { name : this.name })
+					this.eventEmitter.emit("personMovementDetected", { name : this.name, type: "POSTA!!!!" })
 				}
 				return true;
 			}
@@ -95,12 +94,13 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 	this.parseResponse = function(message, networkInfo){
 		ip = networkInfo.address;
 
-		if(this.ip !== ip){
+		if(this.ip !== ip && this.name != "Living Dual"){
 			debug(this.name , "ip Mismatch", this.ip, ip);
 			return false;
 		}
 
 		if(message[0] == 0x11){
+			console.log(this.name , "Movement", message);
 			debug(this.name , "Movement");
 			return this.parseMovementResponse(message, networkInfo);
 		}

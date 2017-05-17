@@ -48,8 +48,20 @@ function HeaterManager(cfg){
 		return this.currentWeather;
 	}
 
-	setInterval(this.queryCurrentWeather.bind(this), this.pollInterval);
-	this.queryCurrentWeather();
+
+	this.start = function(app){
+		if(this.app !== undefined){
+			return this;
+		}
+		this.app = app;
+		setInterval(this.queryCurrentWeather.bind(this), this.pollInterval);
+		this.queryCurrentWeather();
+		this.app.internalEventEmitter.emit("componentStarted", "localWeather");
+		return this;
+	}
+
+
+
 
 }
 

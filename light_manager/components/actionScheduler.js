@@ -262,13 +262,11 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		this.app.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus.bind(this));
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
 		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), this.checkCycleDuration * 1000);
+		this.app.internalEventEmitter.emit("componentStarted", "actionScheduler");
 		debug("enabled");
 		return this;
 	}
 
-	this.forceDayTime = function(){
-
-	}
 }
 
 module.exports = actionScheduler;

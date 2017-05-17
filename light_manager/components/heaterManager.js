@@ -1,22 +1,27 @@
 "use strict"
 
 var Heater = require('./../devices/drivers/nHeatersV1/heater.js');
-var dgram = require('dgram')
+const dgram = require('dgram')
 	, debug = require("debug")("app:component:heaterManager")
 	, debugConnection = require("debug")("app:heaterConnection");
 
-var moment = require('moment');
-var request = require("request");
+const moment = require('moment');
+
+const EventEmitter = require('events').EventEmitter
 
 function HeaterManager(cfg){
 	this.heaters = {};
 	this.heatersByIpAndId = {};
-	this.app = require('../includes/express.js')
-
 	this.pollInterval = 60000;
 
 	this.client = dgram.createSocket('udp4');
 	this.localPort = 8888;
+	this.eventEmitter = new EventEmitter();
+
+	this.eventEmitter.on("personMovementDetected", function(data){
+		debug("Movement: personMovementDetected", data)
+	})
+
 
 	this.getHeaterByName = function(name){
 		return this.heaters[name];
@@ -24,7 +29,7 @@ function HeaterManager(cfg){
 
 	this.addHeatersFromObject = function(heaters){
 		heaters.forEach(function(heater){
-			this.addHeater(heater.id, heater.alias, heater.slot, heater.ip, heater.port, { eventEmitter : this.app.internalEventEmitter });
+			this.addHeater(heater.id, heater.alias, heater.slot, heater.ip, heater.port, this.eventEmitter);
 		}.bind(this));
 	}
 
@@ -84,10 +89,11 @@ function HeaterManager(cfg){
 		debug("on(error)", a,b,c,d,e,f);
 	}.bind(this));
 
-	this.addHeater = function(name, descriptiveName, id, ip, port, options){
+	this.addHeater = function(name, descriptiveName, id, ip, port){
 		if(!this.heatersByIpAndId.hasOwnProperty(ip)){
 			this.heatersByIpAndId[ip] = {};
 		}
+		var options = {eventEmitter : this.eventEmitter};
 
 		var newHeater = new Heater(descriptiveName, id, ip, port, this.client, this.localPort, options, cfg);
 		this.heaters[name] = newHeater;
@@ -166,13 +172,18 @@ function HeaterManager(cfg){
 		return ;
 	}
 
+	this.start = function(app){
+		if(this.app !== undefined){
+			return this;
+		}
+		this.app = app;
+		this.client.bind(this.localPort);
+		this.client.on("listening", this.queryAllHeaters.bind(this));
+		setInterval(this.queryAllHeaters.bind(this), this.pollInterval);
+		this.app.internalEventEmitter.emit("componentStarted", "heaterManager");
+		return this;
+	}
 
-
-
-
-	this.client.bind(this.localPort);
-	this.client.on("listening", this.queryAllHeaters.bind(this));
-	setInterval(this.queryAllHeaters.bind(this), this.pollInterval);
 
 }
 

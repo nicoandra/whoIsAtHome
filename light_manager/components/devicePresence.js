@@ -89,11 +89,15 @@ function DevicePresence(options){
 		
 	}
 
-	this.begin = function(app){
+	this.start = function(app){
+		if(this.app != undefined ){
+			return this;
+		}
 		this.app = app;
 		debug("Begin")
-
 		setTimeout(this.ping.bind(this), 4000);
+		this.app.internalEventEmitter.emit("componentStarted", "devicePresence");
+		return this;
 	}
 
 }

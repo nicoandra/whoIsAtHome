@@ -7,7 +7,7 @@ var server = dgram.createSocket('udp4');
  });*/
 
 function send(payload){
-	server.send(new Buffer(payload), 0, 2, 8888, "127.0.0.1", function(err,res){
+	server.send(new Buffer(payload), 0, payload.length, 8888, "127.0.0.1", function(err,res){
 	});
 }
 
