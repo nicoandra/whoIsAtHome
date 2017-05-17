@@ -77,6 +77,7 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 	this.parseMovementResponse = function(response){
 		try {
 			if(response[3] == this.id){
+				debug("Mov ", this.displayName, this.accumulatedMovements)
 
 				this.accumulatedMovements += .5;
 				if(this.accumulatedMovements > 1){

@@ -72,7 +72,7 @@ function DevicePresence(options){
 
 	this.deviceIsGone = function(){
 		if(!this.deviceIsPresent){
-			// debug("Still gone")
+			debug("Still gone")
 			return;
 		}
 
@@ -97,13 +97,5 @@ function DevicePresence(options){
 	}
 
 }
-
-
-/*
-instance = new devicePresence({ name : "phone", address : '192.168.1.141', eventEmitter : 'none'});
-instance.begin();
-
-*/
-
 
 module.exports = DevicePresence;

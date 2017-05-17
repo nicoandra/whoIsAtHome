@@ -63,10 +63,11 @@ var peopleTracker = function(cfg){
 
             this.peopleAtHome[name] = this.people[name].status
 
-            debug("decideIfHomeIsAloneOrNot", name, this.people[name].status);
+            // debug("decideIfHomeIsAloneOrNot", name, this.people[name].status);
         }, this)
 
         var homeIsAlone = !someoneAtHome;
+        debug("decideIfHomeIsAloneOrNot. Is Home alone?", homeIsAlone);
 
         if(this.home.isAlone != homeIsAlone){
             this.home.sinceWhen = new Date();

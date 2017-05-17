@@ -31,9 +31,9 @@ function ReceiverSocket(params){
 
         if(toSend.length > 3){
             /*
-             Some commands are better to send together; notably the "light on" command and any of the colors or
+             Some commands are better to be sent together; notably the "light on" command and any of the colors or
              disco mode. The reason is that in order to set a light on disco mode, for example, the light that will be
-             affected needs to be identified first. The way to identity the lights is by sending an "on" command.
+             affected needs to be identified first. The way to identify the lights is by sending an "on" command.
 
              But, if 2 setColor are sent at the same time for different lights, the end result can be the opposite; light A will take the color intended to
              be for B, and light B will take the color intended for light A.
@@ -46,7 +46,6 @@ function ReceiverSocket(params){
             buffer1 = new Buffer(buffer1.concat(), 'hex');
             buffer2 = new Buffer(buffer2.concat(), 'hex');
 
-            // console.log('[>Buffer1] ', buffer1);
             this.client.send(
                 buffer1, 0, buffer1.length, this.port,
                 this.host,
@@ -56,7 +55,7 @@ function ReceiverSocket(params){
                             buffer2, 0, buffer2.length, this.port,
                             self.host,
                             function(err){
-                                // calls itelf again
+                                // calls itself again
                                 setTimeout(this.sendQueuedStuff.bind(this), this.delayBetweenCommands);
                             }.bind(this)
                         )}.bind(this), this.delayBetweenCommands);
@@ -74,8 +73,8 @@ function ReceiverSocket(params){
                 buffer, 0, buffer.length, self.port,
                 this.host,
                 function(err){
-                    // calls itelf again
-                    setTimeout(self.sendQueuedStuff.bind(this), this.delayBetweenCommands);    // @@TODO@@ USE THE SETTING VALUE
+                    // calls itself again
+                    setTimeout(self.sendQueuedStuff.bind(this), this.delayBetweenCommands); 
                 }.bind(this)
             );
         }

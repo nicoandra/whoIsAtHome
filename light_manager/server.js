@@ -30,7 +30,7 @@ var HeaterManager = require('./components/heaterManager.js');
 var heaterManager = new HeaterManager(cfg, internalEventEmitter);
 
 var ActionScheduler = require('./components/actionScheduler.js');
-var actionScheduler = new ActionScheduler(cfg, peopleTracker, lightManager, heaterManager, internalEventEmitter );
+var actionScheduler = new ActionScheduler(cfg, peopleTracker, lightManager, heaterManager);
 
 
 const devices = require("./devices/devices");
@@ -103,6 +103,8 @@ app.addComponent('lightManager', lightManager);
 lightManager.addLightsFromObject(devices.lights);
 
 app.addComponent('peopleTracker', peopleTracker);
+app.addComponent('actionScheduler', actionScheduler.start(app));
+
 
 
 

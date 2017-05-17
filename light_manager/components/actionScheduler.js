@@ -2,12 +2,11 @@ var moment = require('moment');
 const debug = require('debug')("app:component:actionScheduler");
 const debugTime = require('debug')("app:component:actionScheduler:time");
 
-function actionScheduler(cfg, peopleTracker, lightManager, heaterManager, internalEventEmitter){
+function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 	this.checkCycleDuration = 1; // 60; // In seconds
 
-	this.app = require('../includes/express.js');
-	this.internalEventEmitter = this.app.internalEventEmitter;
+	this.internalEventEmitter = internalEventEmitter;
 	this.peopleTracker = peopleTracker;
 	this.lightManager = lightManager;
 	this.heaterManager = heaterManager;
@@ -15,6 +14,11 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager, intern
 	this.dayTimeStarts = [7, 0, 0];
 	this.dayTimeEnds = [17, 0, 0];
 
+
+	this.getStatus = function(){
+
+		return {};
+	}
 
 	this.movementWasDetected = function(data){
 		homeStatus = this.peopleTracker.getHomeStatus();
@@ -54,33 +58,33 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager, intern
 		homeStatus = this.peopleTracker.getHomeStatus();
 		debug("eventHandler Person has been detected", data);
 
+		if(homeStatus.home.isAlone === false){
+			return ;
+		}
 
-		if(homeStatus.home.isAlone){
-			var nodemailer = require('nodemailer');
-			var smtpTransport = require('nodemailer-smtp-transport');
-			var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
-			var message = {
-				from: cfg.email.fromFields,
-				to:  cfg.email.whoToContact
-			};
+		var nodemailer = require('nodemailer');
+		var smtpTransport = require('nodemailer-smtp-transport');
+		var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
+		var message = {
+			from: cfg.email.fromFields,
+			to:  cfg.email.whoToContact
+		};
 
 
-			debug("eventHandler movementWasDetected", data);
-			try {
-				name = data.name;
-			} catch (exception){
-				name = "(Unknown)";	
-			}
+		debug("eventHandler movementWasDetected", data);
+		try {
+			name = data.name;
+		} catch (exception){
+			name = "(Unknown)";	
+		}
 
-			message.subject = "Alert: A PERSON has been detected in " + name;
-			message.text = message.subject;
-			message.html = message.subject;
+		message.subject = "Alert: A PERSON has been detected in " + name;
+		message.text = message.subject;
+		message.html = message.subject;
 
-			transporter.sendMail(message, function(err, info){
-				console.log('send', err, info);
-			})
-
-		}		
+		transporter.sendMail(message, function(err, info){
+			console.log('send', err, info);
+		})
 	}
 
 
@@ -124,9 +128,9 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager, intern
 		this.wasNightOnLastCheck = this.isNightTime();
 
 		if(this.isDayTime()){
-			internalEventEmitter.emit("time:isDayOrNight", { day: true, night: false });
+			this.app.internalEventEmitter.emit("time:isDayOrNight", { day: true, night: false });
 		} else {
-			internalEventEmitter.emit("time:isDayOrNight", { day: false, night: true });
+			this.app. internalEventEmitter.emit("time:isDayOrNight", { day: false, night: true });
 		}
 
 		this.runActionBasedOnHomeStatus();
@@ -251,15 +255,18 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager, intern
 		return true;
 	}
 
-	this.start = function(){
-		// setInterval(this.verifyStatus.bind(this), this.checkCycleDuration * 1000);
-		this.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus.bind(this));
+	this.start = function(app){
+		if(this.app != undefined){
+			return this;
+		}
+		this.app = app;
+
+		this.app.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus.bind(this));
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
 		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), this.checkCycleDuration * 1000);
 		debug("enabled");
+		return this;
 	}
-
-	this.start();
 
 	this.forceDayTime = function(){
 
