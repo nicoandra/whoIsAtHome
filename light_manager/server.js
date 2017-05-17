@@ -101,6 +101,7 @@ lightManager.addLightsFromObject(devices.lights);
 
 app.addComponent('heaterManager', heaterManager.start(app));
 app.addComponent('localWeather', localWeather.start(app));
+app.internalEventEmitter.on("personMovementDetected", actionScheduler.personMovementHasBeenDetected.bind(actionScheduler));
 app.addComponent('lightManager', lightManager.start(app));
 
 

@@ -18,9 +18,18 @@ function HeaterManager(cfg){
 	this.localPort = 8888;
 	this.eventEmitter = new EventEmitter();
 
-	this.eventEmitter.on("personMovementDetected", function(data){
+	function personMovementDetectedEventHanlder(data){
 		debug("Movement: personMovementDetected", data)
-	})
+		try {
+			return this.app.internalEventEmitter.emit("personMovementDetected", { name: this.heatersByIpAndId[data.ip][data.id].name });
+		} catch (exception){
+			debug("Exception: ", exception);
+		}
+		
+	};
+	this.eventEmitter.on("personMovementDetected", personMovementDetectedEventHanlder.bind(this));
+
+
 
 
 	this.getHeaterByName = function(name){
@@ -37,9 +46,7 @@ function HeaterManager(cfg){
 
 		// Loop through all heaters and call parseResponse(message, networkInfo)
 		Object.keys(this.heaters).forEach(function(heaterName){
-			if(this.heaters[heaterName].parseResponse(message, networkInfo)){
-				return this.app.internalEventEmitter.emit("movementDetected", { name: this.heaters[heaterName].name });
-			};
+			return this.heaters[heaterName].parseResponse(message, networkInfo);
 		}.bind(this))
 	}
 
