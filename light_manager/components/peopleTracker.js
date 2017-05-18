@@ -30,6 +30,7 @@ var peopleTracker = function(cfg){
     this.setAsAway = function(name){
         this.people[name].status = "away";
         this.people[name].arrivesIn = false;
+        this.app.notify("presence", {name: name, atHome: false, message: name + " gone away"})
     }
 
     this.setAsSleeping = function(name){
@@ -40,6 +41,7 @@ var peopleTracker = function(cfg){
     this.setAsAtHome = function(name){
         this.people[name].status = "atHome";
         this.people[name].arrivesIn = false;
+        this.app.notify("presence", {name: name, atHome: true, message: name + " is back home"})
         this.people[name].lastTimeSeen = new Date();
     }
 

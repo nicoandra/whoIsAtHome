@@ -41,6 +41,11 @@ function NotificationEventEmitter() {
 	}.bind(this))
 
 
+	this.on('presence', function(data){
+		var toSend = { date : new Date(), type: "success", title:"Person at home", text: data.name + " changed status to " + (data.atHome ? "at home" : "away") }
+		this.notifications.unshift(toSend);
+	}.bind(this))
+
 	this.removeOldNotifications = function(){
 		var oneHourAgo = new Date().setMinutes(new Date().getMinutes() - 60);
 		var twoDaysAgo = new Date().setMinutes(new Date().getMinutes() - 60 * 24 *2);

@@ -9,7 +9,7 @@ function InternalEventEmitter() {
 
 
 	this.emit = function(event, data){
-		debug("Emitting: ", event, data);
+		debug("Emitting: ", event);
 		this.__proto__.emit(event, data)
 	}	
 

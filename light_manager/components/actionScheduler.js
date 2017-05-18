@@ -81,7 +81,8 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		message.html = message.subject;
 
 		transporter.sendMail(message, function(err, info){
-			console.log('send', err, info);
+			// console.log('send', err, info);
+			debug("Mail sent");
 		})
 	}
 

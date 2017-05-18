@@ -20,14 +20,14 @@
 
 		<li role="presentation" class="dropdown">
 			<a 
-			ng-class="{'btn-success' : !homeStatus.home.isAlone , 'btn-warning' : homeStatus.home.isAlone}"
+			ng-class="{'btn-success' : !home.isAlone , 'btn-warning' :  home.isAlone }"
 			class="dropdown-toggle" 
 			data-toggle="dropdown" 
 			href="#" 
 			role="button" aria-haspopup="true" aria-expanded="false">
 				<span 
-					class="glyphicon glyphicon-user" 
-					ng-class="{'glyphicon-user' : !homeStatus.home.isAlone , 'glyphicon-home' : homeStatus.home.isAlone}"></span>
+					class="glyphicon" 
+					ng-class="{'glyphicon-user' : !home.isAlone , 'glyphicon-home' : home.isAlone}"></span>
 				<span class="caret">
 				</span>
 			</a>

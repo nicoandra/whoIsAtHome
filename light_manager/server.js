@@ -109,7 +109,7 @@ app.addComponent('peopleTracker', peopleTracker.start(app));
 app.addComponent('actionScheduler', actionScheduler.start(app));
 
 var presencePhone = new DevicePresence({ name : "Nic phone", address : "192.168.1.141"});
-internalEventEmitter.on("presenceMessage", function(data){
+app.internalEventEmitter.on("presenceMessage", function(data){
 
 	try {
 		if(data.event === 'back'){

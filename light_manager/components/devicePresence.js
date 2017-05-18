@@ -78,13 +78,13 @@ function DevicePresence(options){
 
 		this.deviceIsPresent = false;
 		debug("Device left...")
-		this.app.internalEventEmitter.emit("presenceMessage", { event : "left" , ref: this});
+		this.app.internalEventEmitter.emit("presenceMessage", { event : "left" , name: this.name.toString() });
 	}
 
 	this.deviceIsBack = function(){
 		this.lastTimeSeenOnline = new moment();
 		debug("Device is back")
-		this.app.internalEventEmitter.emit("presenceMessage", { event : "back" , ref: this});
+		this.app.internalEventEmitter.emit("presenceMessage", { event : "back" , name: this.name.toString() });
 		this.deviceIsPresent = true;
 		
 	}
