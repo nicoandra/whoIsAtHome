@@ -14,7 +14,6 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 
 	this.getStatus = function(){
-
 		return {};
 	}
 
@@ -94,7 +93,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 		if(dayNumber >= 5){
 			// Friday (5) and Saturday (6), close the lights later
-			return moment().hour(2).minute(30).seconds(0);
+			return moment().hour(1).minute(30).seconds(0);
 		}
 
 		// During the week, turn them off much earlier
@@ -230,20 +229,20 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 		if(timeWhenLightsGoOff.isAfter(dayTimeEnds)){
 			// This section might be buggy. @@TODO@@ RECHECK
-			if(now.isAfter(dayTimeEnds) || now.isBefore(this.getTimeWhenLightsGoOff())){
-				debugTime("Between dayTimeEnds and timeWhenLightsGoOff #1. Is it too late to turn lights On? false!. ");
+			if(now.isAfter(dayTimeEnds) && now.isBefore(timeWhenLightsGoOff)){
+				debugTime("Between dayTimeEnds and timeWhenLightsGoOff #1. Lights should be ON now. ");
 				return false;
 			}
 
 		} else {
-			if(now.isAfter(dayTimeEnds) || now.isBefore(this.timeWhenLightsGoOff)){
+			if(now.isAfter(dayTimeEnds) || now.isBefore(timeWhenLightsGoOff)){
 				// We're facing the night time now
-				debugTime("Between dayTimeEnds and timeWhenLightsGoOff #2. Is it too late to turn lights On? false!. ");
+				debugTime("Between dayTimeEnds and timeWhenLightsGoOff #2. Lights should be ON now. ");
 				return false;
 			}
 		}
 
-		debugTime("Between turnOffLightsWhenHomeIsAloneAndItIsTooLate false. Between dayTimeEnds and getTimeWhenLightsGoOff #2");
+		debugTime("It's too late to turn lights ON. Lights should be OFF now.");
 		return true;
 	}
 
