@@ -119,12 +119,13 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 	this.verifyIfNightStartedOrEnded = function(){
 		// If the status did not change, do nothing
-		if(this.wasNightOnLastCheck === this.isNightTime()){
+		var isNightNow = this.isNightTime();
+		if(this.wasNightOnLastCheck === isNightNow){
 			// debug("Night Status did not change. Return.")
 			return ;
 		}
 
-		this.wasNightOnLastCheck = this.isNightTime();
+		this.wasNightOnLastCheck = isNightNow;
 
 		if(this.isDayTime()){
 			this.app.internalEventEmitter.emit("time:isDayOrNight", { day: true, night: false });
@@ -202,7 +203,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 			return false;
 		}
 
-		debugTime("Is NightTime, is HomeAlone", this.isHomeAlone());
+		// debugTime("Is NightTime, is HomeAlone", this.isHomeAlone());
 		return true;
 	}
 
@@ -225,21 +226,24 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 		var now = moment();
 		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2]);
-		var getTimeWhenLightsGoOff = this.getTimeWhenLightsGoOff();
+		var timeWhenLightsGoOff = this.getTimeWhenLightsGoOff();
 
-		if(getTimeWhenLightsGoOff.isAfter(dayTimeEnds)){
+		if(timeWhenLightsGoOff.isAfter(dayTimeEnds)){
+			// This section might be buggy. @@TODO@@ RECHECK
 			if(now.isAfter(dayTimeEnds) || now.isBefore(this.getTimeWhenLightsGoOff())){
-				debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. Between dayTimeEnds and getTimeWhenLightsGoOff #1");
+				debugTime("Between dayTimeEnds and timeWhenLightsGoOff #1. Is it too late to turn lights On? false!. ");
 				return false;
 			}
 
 		} else {
-			if(now.isAfter(dayTimeEnds) || now.isBefore(this.getTimeWhenLightsGoOff())){
+			if(now.isAfter(dayTimeEnds) || now.isBefore(this.timeWhenLightsGoOff)){
 				// We're facing the night time now
-				debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. Between dayTimeEnds and getTimeWhenLightsGoOff #2");
+				debugTime("Between dayTimeEnds and timeWhenLightsGoOff #2. Is it too late to turn lights On? false!. ");
 				return false;
 			}
 		}
+
+		debugTime("Between turnOffLightsWhenHomeIsAloneAndItIsTooLate false. Between dayTimeEnds and getTimeWhenLightsGoOff #2");
 		return true;
 	}
 
