@@ -127,6 +127,8 @@ $scope.sendLightProgramByKey = function(programKey){
 }
 
 $scope.sendLightCommand = function(element, status){
+	
+	$scope.requestStarted();
 	if(typeof element == "string" || typeof element == "object"){
 		status.lightName = element;
 	} else {
@@ -136,10 +138,14 @@ $scope.sendLightCommand = function(element, status){
 	$http.post(
 		"/app/components/lightManager/runProgram",
 		status
-	).success(
-		 $scope.buildInterface
-	)
+	).success(function(response, httpStatus){
+		$scope.requestEnded(httpStatus);
+		$scope.updateInterfaceWithResponse(response)
+	})
+
 }
+
+
 
 $scope.socketSimulator = function(){
 	$http.get("/app/sock", { timeout: 60000 })

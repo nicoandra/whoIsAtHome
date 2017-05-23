@@ -208,7 +208,8 @@ app.post('/app/components/lightManager/runProgram', function(req, res){
 
 	var lightManager = app.getComponent('lightManager');
 
-	changeEventEmitter.emit("majorChange", req.body)
+	changeEventEmitter.emit("majorChange", req.body);
+
 	if(req.body.programKey){
 		try {
 			lightManager.runProgram(req.body.programKey);
@@ -225,16 +226,16 @@ app.post('/app/components/lightManager/runProgram', function(req, res){
 		});
 	}
 
-	[100, 250, 500].forEach(function(delay){
+
+	changeEventEmitter.emit("majorChange", req.body)
+	
+	/*[100, 250, 500].forEach(function(delay){
 		setTimeout(function() {
 			changeEventEmitter.emit("majorChange", req.body)
 		}, delay);
-	})
+	})*/
 
-
-	res.send(
-		lightManager.getStatus()
-	);
+	res.send(app.getStatus());
 
 });
 
@@ -251,12 +252,14 @@ app.get("/app/sock", function(req,res){
 		}
 	}
 
-	// var responseTimeout = setTimeout(sendResponseOnChange, 50 * 1000);
-	changeEventEmitter.on('majorChange', function(data){
+	var processEvent = function(data){
 		// clearTimeout(responseTimeout);
 		sendResponseOnChange();
-		changeEventEmitter.removeListener("majorChange", sendResponseOnChange);
-	})
+		changeEventEmitter.removeListener("majorChange", processEvent);
+	}
+
+	// var responseTimeout = setTimeout(sendResponseOnChange, 50 * 1000);
+	changeEventEmitter.on('majorChange', processEvent)
 })
 
 
