@@ -19,7 +19,7 @@ function HeaterManager(cfg){
 	this.eventEmitter = new EventEmitter();
 
 	function personMovementDetectedEventHanlder(data){
-		debug("Movement: personMovementDetected", data)
+		debugConnection("Movement: personMovementDetected", data)
 		try {
 			return this.app.internalEventEmitter.emit("personMovementDetected", { name: this.heatersByIpAndId[data.ip][data.id].name });
 		} catch (exception){
@@ -28,8 +28,6 @@ function HeaterManager(cfg){
 		
 	};
 	this.eventEmitter.on("personMovementDetected", personMovementDetectedEventHanlder.bind(this));
-
-
 
 
 	this.getHeaterByName = function(name){
@@ -46,7 +44,10 @@ function HeaterManager(cfg){
 
 		// Loop through all heaters and call parseResponse(message, networkInfo)
 		Object.keys(this.heaters).forEach(function(heaterName){
-			return this.heaters[heaterName].parseResponse(message, networkInfo);
+			if(this.heaters[heaterName].parseResponse(message, networkInfo)){
+				debugConnection("Movement message from ", networkInfo.address);
+			}
+			
 		}.bind(this))
 	}
 
@@ -54,22 +55,24 @@ function HeaterManager(cfg){
 		// Loop through all heaters and call parseResponse(message, networkInfo)
 		Object.keys(this.heaters).forEach(function(heaterName){
 			if(this.heaters[heaterName].parseResponse(message, networkInfo)){
-				// debug("Heater matched:", heaterName);
+				debug("Heater matched:", heaterName);
 				return this.app.internalEventEmitter.emit("heaterUpdated",  { name: this.heaters[heaterName].name });
 			};
 		}.bind(this))
 	}
 
+
+
 	// this.client.on('message', this.handleIncomingPackets.bind(this));
 	this.client.on('message', function(message, networkInfo){
 		var ip = networkInfo.address;
 		if(message[0] == 0x31 && message[1] == 0xFF && (message.length === 20 || message.length === 12)) {
-			// debug("Status received from ", ip);
+			debug("Status received from ", ip);
 			return this.handleHeaterStatusResponse(message, networkInfo);
 		}
 
 		if(message[0] == 0x11 && message[1] == 0x00){
-			// debug("Movement detected: ", ip);
+			debug("Movement detected: ", ip);
 			return this.handleMovementDetectedResponse(message, networkInfo);
 		}
 
@@ -115,15 +118,25 @@ function HeaterManager(cfg){
 
 			var response = { heaters : { }}
 			Object.keys(this.heaters).forEach( function(name) {
-				response.heaters[name] = this.heaters[name].getStatus();
-				response.heaters[name].name = name;
+				var status = this.heaters[name].getStatus();
+				response.heaters[name] = {};
+				response.heaters[name].desiredTemperatureFromHeater = status.desiredTemperatureFromHeater;
+				response.heaters[name].displayName = status.displayName;
+				response.heaters[name].humidity = status.humidity;
+				response.heaters[name].isDown = status.isDown;
+				response.heaters[name].isDownSince = status.isDownSince;
+				response.heaters[name].lastResponse = status.lastResponse;
+				response.heaters[name].name = status.name;
+				response.heaters[name].power = status.power;
+				response.heaters[name].temperature = status.temperature;
 				response.heaters[name].isDown = response.heaters[name].lastResponse == 0 ? false : response.heaters[name].lastResponse.isBefore(momentsAgo);
 				if(response.heaters[name].isDown){
 					response.heaters[name].isDownSince = response.heaters[name].lastResponseTime;
 				} else {
 					response.heaters[name].isDownSince = false;
 				}
-				response.heaters[name].desiredTemperature = Math.round(response.heaters[name].desiredTemperature * 10) / 10;	// Round to 1 decimal
+
+				response.heaters[name].desiredTemperatureFromHeater = Math.round(response.heaters[name].desiredTemperatureFromHeater * 10) / 10;	// Round to 1 decimal
 
 			}.bind(this))
 
@@ -171,7 +184,7 @@ function HeaterManager(cfg){
 		}
 
 		Object.keys(statuses).forEach(function(alias){
-			var temperature = statuses[alias].desiredTemperature;
+			var temperature = statuses[alias].desiredTemperatureFromInterface;
 			this.setTemperature(alias, temperature);
 		}.bind(this));
 

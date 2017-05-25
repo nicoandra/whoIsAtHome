@@ -33,10 +33,10 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 
 	this.sendRawPayload = function(payload){
 		var buffer = new Buffer(payload);
-
+		debug("SendPayload", this.name, payload);
 		this.dgramClient.send(buffer, 0, buffer.length, this.heaterPort, this.ip, function(err){
 			if(err){
-				debug("Err setHeaterTemperature", err)
+				debug("Err sendRawPayload", err)
 			} else {
 				this.lastResponseTime = moment();
 			}
@@ -51,10 +51,15 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 		var temperatureDecimal = Math.trunc((desiredTemperature - temperatureInteger) * 256);
 		var payload = [ 0x10 , this.id, temperatureInteger, temperatureDecimal];
 
-		debug("setHeaterTemperature", name, desiredTemperature, payload);
+		var delay = 1000 * this.id;
+		debug("setHeaterTemperature queue request", name, desiredTemperature, payload, delay);
 		var buffer = new Buffer(payload);
-		this.sendRawPayload(payload);
-		this.requestStatus();
+
+		setTimeout(function(){
+			this.sendRawPayload(payload)
+		}.bind(this), delay);
+		
+		
 	}
 
 	this.setValuesFromResponse = function(currentTemperature, desiredTemperature, humidity, heaterPower, powerOutlet){
@@ -95,8 +100,11 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 	this.parseResponse = function(message, networkInfo){
 		ip = networkInfo.address;
 
+		if(this.ip !== ip){
+			return false;
+		}
+
 		if(message[0] == 0x11){
-			console.log(this.name , "Movement", message);
 			debug(this.name , "Movement");
 			return this.parseMovementResponse(message, networkInfo);
 		}
@@ -109,7 +117,8 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 		var humidity = parseInt(message[indexToRead++]) + parseInt(message[indexToRead++]) / 256;
 		var powerOutlet = 0;
 
-		// debug("In the response from",ip,"the heaterPower is", heaterPower, desiredTemperature);
+		debug("Desired temperature in", this.name, this.ip, this.id, desiredTemperature);
+		
 
 		if(temperature < 10 || temperature > 35){
 			var nodemailer = require('nodemailer');
@@ -148,9 +157,15 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 	}
 
 	this.requestStatus = function(){
-		this.dgramClient.send(new Buffer(this.getStatusPayload), 0, 4, this.heaterPort, this.ip, function(err,res){
-			// debug("Sent status request to ", this.name)
-		}.bind(this));
+
+		var delay = this.id * 1000;
+		setTimeout(function(){
+			this.dgramClient.send(new Buffer(this.getStatusPayload), 0, 4, this.heaterPort, this.ip, function(err,res){
+				// debug("Sent status request to ", this.name)
+			}.bind(this));
+			
+		}.bind(this), delay);
+
 	}
 
 	this.getTemperature = function(){
