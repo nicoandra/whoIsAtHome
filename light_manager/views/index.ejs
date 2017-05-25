@@ -214,11 +214,19 @@
 										<span class="label label-success" ng-if="heater.power > 0">{{ heater.power }}</span>
 									</div>
 
-									<div class="col-md-2 col-xs-12">
-										<h-number value="heaters[name].desiredTemperature" min="8" max="30" step="0.1" change="heaterChanged(name)">
-											<input type="text" ng-model="heaters[name].desiredTemperature">
-										</h-number>
+									<div class="col-md-1 col-xs-10">
+										<input type="text" ng-model="heaters[name].desiredTemperatureFromInterface">
 									</div>
+
+									<div class="col-md-1 col-xs-10">
+										<span ng-class="{
+										'text-success': (heaters[name].desiredTemperatureFromInterface == heaters[name].desiredTemperatureFromHeater), 
+										'text-danger' : (heaters[name].desiredTemperatureFromInterface != heaters[name].desiredTemperatureFromHeater) }"
+										>
+										{{ heater.desiredTemperatureFromHeater }}
+										</span>
+									</div>
+
 
 									<div class="col-md-1 col-xs-12" ng-if="heater.isDown">
 										<span class="label label-danger">Down since {{ heater.lastResponse | date:'yyyy-MM-dd HH:mm:ss Z' }}</span>

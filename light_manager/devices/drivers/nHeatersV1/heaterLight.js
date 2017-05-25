@@ -29,7 +29,6 @@ function HeaterLight(name, displayName, heater){
 	}
 
 	this.getInterfaceOptions = function(){
-
 		var resultOptions =  [
 			{
 				displayName : "On / Off",

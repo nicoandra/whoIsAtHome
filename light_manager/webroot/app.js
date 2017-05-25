@@ -5,6 +5,8 @@ $scope.homeStatus = {
 	people: { nico : { status : 'away'}},
 
 }
+$scope.heaters = {};
+$scope.lightManager = {};
 
 $scope.setPersonStatusAs = function(statusName, time){
 	switch(statusName){
@@ -29,13 +31,20 @@ $scope.requestStatus = false;
 
 $scope.setAllHeaters = function(desiredTemperature){
 	Object.keys($scope.heaters).forEach(function(heaterName){
-		$scope.heaters[heaterName].desiredTemperature = desiredTemperature;
+		$scope.heaters[heaterName].desiredTemperatureFromInterface = desiredTemperature;
 	});
 	$scope.heaterChanged();
 }
 
 $scope.heaterChanged = function(){
-	$http.post("/angular/heathers/set", $scope.heaters)
+	$http.post("/angular/heathers/set", $scope.heaters).success(function(response,httpStatus){
+		$scope.updateInterfaceWithResponse(response)
+		$scope.requestEnded(httpStatus);
+	}).error(function(response,httpStatus){
+		console.log("SOMETHING HAPPENED")
+		$scope.requestEnded(httpStatus);
+	});
+
 }
 
 $scope.requestStarted = function(){
@@ -54,13 +63,36 @@ $scope.requestEnded = function(httpStatus){
 
 $scope.dimChange = function(a,b,c){ console.log(a,b,c) };
 
+function processHeaterResponse(source, destination){
+	Object.keys(source).forEach(function(name){
+		if(destination[name] == undefined){
+			destination[name] = {};
+		}
+		destination[name].desiredTemperatureFromHeater = source[name].desiredTemperatureFromHeater,
+		destination[name].displayName = source[name].displayName;
+		destination[name].humidity = source[name].humidity;
+		destination[name].isDown = source[name].isDown;
+		destination[name].isDownSince = source[name].isDownSince;
+		destination[name].lastResponse = source[name].lastResponse;
+		destination[name].power = source[name].power;
+		destination[name].temperature = source[name].temperature;
+	});
+	console.log("HOLA", source, destination);
+}
+
+
 $scope.updateInterfaceWithResponse = function(response){
 
-	$scope.lights = response.lightManager.lights;
+	if(response.lightManager !== undefined){
+		$scope.lights = response.lightManager.lights;	
+	}
+
+	
 	$scope.homeStatus = response.peopleTracker.people;
-	$scope.heaters = response.heaterManager.heaters;
 	$scope.localWeather = response.localWeather;
 	$scope.home = response.peopleTracker.home;
+
+	processHeaterResponse(response.heaterManager.heaters, $scope.heaters);
 
 	isAnyLightOn = Object.keys($scope.lights).reduce(function(prevVal,currVal,c,d){
 		currVal = $scope.lights[currVal]

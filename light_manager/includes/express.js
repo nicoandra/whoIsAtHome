@@ -122,9 +122,12 @@ module.exports = function(cfg) {
 	})
 
 	app.post("/angular/heathers/set", function(req,res){
-		app.getComponent('heaterManager').setMultipleStatus(req.body, function(){
-			app.getComponent('heaterManager').getStatus(function(err, response){
-				res.send(response);
+
+		var heaterManager = app.getComponent('heaterManager');
+
+		heaterManager.setMultipleStatus(req.body, function(){
+			heaterManager.getStatus(function(err, response){
+				res.send(app.getStatus());
 			});
 		})
 	})

@@ -15,7 +15,8 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 
 	this.currentTemperature = 999;
 	this.humidity = 999;
-	this.desiredTemperature = 14;
+	this.desiredTemperatureFromInterface = 14;
+	this.desiredTemperatureFromHeater = 14;
 	this.power = 0;
 	this.lastResponseTime = 0;
 	this.accumulatedMovements = 0;
@@ -39,11 +40,11 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 			} else {
 				this.lastResponseTime = moment();
 			}
-		}.bind(this));		
+		}.bind(this));
 	}
 
 	this.setTemperature = function(desiredTemperature){
-		desiredTemperature = Math.trunc(Math.abs(desiredTemperature) * 10) / 10;
+		this.desiredTemperatureFromInterface = Math.trunc(Math.abs(desiredTemperature) * 10) / 10;
 
 		// this.desiredTemperature = desiredTemperature;
 		var temperatureInteger = Math.trunc(desiredTemperature);
@@ -53,19 +54,19 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 		debug("setHeaterTemperature", name, desiredTemperature, payload);
 		var buffer = new Buffer(payload);
 		this.sendRawPayload(payload);
-
+		this.requestStatus();
 	}
 
-	this.setValues = function(currentTemperature, desiredTemperature, humidity, heaterPower, powerOutlet){
+	this.setValuesFromResponse = function(currentTemperature, desiredTemperature, humidity, heaterPower, powerOutlet){
 		var result = false;
 
 		if(this.currentTemperature != currentTemperature) result = true;
-		if(this.desiredTemperature != desiredTemperature) result = true;
+		if(this.desiredTemperatureFromHeater != desiredTemperature) result = true;
 		if(this.humidity != humidity) result = true;
 		if(this.power != heaterPower) result = true;
 
 		this.currentTemperature = currentTemperature;
-		this.desiredTemperature = desiredTemperature;
+		this.desiredTemperatureFromHeater = desiredTemperature;
 		this.humidity = humidity;
 		this.power = heaterPower;
 		this.lastResponseTime = moment();
@@ -93,11 +94,6 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 
 	this.parseResponse = function(message, networkInfo){
 		ip = networkInfo.address;
-
-		if(this.ip !== ip && this.name != "Living Dual"){
-			debug(this.name , "ip Mismatch", this.ip, ip);
-			return false;
-		}
 
 		if(message[0] == 0x11){
 			console.log(this.name , "Movement", message);
@@ -129,12 +125,13 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 			message.text = message.subject;
 			message.html = message.subject;
 
+			return ;
 			transporter.sendMail(message, function(err, info){
 				console.log('send', err, info);
 			})
 		}
 
-		return this.setValues(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
+		return this.setValuesFromResponse(temperature, desiredTemperature, humidity, heaterPower, powerOutlet);
 	}
 
 	this.getStatus = function(){
@@ -142,7 +139,9 @@ function Heater(name, id, ip, heaterPort, dgramClient, serverPort, options, cfg)
 			displayName: this.name ,
 			temperature: Math.trunc(Math.abs(this.currentTemperature) * 10) / 10,
 			humidity: this.humidity,
-			desiredTemperature: this.desiredTemperature,
+			desiredTemperatureFromHeater: this.desiredTemperatureFromHeater,
+			desiredTemperatureFromInterface: this.desiredTemperatureFromHeater,
+			desiredTemperaturePendingChange: (this.desiredTemperatureFromHeater !== this.desiredTemperatureFromHeater),
 			power: this.power * 10,
 			lastResponse: this.lastResponseTime
 		}
