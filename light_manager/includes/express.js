@@ -130,6 +130,8 @@ module.exports = function(cfg) {
 				res.send(app.getStatus());
 			});
 		})
+
+		app.internalEventEmitter.emit("majorChange", req.body);
 	})
 
 	this.app = app;

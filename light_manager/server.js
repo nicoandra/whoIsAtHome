@@ -199,16 +199,12 @@ app.get("/angular/lights/getAvailablePrograms", function(req, res){
 
 })
 
-var changeEventEmitter = new EventEmitter()
-changeEventEmitter.setMaxListeners(100)
-
-
 
 app.post('/app/components/lightManager/runProgram', function(req, res){
 
 	var lightManager = app.getComponent('lightManager');
 
-	changeEventEmitter.emit("majorChange", req.body);
+	app.internalEventEmitter.emit("majorChange", req.body);
 
 	if(req.body.programKey){
 		try {
@@ -225,15 +221,6 @@ app.post('/app/components/lightManager/runProgram', function(req, res){
 			// Emit message only after the change has been applied
 		});
 	}
-
-
-	changeEventEmitter.emit("majorChange", req.body)
-	
-	/*[100, 250, 500].forEach(function(delay){
-		setTimeout(function() {
-			changeEventEmitter.emit("majorChange", req.body)
-		}, delay);
-	})*/
 
 	res.send(app.getStatus());
 
@@ -255,11 +242,11 @@ app.get("/app/sock", function(req,res){
 	var processEvent = function(data){
 		// clearTimeout(responseTimeout);
 		sendResponseOnChange();
-		changeEventEmitter.removeListener("majorChange", processEvent);
+		app.internalEventEmitter.removeListener("majorChange", processEvent);
 	}
 
 	// var responseTimeout = setTimeout(sendResponseOnChange, 50 * 1000);
-	changeEventEmitter.on('majorChange', processEvent)
+	app.internalEventEmitter.on('majorChange', processEvent)
 })
 
 
@@ -323,20 +310,20 @@ app.post("/people/setAsAway", function(req,res){
 app.post("/people/setAsAtHome", function(req,res){
 	debug("Requested", req.url)
 	peopleTracker.setAsAtHome("nico");
-	changeEventEmitter.emit("majorChange", req.body)
+	app.internalEventEmitter.emit("majorChange", req.body)
 	res.send(peopleTracker.getHomeStatus());
 })
 
 app.post("/people/setAsComingBack", function(req,res){
 	debug("Requested", req.url)
 	peopleTracker.setAsComingBack("nico", 20);
-	changeEventEmitter.emit("majorChange", req.body)
+	app.internalEventEmitter.emit("majorChange", req.body)
 	res.send(peopleTracker.getHomeStatus());
 })
 
 app.post("/people/setAsSleeping", function(req,res){
 	peopleTracker.setAsSleeping("nico");
-	changeEventEmitter.emit("majorChange", req.body)
+	app.internalEventEmitter.emit("majorChange", req.body)
 	res.send(peopleTracker.getHomeStatus());
 })
 

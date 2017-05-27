@@ -135,7 +135,6 @@ function HeaterManager(cfg){
 				} else {
 					response.heaters[name].isDownSince = false;
 				}
-
 				response.heaters[name].desiredTemperatureFromHeater = Math.round(response.heaters[name].desiredTemperatureFromHeater * 10) / 10;	// Round to 1 decimal
 
 			}.bind(this))
@@ -175,6 +174,7 @@ function HeaterManager(cfg){
 		} catch(exception){
 			debug("Err with ", name);
 			debug("setTemperature", exception);
+
 		}
 	}
 
@@ -188,6 +188,7 @@ function HeaterManager(cfg){
 			this.setTemperature(alias, temperature);
 		}.bind(this));
 
+		this.app.internalEventEmitter.emit('majorChange', {name: 'heaters'});
 		callback();		
 		return ;
 	}
