@@ -4,8 +4,8 @@ var Debug = require('debug');
 
 function DevicePresence(options){
 	
-	this.failureCounter = 25;
-	this.intervalWhenFoundOnline = 20000;
+	this.failureCounter = 120;
+	this.intervalWhenFoundOnline = 40000;
 	this.intervalWhenNotFound = 2000;
 
 	ipRegularExpression = /([0-9]{1,3}\.){3}([0-9]{1,3})/
@@ -35,7 +35,7 @@ function DevicePresence(options){
 		debug('Pinging...', code, 'Try: ', this.failureCounter);
 
 		if(code === 0){
-			this.failureCounter = 25 ;
+			this.failureCounter = 120 ;
 			// Ping worked. Next ping will be done in 20 seconds
 
 			setTimeout(this.ping.bind(this), this.intervalWhenFoundOnline);
