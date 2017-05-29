@@ -18,36 +18,9 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	}
 
 	this.movementWasDetected = function(data){
-		homeStatus = this.peopleTracker.getHomeStatus();
+		var homeStatus = this.peopleTracker.getHomeStatus();
 		debug("eventHandler movementWasDetected", data);
-
-
-		if(homeStatus.home.isAlone){
-			var nodemailer = require('nodemailer');
-			var smtpTransport = require('nodemailer-smtp-transport');
-			var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
-			var message = {
-				from: cfg.email.fromFields,
-				to:  cfg.email.whoToContact
-			};
-
-
-			debug("eventHandler movementWasDetected", data);
-			try {
-				name = data.name;
-			} catch (exception){
-				name = "(Unknown)";	
-			}
-
-			message.subject = "Alert: movement has been detected in " + name;
-			message.text = message.subject;
-			message.html = message.subject;
-
-			transporter.sendMail(message, function(err, info){
-				console.log('send', err, info);
-			})
-
-		}		
+		// @@TODO@@ PING THE PHONE TO SEE IF I'M BACK
 	}
 
 
@@ -111,8 +84,8 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 			debug("runActionBasedOnHomeStatus: home is alone. call homeStartedToBeAlone()")
 			this.homeStartedToBeAlone();
 		} else {
-			debug("runActionBasedOnHomeStatus: home is NOT alone. Someone is at home. Call someoneIsAtHome();")
-			this.someoneIsAtHome();
+			debug("runActionBasedOnHomeStatus: home is NOT alone. Someone is at home. Call someoneGotBackHome();")
+			this.someoneGotBackHome();
 		}
 	}
 
@@ -160,7 +133,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		this.heaterManager.setTemperature(17);
 	}
 
-	this.someoneIsAtHome = function(){
+	this.someoneGotBackHome = function(){
 		// Disable enable heaters back, set temperature back to 22;
 		// this.heaterManager.setGlobalTemperature(22);
 		if(this.isDayTime()){
@@ -211,12 +184,6 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	}
 
 	this.isItTooLateToTurnOnLights = function(){
-		if(!this.isHomeAlone()){
-			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. There's someone at home. Do nothing.");
-			// If there's someone at home, don't do anything
-			return false;
-		}
-
 		if(!this.isNightTime()){
 			// If it is not night time, don't do anything
 			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. It's not night time. Do nothing.");
@@ -247,6 +214,13 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	}
 
 	this.turnOffLightsWhenHomeIsAloneAndItIsTooLate = function(){
+
+		if(!this.isHomeAlone()){
+			debug("turnOffLightsWhenHomeIsAloneAndItIsTooLate: There's someone at home. Do nothing.");
+			// If there's someone at home, don't do anything
+			return false;
+		}
+
 		if(!this.isItTooLateToTurnOnLights()){
 			return false;
 		}
