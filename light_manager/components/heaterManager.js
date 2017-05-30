@@ -80,12 +80,12 @@ function HeaterManager(cfg){
 
 		if(message.length == 4 && message[0] == 0x41 && message[1] == 0xFF && message[2] == 0x00){
 			if(message[3] == 0x01){
-				eventEmitter.emit("lightsSwitchProgramRequested", { name: ip, ip: ip, program: "switch" });
+				this.eventEmitter.emit("lightsSwitchProgramRequested", { name: ip, ip: ip, program: "switch" });
 				return;
 			}
 
 			if(message[3] == 0x02){
-				eventEmitter.emit("lightsSwitchProgramRequested", { name: ip, ip: ip , program: "off"});
+				this.eventEmitter.emit("lightsSwitchProgramRequested", { name: ip, ip: ip , program: "off"});
 				return;
 			}
 			return ;
