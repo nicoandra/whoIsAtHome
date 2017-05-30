@@ -171,8 +171,8 @@ function HeaterManager(cfg){
 				return false;
 			}
 			return this.heaters[name].setTemperature(temperature);
-		} catch(exception){
-			debug("Err with ", name);
+		} catch(exception)
+{			debug("Err with ", name);
 			debug("setTemperature", exception);
 
 		}
