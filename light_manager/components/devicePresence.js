@@ -27,7 +27,7 @@ function DevicePresence(options){
 	}
 
 	this.lastTimeSeenOnline = new moment().subtract(15, this.unit);
-	this.deviceIsPresent = true;
+	this.deviceIsPresent = false;
 
 	this.ping = function(){
 		var code = shell.exec('ping ' + this.address + ' -c2 -W1', { silent : 1 }).code;
@@ -92,7 +92,6 @@ function DevicePresence(options){
 		debug("Device is back")
 		this.app.internalEventEmitter.emit("presenceMessage", { event : "back" , name: this.name.toString() });
 		this.deviceIsPresent = true;
-		
 	}
 
 	this.start = function(app){
