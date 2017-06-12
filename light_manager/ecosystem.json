@@ -17,11 +17,16 @@
   "merge_logs"       : true,
   "exec_interpreter" : "node",
   "exec_mode"        : "fork",
-  "autorestart"      : false, // enable/disable automatic restart when an app crashes or exits
+  "autorestart"      : true, // enable/disable automatic restart when an app crashes or exits
   "vizion"           : false, // enable/disable vizion features (versioning control)
   // Default environment variables that will be injected in any environment and at any start
   "env": {
-    "NODE_ENV": "proliant"
+    "NODE_ENV": "proliant",
+    "DEBUG" : "app:component:actionScheduler"
+  },
+  "env_dev" : {
+    "NODE_ENV" : "nickpad",
+    "DEBUG" : "*"
   },
   "env_*" : {
     "SPECIFIC_ENV" : true

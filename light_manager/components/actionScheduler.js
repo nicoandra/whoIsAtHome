@@ -4,7 +4,7 @@ const debugTime = require('debug')("app:component:actionScheduler:time");
 
 function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
-	this.checkCycleDuration = 1; // 60; // In seconds
+	this.checkCycleDuration = 10; // 60; // In seconds
 	this.peopleTracker = peopleTracker;
 	this.lightManager = lightManager;
 	this.heaterManager = heaterManager;
@@ -186,7 +186,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	this.isItTooLateToTurnOnLights = function(){
 		if(!this.isNightTime()){
 			// If it is not night time, don't do anything
-			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate false. It's not night time. Do nothing.");
+			debugTime("isItTooLateToTurnOnLights false. It's not night time. Do nothing.");
 			return false;
 		}
 
@@ -238,8 +238,9 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		this.app = app;
 
 		this.app.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus.bind(this));
-		setInterval(this.verifyIfNightStartedOrEnded.bind(this), this.checkCycleDuration * 1000);
-		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), this.checkCycleDuration * 1000);
+		setInterval(this.verifyIfNightStartedOrEnded.bind(this), 5 * 1000);
+		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), 30 * 1000);
+
 		this.app.internalEventEmitter.emit("componentStarted", "actionScheduler");
 		debug("enabled");
 		return this;
