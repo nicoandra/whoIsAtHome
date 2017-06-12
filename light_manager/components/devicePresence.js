@@ -97,8 +97,25 @@ function DevicePresence(options){
 		debug("Begin")
 		setTimeout(this.ping.bind(this), 4000);
 		this.app.internalEventEmitter.emit("componentStarted", "devicePresence");
+
+		this.app.internalEventEmitter.on("presenceMessage", function(data){
+			if(data.event === 'resetValuesToFakePresence' && data.device == this.name){
+				this.resetValuesToFakePresence();
+			}
+
+		}.bind(this));
+
 		return this;
 	}
+
+	this.resetValuesToFakePresence = function(){
+		this.failureCounter = 120;
+		this.lastTimeSeenOnline = new moment();
+		this.deviceIsPresent = true;
+	}
+
+
+
 
 }
 

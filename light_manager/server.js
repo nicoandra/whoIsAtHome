@@ -310,7 +310,7 @@ app.post("/people/setAsAway", function(req,res){
 app.post("/people/setAsAtHome", function(req,res){
 	debug("Requested", req.url)
 	peopleTracker.setAsAtHome("nico");
-	app.internalEventEmitter.emit("majorChange", req.body)
+	app.internalEventEmitter.emit("presenceMessage", {event : 'resetValuesToFakePresence', device : "Nic phone"} );
 	res.send(peopleTracker.getHomeStatus());
 })
 

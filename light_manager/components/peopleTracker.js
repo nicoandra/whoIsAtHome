@@ -48,7 +48,7 @@ var peopleTracker = function(cfg){
     this.setAsComingBack = function(name, delayInMinutes){
         this.people[name].status = "comingBack";
         now = new Date();
-        arrivalDate = new Date(now.getTime() + delayInMinutes * 60 * 1000)
+        var arrivalDate = new Date(now.getTime() + delayInMinutes * 60 * 1000)
         this.people[name].arrivesIn = arrivalDate;
     }
 
