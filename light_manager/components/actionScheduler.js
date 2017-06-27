@@ -225,6 +225,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		}
 
 		if(!this.isItTooLateToTurnOnLights()){
+			this.lightManager.useScene("homeIsAloneAtNight");
 			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate: lights now should be on.");
 			return false;
 		}
