@@ -137,14 +137,17 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		// Disable enable heaters back, set temperature back to 22;
 		// this.heaterManager.setGlobalTemperature(22);
 		if(this.isDayTime()){
+			debug("someoneGotBackHome ; daytime. Return false.")
 			return false;
 		}
 
 		if(this.isItTooLateToTurnOnLights()){
+			debug("someoneGotBackHome ; late. welcomeHomeLow.")
 			// When coming back home late at night, ligths go on dimmed
 			this.lightManager.useScene("welcomeHomeLow");
 		} else {
 			// When it's not late, lights go on full power
+			debug("someoneGotBackHome ; early. welcomeHome.")
 			this.lightManager.useScene("welcomeHome");
 		}
 	}
@@ -222,6 +225,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		}
 
 		if(!this.isItTooLateToTurnOnLights()){
+			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate: lights now should be on.");
 			return false;
 		}
 
