@@ -225,9 +225,8 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		}
 
 		if(!this.isItTooLateToTurnOnLights()){
-			this.lightManager.useScene("homeIsAloneAtNight");
 			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate: lights now should be on.");
-			return false;
+			return this.turnLightsOnWhenHomeIsAloneAndItsEarly();
 		}
 
 		// Do not turn on the lights when it's too late.
@@ -235,6 +234,29 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		this.lightManager.useScene("allLightsOff");
 		return true;
 	}
+
+
+
+	this.turnLightsOnWhenHomeIsAloneAndItsEarly = function(){
+
+		if(!this.isHomeAlone()){
+			debug("turnLightsOnWhenHomeIsAloneAndItEarly: There's someone at home. Do nothing.");
+			// If there's someone at home, don't do anything
+			return false;
+		}
+
+		if(this.isItTooLateToTurnOnLights()){
+			debugTime("turnLightsOnWhenHomeIsAloneAndItEarly: too late to turn them on.");
+			return false;
+		}
+
+		// Do not turn on the lights when it's too late.
+		debugTime("The home is alone, but it is too late to turn the lights on. Turn them off.");
+		this.lightManager.useScene("homeIsAloneAtNight");
+		return true;
+	}
+
+
 
 	this.start = function(app){
 		if(this.app != undefined){
