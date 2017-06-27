@@ -198,7 +198,7 @@ function LightManager(cfg){
 	this.useScene = function(sceneName, isTheSecondCall){
 
 		if(this.currentScene == sceneName){
-			// return false;
+			return false;
 		}
 
 		this.currentScene = sceneName;
