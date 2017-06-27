@@ -250,6 +250,11 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 			return false;
 		}
 
+		if(this.isDayTime()){
+			debugTime("turnLightsOnWhenHomeIsAloneAndItEarly: not during daytime.");
+			return false;
+		}
+
 		// Do not turn on the lights when it's too late.
 		debugTime("turnLightsOnWhenHomeIsAloneAndItEarly: The home is alone. It's early. Turn lights on.");
 		this.lightManager.useScene("homeIsAloneAtNight");
