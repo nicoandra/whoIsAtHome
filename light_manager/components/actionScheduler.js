@@ -166,8 +166,8 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 			}
 		}
 
-		var dayTimeStarts = moment().hour(this.dayTimeStarts[0]).minute(this.dayTimeStarts[1]).seconds(this.dayTimeStarts[2]);
-		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2]);
+		var dayTimeStarts = moment().hour(this.dayTimeStarts[0]).minute(this.dayTimeStarts[1]).seconds(this.dayTimeStarts[2] - 5);
+		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2] + 5);
 		var now = moment();
 
 		if(now.isAfter(dayTimeStarts) && now.isBefore(dayTimeEnds)){
