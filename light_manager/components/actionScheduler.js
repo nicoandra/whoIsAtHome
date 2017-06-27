@@ -230,7 +230,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		}
 
 		// Do not turn on the lights when it's too late.
-		debugTime("The home is alone, but it is too late to turn the lights on. Turn them off.");
+		debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate: The home is alone. Too late to turn lights on. ");
 		this.lightManager.useScene("allLightsOff");
 		return true;
 	}
@@ -251,7 +251,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		}
 
 		// Do not turn on the lights when it's too late.
-		debugTime("The home is alone, but it is too late to turn the lights on. Turn them off.");
+		debugTime("turnLightsOnWhenHomeIsAloneAndItEarly: The home is alone. It's early. Turn lights on.");
 		this.lightManager.useScene("homeIsAloneAtNight");
 		return true;
 	}
