@@ -108,26 +108,32 @@ app.addComponent('lightManager', lightManager.start(app));
 app.addComponent('peopleTracker', peopleTracker.start(app));
 app.addComponent('actionScheduler', actionScheduler.start(app));
 
-var presencePhone = new DevicePresence({ name : "Nic phone", address : "192.168.1.141"});
+var presencePhoneNico = new DevicePresence({ name : "Nic phone", address : "192.168.1.141", 'ownerName': 'nico'});
+presencePhoneNico.start(app);
+
+var presencePhonePepo = new DevicePresence({ name : "Pepo phone", address : "192.168.1.142", 'ownerName': 'pepo'});
+presencePhonePepo.start(app);
+
 app.internalEventEmitter.on("presenceMessage", function(data){
 
 	try {
 		if(data.event === 'back'){
-			peopleTracker.setAsAtHome("nico");
-			changeEventEmitter.emit("message", data);
+			peopleTracker.setAsAtHome(data.ownerName);
+			// changeEventEmitter.emit("message", data);
 			return ;
 		}
 
 		if(data.event === 'left'){
-			peopleTracker.setAsAway("nico");
-			changeEventEmitter.emit("message", data);
+			peopleTracker.setAsAway(data.ownerName);
+			// changeEventEmitter.emit("message", data);
 			return ;
 		}
 	} catch(excp){
 		debug(excp);
 	}
 })
-presencePhone.start(app);
+
+
 /*
 
 app.internalEventEmitter.on("heaterUpdated", function(data) {
@@ -166,8 +172,8 @@ app.internalEventEmitter.on("movementDetected", function(data){
 
 	if(homeStatus.home.isAlone){
 		if(presencePhone.isPresent()){
-			peopleTracker.setAsAtHome("nico");
-			changeEventEmitter.emit("message", data);
+			peopleTracker.setAsAtHome(data.ownerName);
+			// changeEventEmitter.emit("message", data);
 		}		
 	}
 })

@@ -7,6 +7,7 @@ function DevicePresence(options){
 	this.failureCounter = 120;
 	this.intervalWhenFoundOnline = 40000;
 	this.intervalWhenNotFound = 2000;
+	this.ownerName = options.ownerName;
 
 	ipRegularExpression = /([0-9]{1,3}\.){3}([0-9]{1,3})/
 	if(!options.address.match(ipRegularExpression)){
@@ -84,13 +85,13 @@ function DevicePresence(options){
 
 		this.deviceIsPresent = false;
 		debug("Device left...")
-		this.app.internalEventEmitter.emit("presenceMessage", { event : "left" , name: this.name.toString() });
+		this.app.internalEventEmitter.emit("presenceMessage", { event : "left" , name: this.name.toString(), 'ownerName': this.ownerName.toString() });
 	}
 
 	this.deviceIsBack = function(){
 		this.lastTimeSeenOnline = new moment();
 		debug("Device is back")
-		this.app.internalEventEmitter.emit("presenceMessage", { event : "back" , name: this.name.toString() });
+		this.app.internalEventEmitter.emit("presenceMessage", { event : "back" , name: this.name.toString(), 'ownerName': this.ownerName.toString() });
 		this.deviceIsPresent = true;
 	}
 

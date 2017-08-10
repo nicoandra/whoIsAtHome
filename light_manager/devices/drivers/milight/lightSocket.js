@@ -51,10 +51,12 @@ function LightSocket(name, group, receiver){
     this.on = function(cb){
         debug("GROUP", this.group, "ON!");
         this.receiver.queueStuff(this.commandOn);
+        this.receiver.queueStuff(this.commandOn);
     }
 
     this.off = function(cb){
         debug("GROUP", this.group, "OFF!");
+        this.receiver.queueStuff(this.commandOff);
         this.receiver.queueStuff(this.commandOff);
     }
 
@@ -65,6 +67,7 @@ function LightSocket(name, group, receiver){
     }
 
     this.night = function(cb){
+        this.receiver.queueStuff(this.commandNightMode);
         this.receiver.queueStuff(this.commandNightMode);
     }
 

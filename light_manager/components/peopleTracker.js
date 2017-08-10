@@ -22,7 +22,11 @@ var peopleTracker = function(cfg){
         'pris' : { name : 'Pris', ips: [
             {'ip': '192.168.1.115', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} ,
             {'ip': '192.168.1.116', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} , // iPad?
-        ], status : 'away', arrivesIn : false, lastTimeSeen : false }        
+        ], status : 'away', arrivesIn : false, lastTimeSeen : false },
+
+        'pepo' : { name : 'Nic', ips: [
+            {'ip': '192.168.1.142', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} ,
+        ], status : cfg.peopleTracker.defaultStatus.nico, arrivesIn : false, lastTimeSeen : false },        
     }
 
     this.peopleAtHome = {}

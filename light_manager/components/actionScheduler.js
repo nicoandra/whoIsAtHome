@@ -142,7 +142,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		}
 
 		if(this.isItTooLateToTurnOnLights()){
-			debug("someoneGotBackHome ; late. welcomeHomeLow.")
+			debug("someoneGotBackHome ; late. Do nothing. Bug on detecting presence.")
 			// When coming back home late at night, ligths go on dimmed
 			this.lightManager.useScene("welcomeHomeLow");
 		} else {

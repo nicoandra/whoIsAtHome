@@ -7,8 +7,7 @@ var server = dgram.createSocket('udp4');
 });*/
 
 function send(payload){
-	server.send(new Buffer(payload), 0, 2, 8888, "192.168.1.146", function(err,res){
-	});
+	server.send(new Buffer(payload), 0, 2, 8888, "192.168.1.137", function(err,res){});
 }
 
 const R = 0xF1;
@@ -49,11 +48,10 @@ function breath(){
 }
 
 function alert(){
-	send([R, 2550]);
+	send([R, 0xFF]);
 	send([G, 0]);
 	send([B, 0]);
 }
-
 
 function warning(){
 	send([R, 200]);
@@ -69,9 +67,9 @@ function off(){
 
 
 function halogen(){
-	send([R, 255]);
-	send([G, 241]);
-	send([B, 224]);
+	send([R, 100]);
+	send([G, 100]);
+	send([B, 100]);
 }
 
 function white(){
@@ -80,4 +78,7 @@ function white(){
 	send([B, 255]);
 }
 
- halogen();// off();
+//white();
+//halogen();
+// white();
+off();
