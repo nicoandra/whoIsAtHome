@@ -6,7 +6,7 @@ const debug = require('debug')("app:component:peopleTracker");
 
 var peopleTracker = function(cfg){
 
-    this.pollInterval = 10000;
+    this.pollInterval = 15000;
 
     this.home = {
         isAlone: true,

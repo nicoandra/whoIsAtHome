@@ -270,8 +270,8 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		this.app = app;
 
 		this.app.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus.bind(this));
-		setInterval(this.verifyIfNightStartedOrEnded.bind(this), 1000);
-		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), 1000);
+		setInterval(this.verifyIfNightStartedOrEnded.bind(this), 5000);
+		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), 5000);
 
 		this.app.internalEventEmitter.emit("componentStarted", "actionScheduler");
 		debug("enabled");
