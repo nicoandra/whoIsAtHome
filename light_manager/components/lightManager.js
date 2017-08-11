@@ -1,6 +1,6 @@
 "use strict"
 
-var Light = require("./../light.js"),
+let Light = require("../devices/drivers/milight/light.js"),
 	LightSocket = require("./../devices/drivers/milight/lightSocket.js"),
 	ReceiverSocket = require("./../devices/drivers/milight/receiverSocket.js"),
 	crypto = require('crypto'),
