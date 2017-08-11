@@ -110,8 +110,6 @@ function LightSocket(name, group, receiver){
         value = Math.round( 2+ ( (value/100) *25 ));
 
         this.receiver.queueStuff(this.commandOn.concat(0x55, 0x4e, value));
-
-
     }
 
     this.queueStuff = function(stuff){
