@@ -1,0 +1,16 @@
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title><%= title %></title>
+	<script type="text/javascript" src="/static/angular.min.js"></script>
+
+	<% if(theme == "darkly" || theme == "cyborg" || theme == "reddish"){ %>
+		<link rel="stylesheet" type="text/css" href="/static/bootstrap.<%= theme %>.css">
+	<% } else { %>
+		<link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/css/bootstrap.css">
+	<% } %>
+
+	<link rel="stylesheet" type="text/css" href="/static/custom.css">
+	<script src="/bower_components/jquery/jquery.min.js"></script>
+	<script src="/bower_components/bootstrap/js/bootstrap.js"></script>
+	<script src="/bower_components/angular-number-picker/dist/angular-number-picker.js"></script>
+	<script src="/static/app.js"></script>
