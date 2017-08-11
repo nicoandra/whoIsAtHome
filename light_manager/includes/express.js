@@ -61,23 +61,13 @@ module.exports = function(cfg) {
 	}
 
 	/* Basic Routes */
-	var root = function(req,res, next){
-		debug("")
+	let root = function(req,res, next){
 		var themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
 		var theme = (req.cookies.theme ? req.cookies.theme : 'light').toLowerCase().trim();
 		res.render('index', { title : "HomeOwn", 'theme' : theme , 'themes' : themes})
 	}
 
-	// app.use('/', root);
 	app.get("/", root);
-
-/*
-	app.get("/", function(req,res){
-		var themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
-		var theme = (req.cookies.theme ? req.cookies.theme : 'light').toLowerCase().trim();
-		res.render('index', { title : "HomeOwn", 'theme' : theme , 'themes' : themes})
-	})
-	*/
 
 	app.get("/switchInterface", function(req, res){
 		var theme = "darkly";
@@ -123,8 +113,7 @@ module.exports = function(cfg) {
 	})
 
 	app.post("/angular/heathers/set", function(req,res){
-
-		var heaterManager = app.getComponent('heaterManager');
+		let heaterManager = app.getComponent('heaterManager');
 
 		heaterManager.setMultipleStatus(req.body, function(){
 			heaterManager.getStatus(function(err, response){

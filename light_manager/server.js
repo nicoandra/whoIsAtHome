@@ -10,55 +10,55 @@ const env = process.env.NODE_ENV || 'development'
 
 
 
-var EventEmitter = require('events').EventEmitter
+let EventEmitter = require('events').EventEmitter;
 const path = require('path');
 
 
-var internalEventEmitter = new EventEmitter()
+let internalEventEmitter = new EventEmitter()
 internalEventEmitter.setMaxListeners(100);
 
 
-var LightProgram = require("./lightProgram.js")
+let LightProgram = require("./lightProgram.js")
 /** Prepare the light setup */
 const LightManager = require("./components/lightManager.js");
-var lightManager = new LightManager(cfg);	// With a LightManager, add lights
+let lightManager = new LightManager(cfg);	// With a LightManager, add lights
 
-var peopleTracker = new PeopleTracker(cfg)
+let peopleTracker = new PeopleTracker(cfg)
 
 /** Prepare heaters */
-var HeaterManager = require('./components/heaterManager.js');
-var heaterManager = new HeaterManager(cfg, internalEventEmitter);
+const HeaterManager = require('./components/heaterManager.js');
+let heaterManager = new HeaterManager(cfg, internalEventEmitter);
 
-var ActionScheduler = require('./components/actionScheduler.js');
-var actionScheduler = new ActionScheduler(cfg, peopleTracker, lightManager, heaterManager);
+const ActionScheduler = require('./components/actionScheduler.js');
+let actionScheduler = new ActionScheduler(cfg, peopleTracker, lightManager, heaterManager);
 
 
 const devices = require("./devices/devices");
 
 
 
-var normalOptions = new LightProgram("Normal", "normal");
+let normalOptions = new LightProgram("Normal", "normal");
 
-var normalNight = new LightProgram("Night", "normal-night");
+let normalNight = new LightProgram("Night", "normal-night");
 normalNight.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 0  });
 normalNight.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 0 });
 normalNight.addStatus({lightName: 'officeBoards', onOff : false });
 normalNight.addStatus({lightName: 'officeLamp', onOff : false });
 
-var normalLow = new LightProgram("Low", "normal-low");
+let normalLow = new LightProgram("Low", "normal-low");
 normalLow.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 30  });
 normalLow.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 40 });
 normalLow.addStatus({lightName: 'officeBoards', onOff : false });
 normalLow.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 40  });
 
 
-var normalMed = new LightProgram("Med", "normal-med");
+let normalMed = new LightProgram("Med", "normal-med");
 normalMed.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 70  });
 normalMed.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 70 });
 normalMed.addStatus({lightName: 'officeBoards', onOff : false });
 normalMed.addStatus({lightName: 'officeLamp', onOff : true, color: "white", "brightness": 70  });
 
-var normalHigh = new LightProgram("High", "normal-high");
+let normalHigh = new LightProgram("High", "normal-high");
 normalHigh.addStatus({lightName: 'kitchenCountertop', onOff : true, "brightness": 100  });
 normalHigh.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 });
 normalHigh.addStatus({lightName: 'officeBoards', onOff : false });
@@ -69,13 +69,13 @@ normalOptions.addChildProgram(normalMed);
 normalOptions.addChildProgram(normalHigh);
 lightManager.addProgramInstance(normalOptions);
 
-var allRed = new LightProgram("All Red", "all red");
+let allRed = new LightProgram("All Red", "all red");
 ["officeLamp","kitchenLamp", "officeBoards"].forEach(function(lightName){
 	allRed.addStatus({lightName: lightName, onOff : true, color: "red" , brightness: 100});	
 })
 lightManager.addProgramInstance(allRed);
 
-var romantic = new LightProgram("Romantic", "romantic");
+let romantic = new LightProgram("Romantic", "romantic");
 romantic.addStatus({lightName: 'kitchenLamp', onOff : true, color: "white", brightness: 20 });
 romantic.addStatus({lightName: 'kitchenCountertop', onOff : false });
 romantic.addStatus({lightName: 'officeBoards', onOff : false });
@@ -89,12 +89,12 @@ lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
 
 
 
-var LocalWeather = require('./components/localWeather.js');
-var localWeather = new LocalWeather(cfg);
+const LocalWeather = require('./components/localWeather.js');
+let localWeather = new LocalWeather(cfg);
 
 
 /** HTTP SERVER **/
-var app = require('./includes/express.js')(cfg);
+let app = require('./includes/express.js')(cfg);
 
 
 lightManager.addLightsFromObject(devices.lights);
@@ -108,10 +108,10 @@ app.addComponent('lightManager', lightManager.start(app));
 app.addComponent('peopleTracker', peopleTracker.start(app));
 app.addComponent('actionScheduler', actionScheduler.start(app));
 
-var presencePhoneNico = new DevicePresence({ name : "Nic phone", address : "192.168.1.141", 'ownerName': 'nico'});
+let presencePhoneNico = new DevicePresence({ name : "Nic phone", address : "192.168.1.141", 'ownerName': 'nico'});
 presencePhoneNico.start(app);
 
-var presencePhonePepo = new DevicePresence({ name : "Pepo phone", address : "192.168.1.142", 'ownerName': 'pepo'});
+let presencePhonePepo = new DevicePresence({ name : "Pepo phone", address : "192.168.1.142", 'ownerName': 'pepo'});
 presencePhonePepo.start(app);
 
 app.internalEventEmitter.on("presenceMessage", function(data){
@@ -160,7 +160,7 @@ app.internalEventEmitter.on("lightsSwitchProgramRequested", function(data) {
 */
 
 app.internalEventEmitter.on("personMovementDetected", function(data){
-	var homeStatus = peopleTracker.getHomeStatus();
+	let homeStatus = peopleTracker.getHomeStatus();
 	if(homeStatus.home.isAlone){
 		actionScheduler.personMovementHasBeenDetected(data);
 		app.notify("movement", data);
@@ -168,7 +168,7 @@ app.internalEventEmitter.on("personMovementDetected", function(data){
 })
 
 app.internalEventEmitter.on("movementDetected", function(data){
-	var homeStatus = peopleTracker.getHomeStatus();
+	let homeStatus = peopleTracker.getHomeStatus();
 
 	if(homeStatus.home.isAlone){
 		if(presencePhone.isPresent()){
@@ -178,23 +178,14 @@ app.internalEventEmitter.on("movementDetected", function(data){
 	}
 })
 
-/*
-app.get("/angular/lights/getInterfaceOptions", function(req, res){
-	var lights = lightManager.getInterfaceOptions();
-	var people = peopleTracker.getHomeStatus();
-	var heaters = heaterManager.getHomeStatus();
-	res.send({'lights' : lights.lights , 'people' : people, 'programs' : lights.programs});
-})
-*/
-
 app.get("/angular/lights/getStatus", function(req, res){
 	res.send(lightManager.getStatus())
 })
 
 app.get("/angular/lights/getAvailablePrograms", function(req, res){
 
-	var availablePrograms = lightManager.getAvailablePrograms();
-	var response = [];
+	let availablePrograms = lightManager.getAvailablePrograms();
+	let response = [];
 
 	Object.keys(availablePrograms).forEach(function(key, value){
 		value = availablePrograms[key];
@@ -208,7 +199,7 @@ app.get("/angular/lights/getAvailablePrograms", function(req, res){
 
 app.post('/app/components/lightManager/runProgram', function(req, res){
 
-	var lightManager = app.getComponent('lightManager');
+	let lightManager = app.getComponent('lightManager');
 
 	app.internalEventEmitter.emit("majorChange", req.body);
 
@@ -236,7 +227,7 @@ app.post('/app/components/lightManager/runProgram', function(req, res){
 
 app.get("/app/sock", function(req,res){
 
-	var sendResponseOnChange = function(){
+	let sendResponseOnChange = function(){
 		try {
 			res.send(app.getStatus())
 			res.end();
@@ -245,25 +236,24 @@ app.get("/app/sock", function(req,res){
 		}
 	}
 
-	var processEvent = function(data){
+	let processEvent = function(data){
 		// clearTimeout(responseTimeout);
 		sendResponseOnChange();
 		app.internalEventEmitter.removeListener("majorChange", processEvent);
 	}
 
-	// var responseTimeout = setTimeout(sendResponseOnChange, 50 * 1000);
 	app.internalEventEmitter.on('majorChange', processEvent)
 })
 
 
 app.get("/angular/system/getNotifications", function(req,res){
-	var uptime = moment.duration(process.uptime(), 'seconds').asMinutes();
-	var type = "success";
+	let uptime = moment.duration(process.uptime(), 'seconds').asMinutes();
+	let type = "success";
 	if(uptime < 10){
 		type = "danger";
 	}
 
-	var toSend = [
+	let toSend = [
 		{ date : new Date(), type: type, title:"Uptime", text: "Uptime is " + moment.duration(uptime, 'minutes').humanize()}
 	];
 	toSend = toSend.concat(app.notificationEventEmitter.getNotificationsToSend());
@@ -276,7 +266,7 @@ app.get("/lights/allOff", function(req,res){
 })
 
 app.post("/lights/iterateBetweenChildPrograms", function(req,res){
-	var programKey = req.body.programKey;
+	let programKey = req.body.programKey;
 	lightManager.iterateBetweenChildPrograms(programKey);
 
 	[1, 500, 1000].forEach(function(delay){
