@@ -21,11 +21,10 @@ function LightSocket(name, group, receiver){
         orange : [0x40, 0xa0],
         red : [0x40, 0xb0],
         pink : [0x40, 0xc0],
-        fusia : [0x40, 0xd0],
+        fuchsia : [0x40, 0xd0],
         lilac : [0x40, 0xe0],
-        lavendar : [0x40, 0xf0]
+        lavender : [0x40, 0xf0]
     };
-
 
     this.commandOn = led.RGBW['GROUP'+group+'_ON'];
     this.commandOff = led.RGBW['GROUP'+group+'_OFF'];
@@ -35,15 +34,6 @@ function LightSocket(name, group, receiver){
     this.commandDiscoSlower = led.RGBW.DISCO_SLOWER;
 
     this.commandNightMode = [0xC6 + group - 1, 0x00];
-
-    /*
-    ALL_NIGHT: [0xC1, 0x00],
-    GROUP1_NIGHT: [0xC6, 0x00],
-    GROUP2_NIGHT: [0xC8, 0x00],
-    GROUP3_NIGHT: [0xCA, 0x00],
-    GROUP4_NIGHT: [0xCC, 0x00],
-    */
-
 
     this.commandBrightnessMax = led.RGBW.BRIGHTNESS_MAX;
     this.commandBrightnessMin = led.RGBW.BRIGHTNESS_MIN;

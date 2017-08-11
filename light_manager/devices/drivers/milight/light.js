@@ -103,34 +103,54 @@ function Light(name, displayName, socket){
 
 	this.getInterfaceOptions = function(){
 
-		var resultOptions =  [
-			{
-				displayName : "On / Off",
-				type : "switch",
-				options : [
-					{ displayName : "On", status: { onOff : true } },
-					{ displayName : "Off", status: { onOff : false } },
-				]
-			}
-		]
+		let resultOptions = {
+            main: {
+                displayName: "On / Off",
+                type: "switch",
+                options: [
+                    {displayName: "On", status: {onOff: true}},
+                    {displayName: "Off", status: {onOff: false}},
+                ]
+            }
+        }
 
 		if(this.abilities.hasRgb){
-			resultOptions.push({
+			resultOptions.rgb = {
 				name : 'color',
 				displayName : "Color", 
-				type : "colorPicker"
-			})
+				type : "colorPicker",
+				values : {
+					white : { name: "White", color: null },
+                    violet : { name: "Violet", color: '#975297' },
+                    royalBlue : { name: "Royal Blue", color: '#4169e1' },
+                    blue : { name: "Blue", color: '#4169e1' },
+                    lightBlue : { name: "Light Blue", color: '#87ceeb' },
+                    aqua : { name: "Aqua", color: '#00ffff' },
+                    royalMint : { name: "Royal mint", color: '#8fff9f' },
+                    seafoamGreen : { name: "Seafoam green", color: '#7af9ab' },
+                    green : { name: "Green", color: '#15b01a' },
+                    limeGreen : { name: "Lime green", color: '#89fe05' },
+                    yellow : { name: "Yellow", color: '#ffff14' },
+                    yellowOrange : { name: "Yellow orange",  color: '#fcb001' },
+                    orange : { name: "Orange",  color: '#f97306' },
+                    red : { name: "Red",  color: '#e50000' },
+                    pink : { name: "Pink",  color: '#ff81c0' },
+                    fuchsia : { name: "Fuchsia",  color: '#ed0dd9' },
+                    lilac : { name: "Lilac",  color: '#cea2fd' },
+                    lavender : { name: "Lavender",  color: '#c79fef' },
+				}
+			}
 		}
 
 		if(this.abilities.hasDimmer){
-			resultOptions.push({
+			resultOptions.dimmer = {
 				displayName : "Dim",
 				name : 'dim',
 				type : "slider",
 				status : function(){
 					return this.value;
 				}
-			})
+			}
 		}
 
 		return resultOptions;
