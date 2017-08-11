@@ -1,4 +1,3 @@
-const shell = require('shelljs');
 const { exec } = require('child_process');
 const moment = require('moment');
 const Debug = require('debug');
