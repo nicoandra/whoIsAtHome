@@ -1,13 +1,15 @@
-var shell = require('shelljs');
-var moment = require('moment');
-var Debug = require('debug');
+const shell = require('shelljs');
+const { exec } = require('child_process');
+const moment = require('moment');
+const Debug = require('debug');
 
 function DevicePresence(options){
 	
 	this.failureCounter = 120;
-	this.intervalWhenFoundOnline = 40000;
-	this.intervalWhenNotFound = 2000;
+	this.intervalWhenFoundOnline = 15000;
+	this.intervalWhenNotFound = 4000;
 	this.ownerName = options.ownerName;
+	this.lastPingExitCode = 0
 
 	ipRegularExpression = /([0-9]{1,3}\.){3}([0-9]{1,3})/
 	if(!options.address.match(ipRegularExpression)){
@@ -28,12 +30,34 @@ function DevicePresence(options){
 	}
 
 	this.lastTimeSeenOnline = new moment().subtract(15, this.unit);
-	this.deviceIsPresent = false;
+	this.deviceIsPresent = true;
+
+
+	this.doPing = function(){
+		let command = 'ping ' + this.address + ' -c2 -W1';
+		
+		debug('Pinging... Try: ', this.failureCounter);
+
+		exec(command, (error, stdout, stderr) => {
+			this.lastPingExitCode = error ? error.code : 0;
+			debug("Code is", this.lastPingExitCode);
+			if(this.lastPingExitCode === 0){
+				debug("Setting intervalWhenFoundOnline for", this.name);
+				return 
+			}
+
+			debug("Setting intervalWhenNotFound for", this.name);
+
+		});
+
+
+	}
 
 	this.ping = function(){
-		var code = shell.exec('ping ' + this.address + ' -c2 -W1', { silent : 1 }).code;
-		
-		debug('Pinging...', code, 'Try: ', this.failureCounter);
+		let code = this.lastPingExitCode;
+
+		this.doPing();
+		debug('Try: ', this.failureCounter)
 
 		if(code === 0){
 			// Device is found
@@ -48,6 +72,7 @@ function DevicePresence(options){
 
 			// Ping worked. Next ping will be done in 20 seconds
 			setTimeout(this.ping.bind(this), this.intervalWhenFoundOnline);
+			debug("Setting intervalWhenFoundOnline for", this.name);
 			if(this.deviceIsPresent){
 				debug("Still around...");
 				return ;
@@ -60,6 +85,7 @@ function DevicePresence(options){
 
 		// Ping did not work. Next ping will be done in 4 seconds
 		setTimeout(this.ping.bind(this), this.intervalWhenNotFound);
+		debug("Setting intervalWhenNotFound for", this.name);
 		if(!this.deviceIsPresent){
 			return ;
 		}
@@ -69,10 +95,10 @@ function DevicePresence(options){
 
 		if(this.lastTimeSeenOnline.isBefore(momentsAgo)){
 			// Last pong was some time ago...
-			if(this.failureCounter-- == 0){
+			if(this.failureCounter-- < 0){
 				this.failureCounter = 0;
 				this.deviceIsGone();
-			};
+			}
 		}
 
 	}
@@ -96,12 +122,16 @@ function DevicePresence(options){
 	}
 
 	this.start = function(app){
+
+
 		if(this.app != undefined ){
 			return this;
 		}
 		this.app = app;
 		debug("Begin")
+
 		setTimeout(this.ping.bind(this), 4000);
+
 		this.app.internalEventEmitter.emit("componentStarted", "devicePresence");
 
 		this.app.internalEventEmitter.on("presenceMessage", function(data){

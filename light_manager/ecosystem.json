@@ -26,7 +26,7 @@
   },
   "env_dev" : {
     "NODE_ENV" : "nickpad",
-    "DEBUG" : "*"
+    "DEBUG" : "presence:*"
   },
   "env_*" : {
     "SPECIFIC_ENV" : true
