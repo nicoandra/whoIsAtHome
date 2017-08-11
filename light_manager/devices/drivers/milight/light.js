@@ -119,26 +119,26 @@ function Light(name, displayName, socket){
 				name : 'color',
 				displayName : "Color", 
 				type : "colorPicker",
-				values : {
-					white : { name: "White", color: null },
-                    violet : { name: "Violet", color: '#975297' },
-                    royalBlue : { name: "Royal Blue", color: '#4169e1' },
-                    blue : { name: "Blue", color: '#4169e1' },
-                    lightBlue : { name: "Light Blue", color: '#87ceeb' },
-                    aqua : { name: "Aqua", color: '#00ffff' },
-                    royalMint : { name: "Royal mint", color: '#8fff9f' },
-                    seafoamGreen : { name: "Seafoam green", color: '#7af9ab' },
-                    green : { name: "Green", color: '#15b01a' },
-                    limeGreen : { name: "Lime green", color: '#89fe05' },
-                    yellow : { name: "Yellow", color: '#ffff14' },
-                    yellowOrange : { name: "Yellow orange",  color: '#fcb001' },
-                    orange : { name: "Orange",  color: '#f97306' },
-                    red : { name: "Red",  color: '#e50000' },
-                    pink : { name: "Pink",  color: '#ff81c0' },
-                    fuchsia : { name: "Fuchsia",  color: '#ed0dd9' },
-                    lilac : { name: "Lilac",  color: '#cea2fd' },
-                    lavender : { name: "Lavender",  color: '#c79fef' },
-				}
+				values : [
+					{ name: "White", htmlColor : "White", id: 'white' },
+                    { name: "Violet", htmlColor : '#975297' , id : 'violet'},
+                    { name: "Royal Blue", htmlColor : '#4169e1', id : 'royalBlue'},
+                    { name: "Blue", htmlColor : '#4169e1', id : 'blue'},
+                    { name: "Light Blue", htmlColor : '#87ceeb', id : 'lightBlue'},
+                    { name: "Aqua", htmlColor : '#00ffff' , id : 'aqua'},
+                    { name: "Royal mint", htmlColor : '#8fff9f' , id : 'royalMint'},
+                    { name: "Seafoam green", htmlColor : '#7af9ab' , id : 'seafoamGreen'},
+                    { name: "Green", htmlColor : '#15b01a' , id : 'green'},
+                    { name: "Lime green", htmlColor : '#89fe05' , id : 'limeGreen'},
+                    { name: "Yellow", htmlColor : '#ffff14' , id : 'yellow'},
+                    { name: "Yellow orange",  htmlColor : '#fcb001' , id : 'yellowOrange'},
+                    { name: "Orange",  htmlColor : '#f97306' , id : 'orange'},
+                    { name: "Red",  htmlColor : '#e50000' , id : 'red'},
+                    { name: "Pink",  htmlColor : '#ff81c0' , id : 'pink'},
+                    { name: "Fuchsia", htmlColor : '#ed0dd9' , id : 'fuchsia'},
+                    { name: "Lilac",  htmlColor : '#cea2fd' , id : 'lilac'},
+                    { name: "Lavender", htmlColor : '#c79fef' , id : 'lavender'}
+				]
 			}
 		}
 

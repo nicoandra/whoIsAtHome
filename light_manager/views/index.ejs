@@ -72,17 +72,26 @@
 										ng-click="sendLightCommand(light.name, { onOff: false } )"
 										ng-if="light.actualStatus.onOff"></a>
 
-
 								</div>
 
 								<div class="col-md-2 col-xs-2" >
+									
 									<select
+										ng-if="light.interface.dimmer"
 										ng-model="light.actualStatus.brightness"
 										ng-options="x for x in [0, 1, 10,20,30,40,50,60,70,80,90,100]"
 										name="{{ light.name }}{{ interfaceOption.name }}Slider"
 										id="{{ light.name }}{{ interfaceOption.name }}Slider"
 										ng-change="sendLightCommand(light.name , {brightness : light.actualStatus.brightness})">
 									></select>
+
+									<select
+										ng-if="light.interface.rgb"
+										ng-model="light.actualStatus.color"
+										ng-options="colorObject.id as colorObject.name for colorObject in light.interface.rgb.values" 
+										ng-change="sendLightCommand(light.name , { color : light.actualStatus.color })">
+									</select>
+
 								</div>
 							</li>
 						</ul>

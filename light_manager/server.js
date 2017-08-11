@@ -86,6 +86,8 @@ lightManager.addProgramInstance(romantic);
 /** Prepare heaters */
 heaterManager.addHeatersFromObject(devices.heaters);
 lightManager.addHeaterLight("dev", "Dev", heaterManager.getHeaterByName("dev"));
+lightManager.addLightsFromObject(devices.lights);
+
 
 
 
@@ -97,7 +99,6 @@ let localWeather = new LocalWeather(cfg);
 let app = require('./includes/express.js')(cfg);
 
 
-lightManager.addLightsFromObject(devices.lights);
 
 app.addComponent('heaterManager', heaterManager.start(app));
 app.addComponent('localWeather', localWeather.start(app));

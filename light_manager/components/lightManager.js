@@ -67,12 +67,12 @@ function LightManager(cfg){
 	this.addLight = function(name, displayName, socketNumber, groupNumber, hasRgb, hasDimmer){
 		// this.app.notify('lights', {message: "added one"});
 
-		if(this.receiverSockets[socketNumber] == undefined){
+		if(this.receiverSockets[socketNumber] === undefined){
 			this.receiverSockets[socketNumber] = new ReceiverSocket(cfg.milight[socketNumber]);
 		}
 
-		var lightSocket = new LightSocket("name", groupNumber, this.receiverSockets[socketNumber]);
-		var light = new Light(name, displayName, lightSocket).hasRgb(hasRgb).hasDimmer(hasDimmer);
+		let lightSocket = new LightSocket("name", groupNumber, this.receiverSockets[socketNumber]);
+		let light = new Light(name, displayName, lightSocket).hasRgb(hasRgb).hasDimmer(hasDimmer);
 		this.lights[name] = light;
 	}
 

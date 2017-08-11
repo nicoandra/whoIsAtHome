@@ -30,7 +30,7 @@ module.exports = {
 			id: "kitchenCountertop",
 			alias: "Kitchen Countertop",
 			receiverId: 0,
-			groupId: 4, hasRgb: true, hasDimmer: true
+			groupId: 4, hasRgb: false, hasDimmer: true
 		}
 	],
 	"heaters" : [
