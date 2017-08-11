@@ -1,6 +1,6 @@
 const path = require('path'),
 	bodyParser = require('body-parser');
-
+debug = require('debug')("includes:express")
 
 module.exports = function(cfg) {
 
@@ -62,6 +62,7 @@ module.exports = function(cfg) {
 
 	/* Basic Routes */
 	var root = function(req,res, next){
+		debug("")
 		var themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
 		var theme = (req.cookies.theme ? req.cookies.theme : 'light').toLowerCase().trim();
 		res.render('index', { title : "HomeOwn", 'theme' : theme , 'themes' : themes})
