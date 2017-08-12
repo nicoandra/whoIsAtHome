@@ -5,8 +5,8 @@ const Debug = require('debug');
 function DevicePresence(options){
 	
 	this.failureCounter = 120;
-	this.intervalWhenFoundOnline = 150000;
-	this.intervalWhenNotFound = 15000;
+	this.intervalWhenFoundOnline = 150 * 1000;
+	this.intervalWhenNotFound = 15 * 1000;
 	this.ownerName = options.ownerName;
 	this.lastPingExitCode = 0
 
@@ -15,7 +15,7 @@ function DevicePresence(options){
 		throw new Error("The Address parameter is not a valid / safe IP");
 	}
 
-	this.unit = 'seconds';
+	this.unit = 'minutes';
 	try {
 		this.name = options.name ;
 		this.address = options.address;
@@ -28,7 +28,7 @@ function DevicePresence(options){
 		return this.deviceIsPresent;
 	}
 
-	this.lastTimeSeenOnline = new moment().subtract(15, this.unit);
+	this.lastTimeSeenOnline = new moment().subtract(30, this.unit);
 	this.deviceIsPresent = true;
 
 
@@ -90,7 +90,7 @@ function DevicePresence(options){
 		}
 
 
-		var momentsAgo = new moment().subtract(10, this.unit);
+		var momentsAgo = new moment().subtract(5, this.unit);
 
 		if(this.lastTimeSeenOnline.isBefore(momentsAgo)){
 			// Last pong was some time ago...
