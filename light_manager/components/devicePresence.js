@@ -4,9 +4,9 @@ const Debug = require('debug');
 
 function DevicePresence(options){
 	
-	this.failureCounter = 300;
+	this.failureCounter = 150;
 	this.intervalWhenFoundOnline = 300 * 1000;
-	this.intervalWhenNotFound = 2 * 1000;
+	this.intervalWhenNotFound = 5 * 1000;
 	this.ownerName = options.ownerName;
 	this.lastPingExitCode = 0
 
