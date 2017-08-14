@@ -88,9 +88,7 @@ function DevicePresence(options){
 			return ;
 		}
 
-
-		var momentsAgo = new moment().subtract(5, this.unit);
-
+		let momentsAgo = new moment().subtract(5, this.unit);
 		if(this.lastTimeSeenOnline.isBefore(momentsAgo)){
 			// Last pong was some time ago...
 			if(this.failureCounter-- < 0){
@@ -147,10 +145,6 @@ function DevicePresence(options){
 		this.lastTimeSeenOnline = new moment();
 		this.deviceIsPresent = true;
 	}
-
-
-
-
 }
 
 module.exports = DevicePresence;
