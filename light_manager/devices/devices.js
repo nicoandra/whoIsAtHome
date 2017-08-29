@@ -36,7 +36,7 @@ module.exports = {
 	"heaters" : [
 		{id: 'dev' , alias: 'Dev', slot: 1, ip: '192.168.1.113', port: 8888 },
 		{id: 'living' , alias: 'Living', slot: 1, ip: '192.168.1.130', port: 8888 },
-		{id: 'livingDual' , alias: 'Living Dual', slot: 1, ip: '192.168.1.128', port: 8888 },
-		{id: 'officeDual' , alias: 'Office Dual', slot: 2, ip: '192.168.1.128', port: 8888 },
+		{id: 'livingDual' , alias: 'Living Dual', slot: 1, ip: '192.168.1.133', port: 8888 },
+		{id: 'officeDual' , alias: 'Office Dual', slot: 2, ip: '192.168.1.133', port: 8888 },
 	]
 }
