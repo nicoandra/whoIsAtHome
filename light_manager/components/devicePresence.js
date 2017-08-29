@@ -4,9 +4,9 @@ const Debug = require('debug');
 
 function DevicePresence(options){
 	
-	this.failureCounter = 150;
+	this.failureCounter = 1;
 	this.intervalWhenFoundOnline = 300 * 1000;
-	this.intervalWhenNotFound = 5 * 1000;
+	this.intervalWhenNotFound = 2 * 1000;
 	this.ownerName = options.ownerName;
 	this.lastPingExitCode = 0
 
@@ -60,13 +60,12 @@ function DevicePresence(options){
 
 		if(code === 0){
 			// Device is found
-			this.lastTimeSeenOnline = new moment();
+			this.lastTimeSeenOnline = new moment()
+			this.failureCounter = 300
 
-			this.failureCounter = 120 ;
-
-			var hour = this.lastTimeSeenOnline.hour();
-			if(hour > 1 && hour < 7){
-				this.failureCounter = 250 ;
+			let hour = this.lastTimeSeenOnline.hour()
+			if(hour > 18 || hour < 8){
+				this.failureCounter = Math.round(this.failureCounter * 1.5)
 			}
 
 			// Ping worked. Next ping will be done in 20 seconds
@@ -89,9 +88,7 @@ function DevicePresence(options){
 			return ;
 		}
 
-
-		var momentsAgo = new moment().subtract(5, this.unit);
-
+		let momentsAgo = new moment().subtract(5, this.unit);
 		if(this.lastTimeSeenOnline.isBefore(momentsAgo)){
 			// Last pong was some time ago...
 			if(this.failureCounter-- < 0){
@@ -148,10 +145,6 @@ function DevicePresence(options){
 		this.lastTimeSeenOnline = new moment();
 		this.deviceIsPresent = true;
 	}
-
-
-
-
 }
 
 module.exports = DevicePresence;
