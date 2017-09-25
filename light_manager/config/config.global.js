@@ -13,5 +13,5 @@ config.peopleTracker = {
 }
 
 config.mqtt = {
-	dsn : 'mqtt://192.168.0.106'
+	host: '192.168.0.106', port: 1883
 }
