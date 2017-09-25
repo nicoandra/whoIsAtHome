@@ -10,7 +10,7 @@ function messageBroker(cfg) {
     }
 
     client.on('connect', function () {
-        client.subscribe('/device/announcement')
+        client.subscribe('/device/announcement');
         client.publish('/device/announcement', "Main server started");
     })
 
