@@ -82,6 +82,7 @@ function DevicePresence(options){
 		// Ping did not work. Next ping will be done in 4 seconds
 		setTimeout(this.ping.bind(this), this.intervalWhenNotFound);
 		debug("Setting intervalWhenNotFound for", this.name);
+
 		if(!this.deviceIsPresent){
 			return ;
 		}
@@ -116,8 +117,6 @@ function DevicePresence(options){
 	}
 
 	this.start = function(app){
-
-
 		if(this.app !== undefined ){
 			return this;
 		}

@@ -11,3 +11,7 @@ config.secrets = require("./restricted/secrets.js");
 config.peopleTracker = {
 	defaultStatus : { nico : "away" }
 }
+
+config.mqtt = {
+	dsn : 'mqtt://192.168.0.106'
+}

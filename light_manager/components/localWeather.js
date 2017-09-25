@@ -1,6 +1,5 @@
 "use strict"
 
-var Heater = require('./../devices/drivers/nHeatersV1/heater.js');
 var dgram = require('dgram')
 	, debug = require("debug")("app:component:localWeather")
 
