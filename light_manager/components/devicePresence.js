@@ -5,12 +5,12 @@ const Debug = require('debug');
 function DevicePresence(options){
 	
 	this.failureCounter = 1;
-	this.intervalWhenFoundOnline = 300 * 1000;
-	this.intervalWhenNotFound = 2 * 1000;
+	this.intervalWhenFoundOnline = 360 * 1000;
+	this.intervalWhenNotFound = 250;
 	this.ownerName = options.ownerName;
 	this.lastPingExitCode = 0
 
-	ipRegularExpression = /([0-9]{1,3}\.){3}([0-9]{1,3})/
+	let ipRegularExpression = /([0-9]{1,3}\.){3}([0-9]{1,3})/
 	if(!options.address.match(ipRegularExpression)){
 		throw new Error("The Address parameter is not a valid / safe IP");
 	}
@@ -31,25 +31,24 @@ function DevicePresence(options){
 	this.lastTimeSeenOnline = new moment().subtract(30, this.unit);
 	this.deviceIsPresent = true;
 
-
 	this.doPing = function(){
 		let command = 'ping ' + this.address + ' -c2 -W1';
 		
 		debug('Pinging... Try: ', this.failureCounter);
 
 		exec(command, (error, stdout, stderr) => {
+			stdout = null;
+			stderr = null;
 			this.lastPingExitCode = error ? error.code : 0;
 			debug("Code is", this.lastPingExitCode);
+			/*
 			if(this.lastPingExitCode === 0){
 				debug("Setting intervalWhenFoundOnline for", this.name);
 				return 
 			}
-
 			debug("Setting intervalWhenNotFound for", this.name);
-
+			*/
 		});
-
-
 	}
 
 	this.ping = function(){
@@ -61,7 +60,7 @@ function DevicePresence(options){
 		if(code === 0){
 			// Device is found
 			this.lastTimeSeenOnline = new moment()
-			this.failureCounter = 300
+			this.failureCounter = 1200
 
 			let hour = this.lastTimeSeenOnline.hour()
 			if(hour > 18 || hour < 8){
@@ -79,7 +78,6 @@ function DevicePresence(options){
 			this.deviceIsPresent = true;
 			return this.deviceIsBack();
 		}
-
 
 		// Ping did not work. Next ping will be done in 4 seconds
 		setTimeout(this.ping.bind(this), this.intervalWhenNotFound);
@@ -101,7 +99,7 @@ function DevicePresence(options){
 
 	this.deviceIsGone = function(){
 		if(!this.deviceIsPresent){
-			debug("Still gone")
+			debug("Still gone");
 			return;
 		}
 
@@ -120,7 +118,7 @@ function DevicePresence(options){
 	this.start = function(app){
 
 
-		if(this.app != undefined ){
+		if(this.app !== undefined ){
 			return this;
 		}
 		this.app = app;
@@ -131,7 +129,7 @@ function DevicePresence(options){
 		this.app.internalEventEmitter.emit("componentStarted", "devicePresence");
 
 		this.app.internalEventEmitter.on("presenceMessage", function(data){
-			if(data.event === 'resetValuesToFakePresence' && data.device == this.name){
+			if(data.event === 'resetValuesToFakePresence' && data.device === this.name){
 				this.resetValuesToFakePresence();
 			}
 

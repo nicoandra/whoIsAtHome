@@ -142,6 +142,20 @@ function Light(name, displayName, socket){
 			}
 		}
 
+        if(this.abilities.hasDisco){
+            resultOptions.disco = {
+                name : 'disco',
+                displayName : "Disco",
+                values : [
+                    { name: "Disco"		, id: 'disco' },
+                    { name: "Next >"	,  id : 'discoNext'},
+                    { name: "< Prev"	, id : 'discoPrev'},
+                    { name: "+ Faster"	, id : 'discoFaster'},
+                    { name: "- Slower"	, id : 'discoSlower'}
+                ]
+            }
+        }
+
 		if(this.abilities.hasDimmer){
 			resultOptions.dimmer = {
 				displayName : "Dim",
