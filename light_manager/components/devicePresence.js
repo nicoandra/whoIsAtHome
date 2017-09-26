@@ -7,15 +7,16 @@ function DevicePresence(options){
 	this.failureCounter = 1;
 	this.intervalWhenFoundOnline = 300 * 1000;
 	this.intervalWhenNotFound = 250;
+    this.intervalWhenNotFoundAfterLongTime = 1000;
 	this.ownerName = options.ownerName;
 	this.lastPingExitCode = 0
+	this.pingInProgress = 0;
 
 	let ipRegularExpression = /([0-9]{1,3}\.){3}([0-9]{1,3})/
 	if(!options.address.match(ipRegularExpression)){
 		throw new Error("The Address parameter is not a valid / safe IP");
 	}
 
-	this.unit = 'minutes';
 	try {
 		this.name = options.name ;
 		this.address = options.address;
@@ -28,15 +29,19 @@ function DevicePresence(options){
 		return this.deviceIsPresent;
 	}
 
-	this.lastTimeSeenOnline = new moment().subtract(30, this.unit);
+	this.lastTimeSeenOnline = new moment().subtract(30, 'minute');
 	this.deviceIsPresent = true;
 
 	this.doPing = function(){
-		// let command = 'ping ' + this.address + ' -c2 -W1';
-		let command = 'ping ' + this.address + ' -c20 -i.2 -n -r';
 
-		
-		
+		if(this.pingInProgress){
+			debug("Ping in progress. Skipping.")
+			return false;
+		}
+        this.pingInProgress = true;
+
+		let command = 'ping ' + this.address + ' -4 -c10 -i.25 -n -s 24'
+
 		debug('Pinging... Try: ', this.failureCounter);
 
 		exec(command, (error, stdout, stderr) => {
@@ -44,14 +49,10 @@ function DevicePresence(options){
 			stderr = null;
 			this.lastPingExitCode = error ? error.code : 0;
 			debug("Code is", this.lastPingExitCode);
-			/*
-			if(this.lastPingExitCode === 0){
-				debug("Setting intervalWhenFoundOnline for", this.name);
-				return 
-			}
-			debug("Setting intervalWhenNotFound for", this.name);
-			*/
+            this.pingInProgress = false;
 		});
+
+		return true;
 	}
 
 	this.ping = function(){
@@ -63,12 +64,12 @@ function DevicePresence(options){
 		if(code === 0){
 			// Device is found
 			this.lastTimeSeenOnline = new moment()
-			this.failureCounter = 1200
+			this.failureCounter = 2400
 
-			let hour = this.lastTimeSeenOnline.hour()
+			/*let hour = this.lastTimeSeenOnline.hour()
 			if(hour > 18 || hour < 8){
 				this.failureCounter = Math.round(this.failureCounter * 1.5)
-			}
+			}*/
 
 			// Ping worked. Next ping will be done in 20 seconds
 			setTimeout(this.ping.bind(this), this.intervalWhenFoundOnline);
@@ -83,25 +84,26 @@ function DevicePresence(options){
 		}
 
 		// Ping did not work. Next ping will be done in 4 seconds
-		setTimeout(this.ping.bind(this), this.intervalWhenNotFound);
-		debug("Setting intervalWhenNotFound for", this.name);
+		// If the device was last seen recently, ping more often.
+		// If the device was last seen more than 10 minutes ago, ping less often.
 
-		if(!this.deviceIsPresent){
-			return ;
+		let now = moment();
+		let timeDiff = (now - this.lastTimeSeenOnline) / 1000;
+
+		if(timeDiff > 600){
+            setTimeout(this.ping.bind(this), this.intervalWhenNotFoundAfterLongTime);
+		} else {
+            setTimeout(this.ping.bind(this), this.intervalWhenNotFound);
 		}
 
+        if(!this.deviceIsPresent){
+            return ;
+        }
 
-
-		let momentsAgo = new moment().subtract(5, 'minute');
-		if(false || this.lastTimeSeenOnline.isBefore(momentsAgo)){
-			// Last pong was some time ago...
-			if(this.failureCounter-- < 0){
-				this.failureCounter = 0;
-				this.deviceIsGone();
-			}
-		}
-
-
+		if(timeDiff > 300 && this.failureCounter-- < 0){ // Decrease the counter only after 5 minutes of missed pings
+            this.failureCounter = 0;
+            this.deviceIsGone();
+        }
 	}
 
 	this.deviceIsGone = function(){
