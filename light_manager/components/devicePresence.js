@@ -5,7 +5,7 @@ const Debug = require('debug');
 function DevicePresence(options){
 	
 	this.failureCounter = 1;
-	this.intervalWhenFoundOnline = 360 * 1000;
+	this.intervalWhenFoundOnline = 300 * 1000;
 	this.intervalWhenNotFound = 250;
 	this.ownerName = options.ownerName;
 	this.lastPingExitCode = 0
@@ -32,7 +32,10 @@ function DevicePresence(options){
 	this.deviceIsPresent = true;
 
 	this.doPing = function(){
-		let command = 'ping ' + this.address + ' -c2 -W1';
+		// let command = 'ping ' + this.address + ' -c2 -W1';
+		let command = 'ping ' + this.address + ' -c20 -i.2 -n -r';
+
+		
 		
 		debug('Pinging... Try: ', this.failureCounter);
 
@@ -87,14 +90,17 @@ function DevicePresence(options){
 			return ;
 		}
 
-		let momentsAgo = new moment().subtract(5, this.unit);
-		if(this.lastTimeSeenOnline.isBefore(momentsAgo)){
+
+
+		let momentsAgo = new moment().subtract(5, 'minute');
+		if(false || this.lastTimeSeenOnline.isBefore(momentsAgo)){
 			// Last pong was some time ago...
 			if(this.failureCounter-- < 0){
 				this.failureCounter = 0;
 				this.deviceIsGone();
 			}
 		}
+
 
 	}
 
