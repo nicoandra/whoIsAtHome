@@ -2,7 +2,7 @@
   "name"             : "lightmanager",
   "args"             : [],
   "script"           : "server.js",
-  "node_args"        : ["--trace-events-enabled"],
+  "node_args"        : [],
   "log_date_format"  : "YYYY-MM-DD HH:mm Z",
   // "error_file"       : "/var/log/node-app/node-app.stderr.log",
   // "out_file"         : "log/node-app.stdout.log",
@@ -22,7 +22,7 @@
   // Default environment variables that will be injected in any environment and at any start
   "env": {
     "NODE_ENV": "proliant",
-    "DEBUG" : "app:component:actionScheduler*"
+    "DEBUG" : "presence*"
   },
   "env_dev" : {
     "NODE_ENV" : "nickpad",

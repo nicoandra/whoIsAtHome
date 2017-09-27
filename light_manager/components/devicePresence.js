@@ -7,7 +7,7 @@ function DevicePresence(options){
 	this.failureCounter = 1;
 	this.intervalWhenFoundOnline = 300 * 1000;
 	this.intervalWhenNotFound = 250;
-    this.intervalWhenNotFoundAfterLongTime = 1000;
+        this.intervalWhenNotFoundAfterLongTime = 2000;
 	this.ownerName = options.ownerName;
 	this.lastPingExitCode = 0
 	this.pingInProgress = 0;
@@ -38,9 +38,8 @@ function DevicePresence(options){
 			debug("Ping in progress. Skipping.")
 			return false;
 		}
-        this.pingInProgress = true;
 
-		let command = 'ping ' + this.address + ' -4 -c10 -i.25 -n -s 24'
+		let command = 'ping ' + this.address + ' -c10 -n '
 
 		debug('Pinging... Try: ', this.failureCounter);
 
@@ -49,7 +48,7 @@ function DevicePresence(options){
 			stderr = null;
 			this.lastPingExitCode = error ? error.code : 0;
 			debug("Code is", this.lastPingExitCode);
-            this.pingInProgress = false;
+		        this.pingInProgress = false;
 		});
 
 		return true;
