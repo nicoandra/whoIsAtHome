@@ -39,7 +39,7 @@ function DevicePresence(options){
 			return false;
 		}
 
-		let command = 'ping ' + this.address + ' -c10 -n '
+		let command = 'ping ' + this.address + ' -c10 '
 
 		debug('Pinging... Try: ', this.failureCounter);
 
