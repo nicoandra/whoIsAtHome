@@ -1,12 +1,18 @@
-const env = process.env.NODE_ENV || 'development'
-        , cfg = require(__dirname + '/../../config/config.'+env+'.js')
-        , debug = require('debug')("server")
-        , moment = require('moment')
-	, Brk = require(__dirname + '/../../components/core/mqtt.js')
+const debug = require('debug')("server")
+      , moment = require('moment')
+	  , broker = require(__dirname + '/../../components/core/mqtt.js')
+	  , broker3 = require(__dirname + '/../../components/core/mqtt.js')
+	  , broker5 = require(__dirname + '/../../components/core/mqtt.js')
+	  , light = require(__dirname + '/../../components/core/mqtt.js')
 
 
-cfg.mqtt.dsn = { host: "192.168.1.106", port: 1883 , keepalive: 10000 }
-// cfg.mqtt.dsn.host = "test.mosquitto.org"
-const broker = Brk(cfg);
+broker.subscribe("/lights/eaa", function(topic, message){
+	console.log("TE MANDÉ A GUARDAR EL ASUNTO", topic, message)
+})
 
+
+setTimeout(function(){
+	console.log("TIMEOUT VINO!!");
+	broker.publish("/lights/eaa", "URCO SOS??");
+}, 2000)
 

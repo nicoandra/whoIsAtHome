@@ -12,6 +12,9 @@ config.peopleTracker = {
 	defaultStatus : { nico : "away" }
 }
 
-config.mqtt = {
-	host: '192.168.0.106', port: 1883
+config.mqtt = { 
+	host: "192.168.1.106", 
+	port: 1883 , 
+	keepalive: 10000 
 }
+
