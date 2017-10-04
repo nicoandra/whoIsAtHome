@@ -30,7 +30,7 @@ function DevicePresence(options){
 	}
 
 	this.lastTimeSeenOnline = new moment().subtract(30, 'minute');
-	this.deviceIsPresent = true;
+	this.deviceIsPresent = false;
 
 	this.doPing = function(){
 
