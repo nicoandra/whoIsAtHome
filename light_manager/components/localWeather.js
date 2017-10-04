@@ -8,6 +8,7 @@ var request = require("request");
 function HeaterManager(cfg){
 	this.pollInterval = 15 * 60 * 1000;
 	this.currentWeather = {};
+	this.rawResponse = {}
 
 	this.getDeviceClassName = function(){
 		return 'localWeather';
@@ -28,6 +29,8 @@ function HeaterManager(cfg){
 				return false;
 			}
 
+			this.rawResponse = body;
+
 			try {
 				this.currentWeather = body.weather[0];
 				this.currentWeather.cityName = body.name;
@@ -44,7 +47,14 @@ function HeaterManager(cfg){
 	}
 
 	this.getStatus = function(){
-		return this.currentWeather;
+		return {
+			short: this.currentWeather,
+			raw:  this.rawResponse
+		}
+	}
+
+	this.getRawResponse = function(){
+		return this.rawResponse;
 	}
 
 
