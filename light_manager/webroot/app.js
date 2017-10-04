@@ -89,7 +89,7 @@ $scope.updateInterfaceWithResponse = function(response){
 
 	
 	$scope.homeStatus = response.peopleTracker.people;
-	$scope.localWeather = response.localWeather;
+	$scope.localWeather = response.localWeather.short;
 	$scope.home = response.peopleTracker.home;
 
 	processHeaterResponse(response.heaterManager.heaters, $scope.heaters);
