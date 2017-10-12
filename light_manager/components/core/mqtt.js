@@ -28,20 +28,24 @@ function MessageBroker(cfg) {
         // message is Buffer
         debug ("Received message in topic:", topic, message.toString())
 
-        if(this.callbacks[topic] == undefined){
-
+        if(this.callbacks[topic] == undefined || typeof this.callbacks[topic] !== 'function')  {
             debug("No callback for topic", topic, this.callbacks);
             return false;
         }
 
         debug("SuperCall On Topic ", topic);
-        this.callbacks[topic]()
+        try {
+            this.callbacks[topic](topic, message.toString())
+        } catch(exception){
+            debug("Error in message", exception)
+        }
+
 
     }.bind(this))
 
     client.on('offline', function(){
         debug ("Disconnected...");
-        this.connect();
+        connect();
     }.bind(this))
 
 
@@ -51,7 +55,7 @@ function MessageBroker(cfg) {
     }
 
     this.publish = function(topic, message){
-        client.publish("/device/announcement", "Message published", {}, function(err){ debug("[PUBLISH]", err )} );
+        client.publish(topic, message, {}, function(err){ debug("[PUBLISH] Err: ", err )} );
         debug("Publishing",message, "over", topic);
         
         client.publish(topic, message);

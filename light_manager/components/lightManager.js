@@ -1,6 +1,7 @@
 "use strict"
 
-let Light = require("../devices/drivers/milight/light.js"),
+let MiLight = require("../devices/drivers/milight/light.js"),
+	EspLight = require("../devices/drivers/espLight/light.js"),
 	LightSocket = require("./../devices/drivers/milight/lightSocket.js"),
 	ReceiverSocket = require("./../devices/drivers/milight/receiverSocket.js"),
 	crypto = require('crypto'),
@@ -17,9 +18,20 @@ function LightManager(cfg){
 	this.addLightsFromObject = function(lights){
 		lights.forEach(function(lightDefinition){
 			if(lightDefinition.type == 'milight'){
-				this.addLight(lightDefinition.id, lightDefinition.alias, lightDefinition.receiverId, lightDefinition.groupId, lightDefinition.hasRgb, lightDefinition.hasDimmer);
+				this.addMilightLight(lightDefinition.id, lightDefinition.alias, lightDefinition.receiverId, lightDefinition.groupId, lightDefinition.hasRgb, lightDefinition.hasDimmer);
+				return ;
 			}
+
+			if(lightDefinition.type == 'espLight'){
+				this.addEspLight(lightDefinition.id, lightDefinition.alias, lightDefinition.macAddress, lightDefinition.channel);
+				return ;
+			}			
+
 		}.bind(this));
+	}
+
+	this.addEspLight = function(name, displayName, macAddress, channelNumber){
+		this.lights[name] = new EspLight(name, displayName, macAddress, channelNumber);
 	}
 
 	this.allLightsOff = function(){
@@ -64,7 +76,7 @@ function LightManager(cfg){
 		this.lights[name] = new HeaterLight(name, displayName, heater);
 	}
 
-	this.addLight = function(name, displayName, socketNumber, groupNumber, hasRgb, hasDimmer){
+	this.addMilightLight = function(name, displayName, socketNumber, groupNumber, hasRgb, hasDimmer){
 		// this.app.notify('lights', {message: "added one"});
 
 		if(this.receiverSockets[socketNumber] === undefined){
@@ -72,7 +84,7 @@ function LightManager(cfg){
 		}
 
 		let lightSocket = new LightSocket("name", groupNumber, this.receiverSockets[socketNumber]);
-		let light = new Light(name, displayName, lightSocket).hasRgb(hasRgb).hasDimmer(hasDimmer);
+		let light = new MiLight(name, displayName, lightSocket).hasRgb(hasRgb).hasDimmer(hasDimmer);
 		this.lights[name] = light;
 	}
 
@@ -263,7 +275,6 @@ function LightManager(cfg){
 		this.app.internalEventEmitter.emit("componentStarted", "lightManager");
 		return this;
 	}
-
 
 	this.getInterfaceOptions = function(){
 		return this.getStatus();

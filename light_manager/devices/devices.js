@@ -31,7 +31,29 @@ module.exports = {
 			alias: "Kitchen Countertop",
 			receiverId: 0,
 			groupId: 4, hasRgb: false, hasDimmer: true
+		},
+		{
+			type: 'espLight',
+			id: "screen1",
+			alias: "Screen 1",
+			macAddress: "60019449CB55",
+			channel: 1
+		},
+		{
+			type: 'espLight',
+			id: "screen2",
+			alias: "Screen 2",
+			macAddress: "60019449CB55",
+			channel: 2
+		},
+		{
+			type: 'espLight',
+			id: "screen3",
+			alias: "Screen 3",
+			macAddress: "60019449CB55",
+			channel: 4
 		}
+
 	],
 	"heaters" : [
 		{id: 'dev' , alias: 'Dev', slot: 1, ip: '192.168.1.113', port: 8888 },

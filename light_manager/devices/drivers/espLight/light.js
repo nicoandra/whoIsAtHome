@@ -1,74 +1,13 @@
 
+const manager = require(__dirname + '/../../../components/core/mqttDeviceManagement.js')
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* THIS CODE DOES NOT WORK, USE AS TEMPLATE */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function Light(name, displayName, mqtt, channelNumber){
+function Light(name, displayName, macAddress, channelNumber){
 	// Parameters
 	this.name = name;
 	this.displayName = displayName;
-	this.mqtt = mqtt;
-	this.topic = name + "/" + channelNumber;
+	this.macAddress = macAddress;
+	this.channelNumber = channelNumber;
 
 	// Status tracking
 	this.actualStatus = {};  // Shows the actual status
@@ -79,10 +18,9 @@ function Light(name, displayName, mqtt, channelNumber){
 	this.color = 'white';
 	this.fadeInProgress = 0;
 	this.currentProgram = '';
+	this.brightness = 0;
 
 	this.abilities = { hasRgb : false, hasDimmer : true };
-
-	this.mqtt
 
 	this.hasRgb = function(hasRgb){
 		this.abilities.hasRgb = (hasRgb === true)
@@ -217,9 +155,6 @@ function Light(name, displayName, mqtt, channelNumber){
 	  
 	}
 
-	// Internal, queue management attributes and methods
-	this.commandQueue = [];
-
 	this.sendOnOff = function(value){
 		if(value == true){
 			this.queueOn();
@@ -231,93 +166,35 @@ function Light(name, displayName, mqtt, channelNumber){
 	}
 
 	this.queueOn = function(){
-		this.commandQueue.push(this.socket.commandOn);
+		manager.setLightValue(this.macAddress, this.channelNumber, 1024);
 	}
 
 	this.queueOff = function(){
-		this.commandQueue.push(this.socket.commandOff);
+		manager.setLightValue(this.macAddress, this.channelNumber, 0);
 	}
-
-	this.queueColor = function(color){
-		// this.commandQueue.push(this.socket.commandOn);
-		this.commandQueue.push([].concat(this.socket.commandOn, [0x55], color));
-	}
-
-	this.sendQueue = function(){
-		if(this.socket && this.commandQueue.length){
-			toSend = this.commandQueue.shift();
-			this.socket.queueStuff(toSend);
-		}
-	}
-
-	setInterval(this.sendQueue.bind(this), 50);
 
 	this.on = function(){
-		this.socket.on();
+		manager.setLightValue(this.macAddress, this.channelNumber, 1024);
 		this.status = 1;
 		this.actualStatus.onOff = true;
-		this.clearQueue();
 	}
 
 	this.off = function(){
-		this.socket.off();
+		manager.setLightValue(this.macAddress, this.channelNumber, 0);
 		this.actualStatus.onOff = false;
 		this.color = '';
-		this.clearQueue();
 	}
 
 	this.white = function(){
-		this.socket.white();
-		this.actualStatus.onOff = true;
-		this.actualStatus.color = 'white';
-		this.clearQueue();
-	}
-
-	this.disco = function(){
-		this.socket.disco();
-		this.status = 1;
-		this.color = 'disco';
-		this.actualStatus.color = 'disco';
-		this.actualStatus.onOff = true;
-		this.clearQueue();
-	}
-
-	this.discoFaster = function(){
-		this.socket.discoFaster();
-		this.status = 1;
-		this.color = 'disco';
-		this.actualStatus.color = 'disco';
-		this.actualStatus.onOff = true;
-		this.clearQueue();
-	}
-
-	this.discoSlower = function(){
-		this.socket.discoSlower();
-		this.status = 1;
-		this.color = 'disco';
-		this.actualStatus.color = 'disco';
-		this.actualStatus.onOff = true;
-		this.clearQueue();
-	}
-
-	this.setColor = function(colorName){
-		this.socket.setColor(colorName);
-		this.actualStatus.color = colorName;
-		this.actualStatus.onOff = true;
-		this.status = 1;
-		this.color = colorName;
-		this.clearQueue();
+		this.on();
 	}
 
 	this.setBrightnessMax = function(){
-		this.socket.brightnessMax();
-		this.brightness = 100;
-		this.actualStatus.onOff = true;
-		this.actualStatus.brightness = 100;
+		this.on();
 	}
 
 	this.setBrightnessMin = function(){
-		this.socket.brightnessMin();
+		manager.setLightValue(this.macAddress, this.channelNumber, 1);
 		this.brightness = 1;
 		this.actualStatus.onOff = true;
 		this.actualStatus.brightness = 10;
@@ -325,178 +202,20 @@ function Light(name, displayName, mqtt, channelNumber){
 
 
 	this.setBrightness = function(value){
-		this.socket.brightness(value);
+
+		if(!Number.isInteger(value) || value < 0 || value > 100){
+			return false;
+		}
+
+		let intensity = Math.round(value * 1024 / 100)
+		manager.setLightValue(this.macAddress, this.channelNumber, intensity);
+		this.brightness = value;
 		this.actualStatus.onOff = true;
-		this.actualStatus.brightness = value;
+		this.actualStatus.brightness = this.brightness;
 	}
 
 	this.clearQueue = function() {
-		// The queue needs to be cleared when a previous command might have sent a lot of instructions in the queue
-		// but a new command needs to be sent. For example, a fade from Blue to Green will send multiple color changes.
-		// If you turn of the light while the change is happening, the light will keep changing colors and
-		// It will turn off itself at the end of the fading sequence.
-		// By clearing the queue you ensure nothing else is sent to it after the Off command.
-		this.commandQueue = [];
 		return ;
-	}
-
-	this.fade = function(colorFrom, colorTo, maxSteps){
-		var colorFrom = Array.isArray(colorFrom) ? colorFrom : this.colorCodes[colorFrom];
-		colorFrom = colorFrom[1];
-		var colorTo = Array.isArray(colorTo) ? colorTo : this.colorCodes[colorTo];
-		colorTo = colorTo[1];
-
-		var step = colorFrom < colorTo ? 1 : -1;
-
-		step = Math.max(1, Math.abs(colorFrom - colorTo) / maxSteps) * step;
-
-		if(colorFrom == colorTo){
-			return ;
-		}
-
-		for(colorToSet = colorFrom; ; colorToSet = colorToSet + step){
-			if(colorToSet < colorTo && step < 0){
-				break;
-			}
-
-			if(colorToSet > colorTo && step > 0){
-				break;
-			}
-
-			this.queueColor([0x40, colorToSet]);
-		}
-	}
-
-	this.ocean = function(step){
-		this.commandQueue = [];
-
-		if(!step){
-			if(this.color =='ocean'){
-				// Return immediately to not pile up timeouts
-				return ;
-			}
-			this.color = 'ocean';
-			step = 1;
-			this.status = 1;
-		}
-
-		if(this.color == 'ocean'){
-			if(step === 1){
-				this.fade('lightBlue', 'aqua', 8);
-			} else if(step === 2){
-				this.fade('aqua', 'royalBlue', 8);
-			} else if(step === 3){
-				this.fade('royalBlue', 'lightBlue', 8);
-			}
-
-			step = step == 3 ? 0 : step;
-			step++;
-
-			setTimeout(function(){
-				if(this.color == 'ocean'){
-					this.ocean(step);
-				}
-			}.bind(this).bind(step), Math.random() * 2000);
-		}
-	}
-
-	this.fire = function(step){
-		this.commandQueue = [];
-
-		if(!step){
-			if(this.color == 'fire'){
-				// Return immediately to not pile up timeouts
-				return ;
-			}
-			this.color = 'fire';
-			step = 1;
-			this.status = 1;
-		}
-
-		if(this.color == 'fire'){
-			if(step === 1){
-				this.fade('red', 'orange', 5 + Math.random() * 3);
-			} else if(step === 2){
-				this.fade('orange', 'yellowOrange', 2);
-			} else if(step === 3){
-				this.fade('yellowOrange', 'orange', 2);
-			} else if(step === 3){
-				this.fade('orange', 'red', 2);
-			}
-
-			step = step == 2 ? 0 : step;
-			step++;
-
-			setTimeout(function(){
-				if(this.color == 'fire'){
-					this.fire(step);
-				}
-			}.bind(this).bind(step), 100);
-		}
-	}
-
-	this.pinks = function(step){
-		this.commandQueue = [];
-
-		if(!step){
-			if(this.color == 'pinks'){
-				// Return immediately to not pile up timeouts
-				return ;
-			}
-			this.color = 'pinks';
-			step = 1;
-			this.status = 1;
-		}
-
-		if(this.color == 'pinks'){
-			if(step === 1){
-				this.fade('lilac', 'pink', 24);
-			} else if(step === 2){
-				this.fade('pink', 'lilac', 24);
-			}
-
-			step = step == 2 ? 0 : step;
-			step++;
-
-			setTimeout(function(){
-				if(this.color == 'pinks'){
-					this.pinks(step);
-				}
-			}.bind(this).bind(step), 2500);
-		}
-	}
-
-	this.greens = function(step){
-		this.commandQueue = [];
-
-		if(!step){
-			if(this.color == 'greens'){
-				// Return immediately to not pile up timeouts
-				return ;
-			}
-			this.color = 'greens';
-			step = 1;
-			this.status = 1;
-		}
-
-		if(this.color == 'greens'){
-			if(step === 1){
-				this.fade(this.colorCodes.seafoamGreen, this.colorCodes.limeGreen, 8);
-			} else if(step === 2){
-				this.fade(this.colorCodes.limeGreen, this.colorCodes.green, 8);
-			} else if(step === 3){
-				this.fade(this.colorCodes.green, this.colorCodes.seafoamGreen, 8);
-			}
-
-			step = step == 3 ? 0 : step;
-			step++;
-
-			setTimeout(function(){
-				if(this.color == 'greens'){
-					this.greens(step);
-				}
-			}.bind(this).bind(step), 2500);
-		}
 	}
 }
 

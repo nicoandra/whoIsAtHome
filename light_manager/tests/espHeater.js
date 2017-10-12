@@ -15,7 +15,7 @@ server.on("message", function(message, networkInfo){
 	remoteIp = networkInfo.address;
 
 	if(remoteIp != "192.168.1.128"){
-		return false;
+		// return false;
 	}
 
 	console.log(message.length, message);
