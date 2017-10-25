@@ -1,5 +1,6 @@
 
-const manager = require(__dirname + '/../../../components/core/mqttDeviceManagement.js')
+const manager = require(__dirname + '/../../../components/core/mqttDeviceManagement.js'),
+	debug = require('debug')('devices:drivers:espLight')
 
 
 function Light(name, displayName, macAddress, channelNumber){
@@ -21,6 +22,40 @@ function Light(name, displayName, macAddress, channelNumber){
 	this.brightness = 0;
 
 	this.abilities = { hasRgb : false, hasDimmer : true };
+
+	manager.mqttEventEmitter.on("mqtt:" + this.macAddress, function(message){
+		debug("The MQTT manager said:", message);
+
+		try {
+			if(undefined == message['mac_address'] || this.macAddress != message['mac_address'] || undefined == message['lights']){
+				// Do not further process if the MAC is different than mine, or if there's no MAC
+				// This should not be needed because of the events we listen to, but in any case
+				// it won't hurt.
+
+				debug("Did not match", message, this.macAddress, this.channelNumber);
+				return false;
+			}
+
+			let arrayPosition = this.channelNumber ;
+			let lights = message['lights']
+
+			if (undefined === lights[arrayPosition]) {
+				debug("Something did not match: ", this.macAddress, this.channelNumber, " when parsing", message)
+				return false;
+			}
+				
+			let brightness = Math.round(parseInt(100 * lights[arrayPosition] / 1024) / 10) * 10;
+			debug("Setting brightness of ", this.macAddress, this.channelNumber, "to", brightness, "because the received value is", lights[arrayPosition])
+			// If there is any light information that is useful for me, use it
+			// Set brightness and status to the one reported by the device
+			this.actualStatus.brightness = brightness;
+			this.actualStatus.onOff = (this.brightness === 0);
+				
+		} catch(excp){
+			debug("Something failed:", message)
+		}
+	}.bind(this));
+
 
 	this.hasRgb = function(hasRgb){
 		this.abilities.hasRgb = (hasRgb === true)
