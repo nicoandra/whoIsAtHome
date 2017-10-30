@@ -45,7 +45,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		try {
 			name = data.name;
 		} catch (exception){
-			name = "(Unknown)";	
+			name = "(Unknown)";
 		}
 
 		message.subject = "Alert: A PERSON has been detected in " + name;
@@ -71,12 +71,11 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 		// During the week, turn them off much earlier
 		return moment().hour(0).minute(30).seconds(0);
-		
+
 	}
 
 	this.isHomeAlone = function() {
-		homeStatus = this.peopleTracker.getHomeStatus().home;		
-		return homeStatus.isAlone;
+		return this.peopleTracker.isHomeAlone();
 	}
 
 	this.runActionBasedOnHomeStatus = function(){

@@ -2,7 +2,7 @@ var config = require('./config.global');
 
 config.env = 'nickpad';
 config.httpHost = '127.0.0.1';
-config.httpHost = '192.168.1.112';
+config.httpHost = '192.168.1.250';
 
 // config.httpHost = '127.0.0.1';
 
@@ -13,6 +13,9 @@ config.milight = [
 ];
 
 config.peopleTracker = {
+	locative: { host: "127.0.0.1" , port: 58972 },
+	usernames: ["nico"],
+
 	defaultStatus : { nico : "atHome" }
 }
 

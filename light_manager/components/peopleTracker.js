@@ -4,99 +4,71 @@
 const debug = require('debug')("app:component:peopleTracker"),
       request = require("request");
 
-
 var peopleTracker = function(cfg){
 
     let pollInterval = 2000;
-    let usernames = [];
+    let usernames = cfg.peopleTracker.usernames;
 
     let status = {
         isAlone: true,
         sinceWhen: new Date()
     }
 
+    let rawResponse = getDefaultResponse();
+    let locativeUrl = "http://" + cfg.peopleTracker.locative.host + ":" + cfg.peopleTracker.locative.port + ""
 
-
-    this.addUser = function(username){
-      if(this.usernames.indexOf(username) === -1){
-        this.usernames.push(username)
-      }
+    function getDefaultResponse(){
+      return { status: -1, body: { status: { uptime: 0 }, presence: { anyoneAtHome: false, users: [] } } }
     }
 
+    function queryService(){
+      request(locativeUrl, function(error, response, body){
 
+        if(error){
+          rawResponse = getDefaultResponse();
+          return
+        }
 
-    this.peopleAtHome = {}
-
-    this.setAsAway = function(name){
-        this.people[name].status = "away";
-        this.people[name].arrivesIn = false;
-        this.app.notify("presence", {name: name, atHome: false, message: name + " gone away"})
-    }
-
-    this.setAsSleeping = function(name){
-        this.people[name].status = "sleeping";
-        this.people[name].arrivesIn = false;
-    }
-
-    this.setAsAtHome = function(name){
-        this.people[name].status = "atHome";
-        this.people[name].arrivesIn = false;
-        this.app.notify("presence", {name: name, atHome: true, message: name + " is back home"})
-        this.people[name].lastTimeSeen = new Date();
-    }
-
-    this.setAsComingBack = function(name, delayInMinutes){
-        this.people[name].status = "comingBack";
-        now = new Date();
-        var arrivalDate = new Date(now.getTime() + delayInMinutes * 60 * 1000)
-        this.people[name].arrivesIn = arrivalDate;
+        rawResponse.status = response.statusCode;
+        rawResponse.body = JSON.parse(body);
+        debug(rawResponse.body.presence);
+      })
     }
 
     this.decideIfHomeIsAloneOrNot = function() {
-
-        var someoneAtHome = false;
-
-        Object.keys(this.people).forEach(function (name) {
-
-            if (['online', 'atHome', 'sleeping'].indexOf(this.people[name].status) > -1) {
-                someoneAtHome = true;
-            }
-
-            this.peopleAtHome[name] = this.people[name].status
-
-            // debug("decideIfHomeIsAloneOrNot", name, this.people[name].status);
-        }, this)
-
-        var homeIsAlone = !someoneAtHome;
-        debug("decideIfHomeIsAloneOrNot. Is Home alone?", homeIsAlone);
-
-        if(this.home.isAlone != homeIsAlone){
-            this.home.sinceWhen = new Date();
-            this.home.isAlone = homeIsAlone ? true : false;
-            this.app.internalEventEmitter.emit("home:presence:statusChange", this.home);
-        }
+        return rawResponse.body.presence.anyoneAtHome != true
     }
 
     this.getStatus = function(){
-        return this.getHomeStatus();
+      debug("RETURNING HOME STATUS");
+      return { home: { isAlone: !rawResponse.body.presence.anyoneAtHome }}
+    }
+
+    this.isHomeAlone = function(){
+      return !rawResponse.body.presence.anyoneAtHome
+    }
+
+    this.isAnyoneAtHome = function(){
+      return rawResponse.body.presence.anyoneAtHome
     }
 
     this.getHomeStatus = function(){
-        this.decideIfHomeIsAloneOrNot();
         result = {
-            people : this.peopleAtHome,
-            home: this.home
+            home: !this.getStatus().home.isAlone
         };
         return result;
     }
-
 
     this.start = function(app){
         if(this.app !== undefined){
             return this;
         }
         this.app = app;
-        setInterval(this.decideIfHomeIsAloneOrNot.bind(this), this.pollInterval);
+
+        setInterval(function(){
+          queryService();
+        }, 4000)
+
         this.app.internalEventEmitter.emit("componentStarted", "peopleTracker");
         return this;
     }

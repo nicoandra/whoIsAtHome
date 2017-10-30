@@ -105,6 +105,9 @@ app.addComponent('heaterManager', heaterManager.start(app));
 app.addComponent('localWeather', localWeather.start(app));
 app.internalEventEmitter.on("personMovementDetected", actionScheduler.personMovementHasBeenDetected.bind(actionScheduler));
 app.addComponent('lightManager', lightManager.start(app));
+app.addComponent('peopleTracker', peopleTracker.start(app));
+
+
 /*
 
 app.internalEventEmitter.on("heaterUpdated", function(data) {

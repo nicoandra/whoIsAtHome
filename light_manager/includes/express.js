@@ -126,15 +126,5 @@ module.exports = function(cfg) {
 
 	this.app = app;
 
-
-
-	setInterval(function(){
-
-	}, 2000)
-	/// THIS THING SHOULD BE PLUGGED IN WITH THE LOCATIVE SERVER
-	peopleTracker.setAsAtHome(data.ownerName);
-
-
-
 	return this.app;
 }
