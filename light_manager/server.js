@@ -7,11 +7,12 @@ const env = process.env.NODE_ENV || 'development'
 	, moment = require('moment')
 	, PeopleTracker = require('./components/peopleTracker.js')
 	, DevicePresence = require('./components/devicePresence.js')
+	, path = require('path');
 
 
 
 let EventEmitter = require('events').EventEmitter;
-const path = require('path');
+
 
 
 let internalEventEmitter = new EventEmitter()
@@ -71,7 +72,7 @@ lightManager.addProgramInstance(normalOptions);
 
 let allRed = new LightProgram("All Red", "all red");
 ["officeLamp","kitchenLamp", "officeBoards"].forEach(function(lightName){
-	allRed.addStatus({lightName: lightName, onOff : true, color: "red" , brightness: 100});	
+	allRed.addStatus({lightName: lightName, onOff : true, color: "red" , brightness: 100});
 })
 lightManager.addProgramInstance(allRed);
 
@@ -175,7 +176,7 @@ app.internalEventEmitter.on("movementDetected", function(data){
 		if(presencePhone.isPresent()){
 			peopleTracker.setAsAtHome(data.ownerName);
 			// changeEventEmitter.emit("message", data);
-		}		
+		}
 	}
 })
 
@@ -274,7 +275,7 @@ app.post("/lights/iterateBetweenChildPrograms", function(req,res){
 		setTimeout(function() {
 			messageBus.emit("message", req.body)
 		}, delay);
-	})	
+	})
 	res.send("ITERATION");
 })
 
