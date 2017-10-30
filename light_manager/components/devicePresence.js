@@ -3,11 +3,11 @@ const moment = require('moment');
 const Debug = require('debug');
 
 function DevicePresence(options){
-	
+
 	this.failureCounter = 1;
 	this.intervalWhenFoundOnline = 300 * 1000;
 	this.intervalWhenNotFound = 250;
-    this.intervalWhenNotFoundAfterLongTime = 1000;
+  this.intervalWhenNotFoundAfterLongTime = 1000;
 	this.ownerName = options.ownerName;
 	this.lastPingExitCode = 0
 	this.pingInProgress = 0;

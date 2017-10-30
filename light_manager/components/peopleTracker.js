@@ -1,33 +1,29 @@
 /**
  * Created by n_andrade on 10/27/2016.
  */
-var ping = require ("ping");
-const debug = require('debug')("app:component:peopleTracker");
+const debug = require('debug')("app:component:peopleTracker"),
+      request = require("request");
+
 
 var peopleTracker = function(cfg){
 
-    this.pollInterval = 15000;
+    let pollInterval = 2000;
+    let usernames = [];
 
-    this.home = {
+    let status = {
         isAlone: true,
         sinceWhen: new Date()
     }
 
-    this.people = {
-        'nico' : { name : 'Nic', ips: [
-            {'ip': '192.168.1.111', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0, timeoutId : false} ,
-            {'ip': '192.168.1.112', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} ,
-        ], status : cfg.peopleTracker.defaultStatus.nico, arrivesIn : false, lastTimeSeen : false },
 
-        'pris' : { name : 'Pris', ips: [
-            {'ip': '192.168.1.115', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} ,
-            {'ip': '192.168.1.116', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} , // iPad?
-        ], status : 'away', arrivesIn : false, lastTimeSeen : false },
 
-        'pepo' : { name : 'Nic', ips: [
-            {'ip': '192.168.1.142', 'status' : 'offline', 'lastTimeSeen' : false , 'scanIntervalTime' : 600, maxConsecutiveFailures: 3, consecutiveFailures : 0 , timeoutId : false} ,
-        ], status : cfg.peopleTracker.defaultStatus.nico, arrivesIn : false, lastTimeSeen : false },        
+    this.addUser = function(username){
+      if(this.usernames.indexOf(username) === -1){
+        this.usernames.push(username)
+      }
     }
+
+
 
     this.peopleAtHome = {}
 
@@ -87,8 +83,8 @@ var peopleTracker = function(cfg){
 
     this.getHomeStatus = function(){
         this.decideIfHomeIsAloneOrNot();
-        result = { 
-            people : this.peopleAtHome, 
+        result = {
+            people : this.peopleAtHome,
             home: this.home
         };
         return result;

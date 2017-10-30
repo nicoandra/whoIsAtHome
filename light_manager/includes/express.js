@@ -18,7 +18,7 @@ module.exports = function(cfg) {
 	app.internalEventEmitter = new require(path.join(__dirname, '..', 'components','core','internalEventEmitter.js'));
 
 	app.internalEventEmitter.emit("loaded");
-	
+
 	app.notificationEventEmitter = new require(path.join(__dirname, '..', 'components','core','notificationEventEmitter.js'));
 
 	var cookieParser = require('cookie-parser');
@@ -125,7 +125,16 @@ module.exports = function(cfg) {
 	})
 
 	this.app = app;
+
+
+
+	setInterval(function(){
+
+	}, 2000)
+	/// THIS THING SHOULD BE PLUGGED IN WITH THE LOCATIVE SERVER
+	peopleTracker.setAsAtHome(data.ownerName);
+
+
+
 	return this.app;
 }
-
-

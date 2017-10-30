@@ -105,37 +105,6 @@ app.addComponent('heaterManager', heaterManager.start(app));
 app.addComponent('localWeather', localWeather.start(app));
 app.internalEventEmitter.on("personMovementDetected", actionScheduler.personMovementHasBeenDetected.bind(actionScheduler));
 app.addComponent('lightManager', lightManager.start(app));
-
-
-app.addComponent('peopleTracker', peopleTracker.start(app));
-app.addComponent('actionScheduler', actionScheduler.start(app));
-
-let presencePhoneNico = new DevicePresence({ name : "Nic phone", address : "192.168.1.141", 'ownerName': 'nico'});
-presencePhoneNico.start(app);
-
-let presencePhonePepo = new DevicePresence({ name : "Pepo phone", address : "192.168.1.142", 'ownerName': 'pepo'});
-presencePhonePepo.start(app);
-
-app.internalEventEmitter.on("presenceMessage", function(data){
-
-	try {
-		if(data.event === 'back'){
-			peopleTracker.setAsAtHome(data.ownerName);
-			// changeEventEmitter.emit("message", data);
-			return ;
-		}
-
-		if(data.event === 'left'){
-			peopleTracker.setAsAway(data.ownerName);
-			// changeEventEmitter.emit("message", data);
-			return ;
-		}
-	} catch(excp){
-		debug(excp);
-	}
-})
-
-
 /*
 
 app.internalEventEmitter.on("heaterUpdated", function(data) {
