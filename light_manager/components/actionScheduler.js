@@ -12,7 +12,6 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	this.dayTimeStarts = [7, 0, 0];
 	this.dayTimeEnds = [17, 0, 0];
 
-
 	this.getStatus = function(){
 		return {};
 	}
@@ -155,18 +154,6 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	this.nightTimeCounter = 10;
 
 	this.isNightTime = function(){
-
-		if(false){
-			if(this.nightTimeCounter-- > 0){
-				return false;
-			}
-
-
-			if(this.nightTimeCounter < -30){
-				this.nightTimeCounter = 10;
-				return true;
-			}
-		}
 
 		var dayTimeStarts = moment().hour(this.dayTimeStarts[0]).minute(this.dayTimeStarts[1]).seconds(this.dayTimeStarts[2] - 5);
 		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2] + 5);

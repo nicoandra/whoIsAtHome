@@ -108,31 +108,6 @@ app.addComponent('lightManager', lightManager.start(app));
 app.addComponent('peopleTracker', peopleTracker.start(app));
 
 
-/*
-
-app.internalEventEmitter.on("heaterUpdated", function(data) {
-	// When a heater changes, emit a changeEvent so the interfaces are updated
-	debugEvents("heaterUpdated", data);
-	changeEventEmitter.emit("message", data);
-});
-
-app.internalEventEmitter.on("lightsSwitchProgramRequested", function(data) {
-	if(data.program === "switch"){
-		lightManager.iterateBetweenChildPrograms("13aa6f8804c24f132573b221c93f0e87");
-		debugEvents("lightsSwitchProgramRequested", data);
-		return;
-	}
-
-	if(data.program === "off"){
-		lightManager.allLightsOff();
-		debugEvents("lightsSwitchProgramRequested", data);
-		return;
-	}
-
-});
-
-*/
-
 app.internalEventEmitter.on("personMovementDetected", function(data){
 	let homeStatus = peopleTracker.getHomeStatus();
 	if(homeStatus.home.isAlone){

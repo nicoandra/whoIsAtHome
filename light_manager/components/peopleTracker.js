@@ -53,10 +53,7 @@ var peopleTracker = function(cfg){
     }
 
     this.getHomeStatus = function(){
-        result = {
-            home: !this.getStatus().home.isAlone
-        };
-        return result;
+      return this.getStatus();
     }
 
     this.start = function(app){
