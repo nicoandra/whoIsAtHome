@@ -32,11 +32,6 @@ function MqttDeviceManager() {
 
 	}.bind(this))
 
-	/*.emit("time:isDayOrNight", { day: true, night: false });
-			this.app.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus.bind(this));
-			*/
-
-
 	this.isDeviceSet = function(macAddress){
 		return (knownDevices.hasOwnProperty(macAddress))
 	}

@@ -5,14 +5,8 @@ const debug = require('debug')("app:component:peopleTracker"),
       request = require("request");
 
 var peopleTracker = function(cfg){
-
     let pollInterval = 2000;
     let usernames = cfg.peopleTracker.usernames;
-
-    let status = {
-        isAlone: true,
-        sinceWhen: new Date()
-    }
 
     let rawResponse = getDefaultResponse();
     let locativeUrl = "http://" + cfg.peopleTracker.locative.host + ":" + cfg.peopleTracker.locative.port + ""
@@ -21,18 +15,24 @@ var peopleTracker = function(cfg){
       return { status: -1, body: { status: { uptime: 0 }, presence: { anyoneAtHome: false, users: [] } } }
     }
 
-    function queryService(){
+    this.setStatusFromResponse = function(receivedResponse) {
+      debug("***************************************** SETTING STATUS!!!!!")
+      if(rawResponse.body.presence.anyoneAtHome != receivedResponse.body.presence.anyoneAtHome){
+        debug("***************************************** EVENT THROWN")
+        debug("Event thrown: home:presence:statusChange !!!!!!!!!!!!!!", this.app.internalEventEmitter.eventNames())
+        this.app.internalEventEmitter.emit("home:presence:statusChange", receivedResponse);
+      }
+      rawResponse = receivedResponse
+    }
+
+    this.queryService = function(){
       request(locativeUrl, function(error, response, body){
 
         if(error){
-          rawResponse = getDefaultResponse();
-          return
+          return this.setStatusFromResponse(getDefaultResponse())
         }
-
-        rawResponse.status = response.statusCode;
-        rawResponse.body = JSON.parse(body);
-        debug(rawResponse.body.presence);
-      })
+        return this.setStatusFromResponse({status: response.statusCode, body: JSON.parse(body)})
+      }.bind(this))
     }
 
     this.decideIfHomeIsAloneOrNot = function() {
@@ -63,8 +63,8 @@ var peopleTracker = function(cfg){
         this.app = app;
 
         setInterval(function(){
-          queryService();
-        }, 4000)
+          this.queryService();
+        }.bind(this), 4000)
 
         this.app.internalEventEmitter.emit("componentStarted", "peopleTracker");
         return this;

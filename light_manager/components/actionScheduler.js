@@ -11,6 +11,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	this.wasNightOnLastCheck = false;
 	this.dayTimeStarts = [7, 0, 0];
 	this.dayTimeEnds = [17, 0, 0];
+	this.config = cfg
 
 	this.getStatus = function(){
 		return {};
@@ -19,22 +20,20 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	this.movementWasDetected = function(data){
 		var homeStatus = this.peopleTracker.getHomeStatus();
 		debug("eventHandler movementWasDetected", data);
-		// @@TODO@@ PING THE PHONE TO SEE IF I'M BACK
 	}
 
 
 	this.personMovementHasBeenDetected = function(data){
-		homeStatus = this.peopleTracker.getHomeStatus();
 		debug("eventHandler Person has been detected", data);
 
-		if(homeStatus.home.isAlone === false){
+		if(this.isHomeAlone() == false){
 			return ;
 		}
 
-		var nodemailer = require('nodemailer');
-		var smtpTransport = require('nodemailer-smtp-transport');
-		var transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
-		var message = {
+		let nodemailer = require('nodemailer');
+		let smtpTransport = require('nodemailer-smtp-transport');
+		let transporter = nodemailer.createTransport(smtpTransport(cfg.email.smtp));
+		let message = {
 			from: cfg.email.fromFields,
 			to:  cfg.email.whoToContact
 		};
@@ -47,12 +46,11 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 			name = "(Unknown)";
 		}
 
-		message.subject = "Alert: A PERSON has been detected in " + name;
+		message.subject = (this.config.type == 'production' ? "" : "[Dev: " +  this.config.env + '] ') + "Alert: A PERSON has been detected in " + name;
 		message.text = message.subject;
 		message.html = message.subject;
 
 		transporter.sendMail(message, function(err, info){
-			// console.log('send', err, info);
 			debug("Mail sent");
 		})
 	}
@@ -70,7 +68,6 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 		// During the week, turn them off much earlier
 		return moment().hour(0).minute(30).seconds(0);
-
 	}
 
 	this.isHomeAlone = function() {
@@ -78,6 +75,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	}
 
 	this.runActionBasedOnHomeStatus = function(){
+
 		if(this.isHomeAlone()){
 			debug("runActionBasedOnHomeStatus: home is alone. call homeStartedToBeAlone()")
 			this.homeStartedToBeAlone();
@@ -106,6 +104,8 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		this.runActionBasedOnHomeStatus();
 	}
 
+
+
 	this.homeStartedToBeAlone = function(){
 		// Disable heaters, set temperature back to 17;
 		debug('Called homeStartedToBeAlone');
@@ -131,6 +131,8 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		this.heaterManager.setTemperature(17);
 	}
 
+
+
 	this.someoneGotBackHome = function(){
 		// Disable enable heaters back, set temperature back to 22;
 		// this.heaterManager.setGlobalTemperature(22);
@@ -149,9 +151,6 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 			this.lightManager.useScene("welcomeHome");
 		}
 	}
-
-
-	this.nightTimeCounter = 10;
 
 	this.isNightTime = function(){
 
@@ -202,8 +201,8 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		return true;
 	}
 
-	this.turnOffLightsWhenHomeIsAloneAndItIsTooLate = function(){
 
+	this.turnOffLightsWhenHomeIsAloneAndItIsTooLate = function(){
 		if(!this.isHomeAlone()){
 			debug("turnOffLightsWhenHomeIsAloneAndItIsTooLate: There's someone at home. Do nothing.");
 			// If there's someone at home, don't do anything
@@ -220,8 +219,6 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		this.lightManager.useScene("allLightsOff");
 		return true;
 	}
-
-
 
 	this.turnLightsOnWhenHomeIsAloneAndItsEarly = function(){
 
@@ -250,12 +247,15 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 
 	this.start = function(app){
+		debug("Starting ActionScheduler instance")
 		if(this.app != undefined){
 			return this;
 		}
 		this.app = app;
 
 		this.app.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus.bind(this));
+
+
 		setInterval(this.verifyIfNightStartedOrEnded.bind(this), 5000);
 		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), 5000);
 

@@ -1,5 +1,7 @@
 var config = module.exports = {};
 
+config.type = "(undefined environment)"
+config.env = "global"
 config.httpHost = '192.168.1.112';
 config.httpPort = '3999';
 

@@ -106,6 +106,7 @@ app.addComponent('localWeather', localWeather.start(app));
 app.internalEventEmitter.on("personMovementDetected", actionScheduler.personMovementHasBeenDetected.bind(actionScheduler));
 app.addComponent('lightManager', lightManager.start(app));
 app.addComponent('peopleTracker', peopleTracker.start(app));
+app.addComponent('actionScheduler', actionScheduler.start(app));
 
 
 app.internalEventEmitter.on("personMovementDetected", function(data){

@@ -1,5 +1,6 @@
 var config = require('./config.global');
 
+config.type = "Production"
 config.env = 'proliant';
 config.httpHost = '192.168.1.106';
 config.httpPort = '3999';

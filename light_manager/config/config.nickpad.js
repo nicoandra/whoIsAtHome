@@ -1,5 +1,6 @@
 var config = require('./config.global');
 
+config.type = "development"
 config.env = 'nickpad';
 config.httpHost = '127.0.0.1';
 config.httpHost = '192.168.1.250';
