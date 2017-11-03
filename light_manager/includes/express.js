@@ -64,7 +64,7 @@ module.exports = function(cfg) {
 	let root = function(req,res, next){
 		var themes = [ "Light", "Darkly" , "Cyborg" , "Reddish" ];
 		var theme = (req.cookies.theme ? req.cookies.theme : 'light').toLowerCase().trim();
-		res.render('index', { title : "HomeOwn", 'theme' : theme , 'themes' : themes})
+		res.render('index', { title : cfg.type + "> HomeOwn", 'theme' : theme , 'themes' : themes })
 	}
 
 	app.get("/", root);

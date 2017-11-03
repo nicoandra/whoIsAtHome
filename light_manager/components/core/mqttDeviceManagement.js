@@ -13,7 +13,6 @@ function MqttDeviceManager() {
 
 	this.mqttEventEmitter =  new EventEmitter()
 
-
 	broker.subscribe("/device/announcement", function(topic, message){
 		try {
 			message = JSON.parse(message);
@@ -26,10 +25,7 @@ function MqttDeviceManager() {
 			debug("No MAC address to update. Doing nothing.")
 			return;
 		}
-
 		this.mqttEventEmitter.emit("mqtt:" + message['mac_address'], message);
-
-
 	}.bind(this))
 
 	this.isDeviceSet = function(macAddress){
