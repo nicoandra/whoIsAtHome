@@ -25,7 +25,7 @@ function LightManager(cfg){
 			if(lightDefinition.type == 'espLight'){
 				this.addEspLight(lightDefinition.id, lightDefinition.alias, lightDefinition.macAddress, lightDefinition.channel);
 				return ;
-			}			
+			}
 
 		}.bind(this));
 	}
@@ -55,7 +55,7 @@ function LightManager(cfg){
 			debug("The selected program does not have child programs. Fallback to parent");
 			this.runProgram(parentProgramKey);
 		}
-	   
+
 		var indexOfProgramToRun = parentProgram.childPrograms.map(function(childProgram, index){
 			debug("iterateBetweenPrograms", childProgram.id , this.activeProgram, index);
 			return childProgram.id == this.activeProgram ? index : 0;
@@ -69,7 +69,7 @@ function LightManager(cfg){
 		}
 
 		this.runProgram(parentProgram.childPrograms[indexOfProgramToRun].id);
-		
+
 	}
 
 	this.addHeaterLight = function(name, displayName, heater){
@@ -208,7 +208,7 @@ function LightManager(cfg){
 	}
 
 	this.useScene = function(sceneName, isTheSecondCall){
-
+		debug("useScene switch from ",this.currentScene,"to", sceneName);
 		if(this.currentScene == sceneName){
 			return false;
 		}
@@ -222,13 +222,16 @@ function LightManager(cfg){
 		}
 
 		if(sceneName === "homeIsAloneAtNight"){
-			this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 60 })
-			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 60 })
+			this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 20 })
+			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 40 })
 			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 60 })
+			this.setStatus({ lightName: 'screen1', onOff : true, color: "white", "brightness": 20 })
+			this.setStatus({ lightName: 'screen2', onOff : true, color: "white", "brightness": 40 })
+			this.setStatus({ lightName: 'screen3', onOff : true, color: "white", "brightness": 60 })
 			return ;
 		}
 
-		if(sceneName === "welcomeHome"){
+		if(sceneName === "welcomeHomeHigh"){
 			this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 100 })
 			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 100 })
 			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 100 })
@@ -236,8 +239,12 @@ function LightManager(cfg){
 		}
 
 		if(sceneName === "welcomeHomeLow"){
-			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 40 })
+			this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 10 })
+			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 10 })
 			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 10 })
+			this.setStatus({ lightName: 'screen1', onOff : true, color: "white", "brightness": 10 })
+			this.setStatus({ lightName: 'screen2', onOff : true, color: "white", "brightness": 10 })
+			this.setStatus({ lightName: 'screen3', onOff : true, color: "white", "brightness": 10 })
 			return ;
 		}
 

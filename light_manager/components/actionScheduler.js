@@ -13,6 +13,8 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	this.dayTimeEnds = [17, 0, 0];
 	this.config = cfg
 
+	this.homeIsAlone = -1
+
 	this.getStatus = function(){
 		return {};
 	}
@@ -21,7 +23,6 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		var homeStatus = this.peopleTracker.getHomeStatus();
 		debug("eventHandler movementWasDetected", data);
 	}
-
 
 	this.personMovementHasBeenDetected = function(data){
 		debug("eventHandler Person has been detected", data);
@@ -58,32 +59,133 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 	this.getTimeWhenLightsGoOff = function(){
 		return moment().hour(0).minute(30).seconds(0);
+	}
 
-		dayNumber = moment().day(); // Get the day number
+	this.setHomeStatusFromEvent = function(message){
+		let homeIsAlone = !message.body.presence.anyoneAtHome
 
-		if(dayNumber >= 5){
-			// Friday (5) and Saturday (6), close the lights later
-			return moment().hour(1).minute(30).seconds(0);
+		if(this.homeIsAlone == homeIsAlone){
+			debug("setHomeStatusFromEvent: no change from ", this.homeIsAlone)
+			return
 		}
 
-		// During the week, turn them off much earlier
-		return moment().hour(0).minute(30).seconds(0);
+		this.homeIsAlone = homeIsAlone
+		if(this.homeIsAlone){
+			this.whenEverybodyLeaves();
+			return
+		}
+
+		this.whenSomeoneGetsBack()
+
 	}
+
 
 	this.isHomeAlone = function() {
-		return this.peopleTracker.isHomeAlone();
-	}
+		let newStatus = this.peopleTracker.isHomeAlone();
+		debug("Changing from",this.homeIsAlone,"to", newStatus, "?")
+		if(this.homeIsAlone != newStatus){
+			debug("Change done. ",this.homeIsAlone," >> ", newStatus)
 
-	this.runActionBasedOnHomeStatus = function(){
+			if(newStatus === true){
+				// Call action to do when the last person leaves
+				this.whenEverybodyLeaves();
+			} else if(newStatus === false) {
+				// Call action to do when someone is the 1st person getting back
+				this.whenSomeoneGetsBack()
+			} else {
+				debug("Status", newStatus, "is Unknown");
+			}
 
-		if(this.isHomeAlone()){
-			debug("runActionBasedOnHomeStatus: home is alone. call homeStartedToBeAlone()")
-			this.homeStartedToBeAlone();
-		} else {
-			debug("runActionBasedOnHomeStatus: home is NOT alone. Someone is at home. Call someoneGotBackHome();")
-			this.someoneGotBackHome();
+			this.homeIsAlone = newStatus;
+			return this.homeIsAlone
 		}
+		debug("No change done")
+		return this.homeIsAlone;
 	}
+
+
+
+	this.whenEverybodyLeaves = function(){
+		// Update lights according to the time.
+		debug("Do the HOME ALONE thing");
+		this.homeAloneLightSceneBasedOnTime()
+		// Bring heaters back to 19
+	}
+
+	this.whenSomeoneGetsBack = function(){
+		// Update lights according to the time.
+		debug("Do the WELCOME HOME thing");
+		this.someoneIsBackLightSceneBasedOnTime()
+		// Bring heaters back to 19
+	}
+
+
+
+
+	this.homeAloneLightSceneBasedOnTime = function(){
+
+			if(this.isDayTime()){
+				// Ligths should be officeLamp
+				debugTime("During day, lights off.")
+				this.lightManager.useScene("allLightsOff");
+				return ;
+			}
+
+			var now = moment();
+			var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2]);
+			var timeWhenLightsGoOff = this.getTimeWhenLightsGoOff();
+
+			if(timeWhenLightsGoOff.isAfter(dayTimeEnds)){
+				if(now.isAfter(dayTimeEnds) && now.isBefore(timeWhenLightsGoOff)){
+					debugTime("Night case 1 #1. Lights should be ON now. ");
+					this.lightManager.useScene("homeIsAloneAtNight");
+				}
+				return
+
+			} else {
+				if(now.isAfter(dayTimeEnds) || now.isBefore(timeWhenLightsGoOff)){
+					// We're facing the night time now
+					debugTime("Night case 2 #2. Lights should be ON now. ");
+					this.lightManager.useScene("homeIsAloneAtNight");
+				}
+			}
+
+			debugTime("Lights will be turned OFF.");
+			this.lightManager.useScene("homeIsAloneAtNight");
+
+	}
+
+	this.someoneIsBackLightSceneBasedOnTime = function(){
+
+				if(this.isDayTime()){
+					// Ligths should be officeLamp
+					debugTime("During day, keep lights as they are.")
+					return ;
+				}
+
+				debugTime("Set the welcome home scene.");
+				this.lightManager.useScene("welcomeHomeLow");
+		}
+
+
+	this.runActionBasedOnPresenceStatus = function(message){
+		debug("Message:", message);
+		return this.setHomeStatusFromEvent(message)
+
+	}
+
+	this.runActionBasedOnDayOrNightStatus = function(current){
+		if(!this.homeIsAlone){
+			return ;
+		}
+		this.homeAloneLightSceneBasedOnTime();
+	}
+
+
+	this.runActionBasedOnHomeStatus = function(){}
+
+
+
 
 	this.verifyIfNightStartedOrEnded = function(){
 		// If the status did not change, do nothing
@@ -98,62 +200,19 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		if(this.isDayTime()){
 			this.app.internalEventEmitter.emit("time:isDayOrNight", { day: true, night: false });
 		} else {
-			this.app. internalEventEmitter.emit("time:isDayOrNight", { day: false, night: true });
+			this.app.internalEventEmitter.emit("time:isDayOrNight", { day: false, night: true });
 		}
 
-		this.runActionBasedOnHomeStatus();
 	}
 
 
+	/*******************************
 
-	this.homeStartedToBeAlone = function(){
-		// Disable heaters, set temperature back to 17;
-		debug('Called homeStartedToBeAlone');
+	********** TIME METHODS START ***
 
-		if(this.isNightTime()){
-			debug("It's night");
-
-			if(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate()){
-				// Do not turn on the lights when it's too late.
-				debugTime("The home is alone, but it is too late to turn the lights on.");
-				return ;
-			}
-
-			debugTime("It's night and the home is alone, turning lights on");
-			this.lightManager.useScene("homeIsAloneAtNight");
-		} else {
-			debug("It's day")
-			debugTime("It's DAY and the home is alone, turning lights off");
-			this.lightManager.setStatus({ lightName: 'officeLamp', onOff : false })
-			this.lightManager.setStatus({ lightName: 'kitchenLamp', onOff : false })
-			this.lightManager.setStatus({ lightName: 'kitchenCountertop', onOff : false })
-		}
-		this.heaterManager.setTemperature(17);
-	}
-
-
-
-	this.someoneGotBackHome = function(){
-		// Disable enable heaters back, set temperature back to 22;
-		// this.heaterManager.setGlobalTemperature(22);
-		if(this.isDayTime()){
-			debug("someoneGotBackHome ; daytime. Return false.")
-			return false;
-		}
-
-		if(this.isItTooLateToTurnOnLights()){
-			debug("someoneGotBackHome ; late. Do nothing. Bug on detecting presence.")
-			// When coming back home late at night, ligths go on dimmed
-			this.lightManager.useScene("welcomeHomeLow");
-		} else {
-			// When it's not late, lights go on full power
-			debug("someoneGotBackHome ; early. welcomeHome.")
-			this.lightManager.useScene("welcomeHome");
-		}
-	}
+	***/
 
 	this.isNightTime = function(){
-
 		var dayTimeStarts = moment().hour(this.dayTimeStarts[0]).minute(this.dayTimeStarts[1]).seconds(this.dayTimeStarts[2] - 5);
 		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2] + 5);
 		var now = moment();
@@ -171,78 +230,14 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		return !this.isNightTime();
 	}
 
-	this.isItTooLateToTurnOnLights = function(){
-		if(!this.isNightTime()){
-			// If it is not night time, don't do anything
-			debugTime("isItTooLateToTurnOnLights false. It's not night time. Do nothing.");
-			return false;
-		}
-
-		var now = moment();
-		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2]);
-		var timeWhenLightsGoOff = this.getTimeWhenLightsGoOff();
-
-		if(timeWhenLightsGoOff.isAfter(dayTimeEnds)){
-			// This section might be buggy. @@TODO@@ RECHECK
-			if(now.isAfter(dayTimeEnds) && now.isBefore(timeWhenLightsGoOff)){
-				debugTime("Between dayTimeEnds and timeWhenLightsGoOff #1. Lights should be ON now. ");
-				return false;
-			}
-
-		} else {
-			if(now.isAfter(dayTimeEnds) || now.isBefore(timeWhenLightsGoOff)){
-				// We're facing the night time now
-				debugTime("Between dayTimeEnds and timeWhenLightsGoOff #2. Lights should be ON now. ");
-				return false;
-			}
-		}
-
-		debugTime("It's too late to turn lights ON. Lights should be OFF now.");
-		return true;
-	}
 
 
-	this.turnOffLightsWhenHomeIsAloneAndItIsTooLate = function(){
-		if(!this.isHomeAlone()){
-			debug("turnOffLightsWhenHomeIsAloneAndItIsTooLate: There's someone at home. Do nothing.");
-			// If there's someone at home, don't do anything
-			return false;
-		}
 
-		if(!this.isItTooLateToTurnOnLights()){
-			debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate: lights now should be on.");
-			return this.turnLightsOnWhenHomeIsAloneAndItsEarly();
-		}
+	/**
 
-		// Do not turn on the lights when it's too late.
-		debugTime("turnOffLightsWhenHomeIsAloneAndItIsTooLate: The home is alone. Too late to turn lights on. ");
-		this.lightManager.useScene("allLightsOff");
-		return true;
-	}
+	********** TIME METHODS STOP  ***
 
-	this.turnLightsOnWhenHomeIsAloneAndItsEarly = function(){
-
-		if(!this.isHomeAlone()){
-			debug("turnLightsOnWhenHomeIsAloneAndItEarly: There's someone at home. Do nothing.");
-			// If there's someone at home, don't do anything
-			return false;
-		}
-
-		if(this.isItTooLateToTurnOnLights()){
-			debugTime("turnLightsOnWhenHomeIsAloneAndItEarly: too late to turn them on.");
-			return false;
-		}
-
-		if(this.isDayTime()){
-			debugTime("turnLightsOnWhenHomeIsAloneAndItEarly: not during daytime.");
-			return false;
-		}
-
-		// Do not turn on the lights when it's too late.
-		debugTime("turnLightsOnWhenHomeIsAloneAndItEarly: The home is alone. It's early. Turn lights on.");
-		this.lightManager.useScene("homeIsAloneAtNight");
-		return true;
-	}
+	********************************/
 
 
 
@@ -253,11 +248,11 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		}
 		this.app = app;
 
-		this.app.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnHomeStatus.bind(this));
+		this.app.internalEventEmitter.on("home:presence:statusChange", this.runActionBasedOnPresenceStatus.bind(this));
+		this.app.internalEventEmitter.on("time:isDayOrNight", this.runActionBasedOnDayOrNightStatus.bind(this))
 
 
-		setInterval(this.verifyIfNightStartedOrEnded.bind(this), 5000);
-		setInterval(this.turnOffLightsWhenHomeIsAloneAndItIsTooLate.bind(this), 5000);
+		setInterval(this.verifyIfNightStartedOrEnded.bind(this), 2000);
 
 		this.app.internalEventEmitter.emit("componentStarted", "actionScheduler");
 		debug("enabled");
