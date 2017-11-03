@@ -6,12 +6,14 @@ let MiLight = require("../devices/drivers/milight/light.js"),
 	ReceiverSocket = require("./../devices/drivers/milight/receiverSocket.js"),
 	crypto = require('crypto'),
 	debug = require('debug')("app:component:lightManager"),
-	HeaterLight = require("./../devices/drivers/nHeatersV1/heaterLight.js");
+	HeaterLight = require("./../devices/drivers/nHeatersV1/heaterLight.js"),
+	fs = require('fs');
 
 function LightManager(cfg){
 	this.lights = {};
 	this.receiverSockets = [];
 	this.programs = {}
+	this.scenes = {}
 	this.allKnownPrograms = {}
 	this.activeProgram = false;
 
@@ -254,7 +256,16 @@ function LightManager(cfg){
 	}
 
 
+	this.getProgrammaticStatus = function(){
+		let status = this.getStatus();
+		Object.keys(status.lights).forEach(function(lightName){
+			status.lights[lightName] = status.lights[lightName].status
+		})
+		return status;
+	}
+
 	this.getStatus = function(){
+		debug(this.scenes)
 		var result = new Object();
 		result.lights = new Object();
 		var allLightsOff = true;
@@ -281,8 +292,55 @@ function LightManager(cfg){
 			return this;
 		}
 		this.app = app;
+		this.loadScenesFromFile();
+		debug(this.scenes)
 		this.app.internalEventEmitter.emit("componentStarted", "lightManager");
 		return this;
+	}
+
+
+	this.loadScenesFromFile = function(programAlias){
+		let filepath = "/tmp/programs.js";
+		fs.readFile(filepath, (err, content) => {
+			let curr
+			if(err){
+				debug(err);
+				curr = {}
+			} else {
+				this.scenes = JSON.parse(content)
+			}
+		})
+	}
+
+	this.loadScene = function(sceneAlias){
+
+		if(this.scenes[sceneAlias] == undefined){
+			return false;
+		}
+		Object.keys(this.scenes[sceneAlias].lights).forEach((lightName) => {
+			this.setStatus(lightName, curr[sceneAlias].lights[lightName])
+		})
+		this.activeProgram = sceneAlias
+	}
+
+	this.addScene = function (programAlias) {
+		this.scenes[programAlias] = this.getProgrammaticStatus()
+		this.persistScenesToFile()
+	}
+
+	this.persistScenesToFile  = function(programAlias){
+		let filepath = "/tmp/programs.js";
+		fs.readFile(filepath, (err, content) => {
+			let curr
+			if(err){
+				debug(err);
+				curr = {}
+			} else {
+				curr = JSON.parse(content)
+			}
+			content = JSON.stringify(this.scenes);
+			fs.writeFile(filepath, content, function(){})
+		})
 	}
 
 	this.getInterfaceOptions = function(){

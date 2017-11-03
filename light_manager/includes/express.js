@@ -69,6 +69,16 @@ module.exports = function(cfg) {
 
 	app.get("/", root);
 
+	app.get("/lights/persistProgram/:programName", function(req,res, next){
+		app.getComponent('lightManager').addScene(req.params.programName);
+		res.send({status: "OK"})
+	})
+
+	app.get("/lights/loadProgram/:programName", function(req,res, next){
+		app.getComponent('lightManager').loadScene(req.params.programName);
+		res.send({status: "OK"})
+	})
+
 	app.get("/switchInterface", function(req, res){
 		var theme = "darkly";
 		if(req.query.theme){

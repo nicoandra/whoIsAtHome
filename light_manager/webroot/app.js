@@ -56,7 +56,7 @@ $scope.requestEnded = function(httpStatus){
 
 	$timeout(function(){
 		if(parseInt($scope.requestStatus) != 0){
-			$scope.requestStatus = false;    
+			$scope.requestStatus = false;
 		}
 	}, httpStatus > 0 ? 1000 : 5000)
 }
@@ -84,10 +84,11 @@ function processHeaterResponse(source, destination){
 $scope.updateInterfaceWithResponse = function(response){
 
 	if(response.lightManager !== undefined){
-		$scope.lights = response.lightManager.lights;	
+		$scope.lights = response.lightManager.lights;
+		$scope.lightManager = response.lightManager;	
 	}
 
-	
+
 	$scope.homeStatus = response.peopleTracker.people;
 	$scope.localWeather = response.localWeather.short;
 	$scope.home = response.peopleTracker.home;
@@ -131,7 +132,7 @@ $scope.allLights = function(statusObject){
 	Object.keys(statusObject).forEach(function(key){
 		$scope.allLights[key] = statusObject[key];
 	})
-	
+
 	$scope.sendLightCommand(Object.keys($scope.lights), statusToSend)
 }
 
@@ -159,7 +160,7 @@ $scope.sendLightProgramByKey = function(programKey){
 }
 
 $scope.sendLightCommand = function(element, status){
-	
+
 	$scope.requestStarted();
 	if(typeof element == "string" || typeof element == "object"){
 		status.lightName = element;

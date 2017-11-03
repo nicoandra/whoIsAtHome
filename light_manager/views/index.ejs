@@ -16,16 +16,16 @@
 					<div class="tab-pane fade in" id="lightsTab">
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-3 col-xs-9" >
+								<div class="col-md-1 col-xs-9" >
 									<span class="h3" class="panel-title">Lights</span>
 								</div>
 
-								<div class="col-md-2 col-xs-2" >
+								<div class="col-md-1 col-xs-2" >
 									<a href="#" class="btn btn-default" ng-click="allLights({ color : 'white' } )">White</a>
 								</div>
 
-							
-								<div class="col-md-2 col-xs-2" >
+
+								<div class="col-md-1 col-xs-2" >
 									<a href="#" class="btn btn-default glyphicon glyphicon-off " ng-click="allLights({ onOff : true})" ng-if="!allLights.onOff"></a>
 									<a href="#" class="btn btn-default btn-primary glyphicon glyphicon-off" ng-click="allLights({ onOff : false})" ng-if="allLights.onOff"></a>
 								</div>
@@ -48,34 +48,34 @@
 
 						<ul class="list-group">
 							<li class="row list-group-item" ng-repeat="light in lights">
-								<div class="col-md-3 col-xs-4" >
+								<div class="col-md-1 col-xs-4" >
 									{{ light.displayName }}
 								</div>
 
-								<div class="col-md-2 col-xs-2" >
+								<div class="col-md-1 col-xs-2" >
 									<a href="#" class="btn btn-default" ng-click="sendLightCommand(light.name, { color : 'white' } )">White</a>
 								</div>
 
-								<div class="col-md-2 col-xs-2" >
+								<div class="col-md-1 col-xs-2" >
 									<!-- NG MODDEL in the switch below is hardcoded, needs to be Dynamic! -->
-									<a 
-										name="{{ light.name }}SwitchOn" 
-										id="{{ light.name }}SwitchOn" href="#" 
-										class="btn btn-default glyphicon glyphicon-off" 
+									<a
+										name="{{ light.name }}SwitchOn"
+										id="{{ light.name }}SwitchOn" href="#"
+										class="btn btn-default glyphicon glyphicon-off"
 										ng-click="sendLightCommand(light.name, { onOff: true } )"
 										ng-if="!light.actualStatus.onOff"></a>
 
-									<a 
-										name="{{ light.name }}SwitchOff" 
-										id="{{ light.name }}SwitchOff" href="#" 
-										class="btn btn-default glyphicon glyphicon-off btn-primary" 
+									<a
+										name="{{ light.name }}SwitchOff"
+										id="{{ light.name }}SwitchOff" href="#"
+										class="btn btn-default glyphicon glyphicon-off btn-primary"
 										ng-click="sendLightCommand(light.name, { onOff: false } )"
 										ng-if="light.actualStatus.onOff"></a>
 
 								</div>
 
 								<div class="col-md-2 col-xs-2" >
-									
+
 									<select
 										ng-if="light.interface.dimmer"
 										ng-model="light.actualStatus.brightness"
@@ -88,7 +88,7 @@
 									<select
 										ng-if="light.interface.rgb"
 										ng-model="light.actualStatus.color"
-										ng-options="colorObject.id as colorObject.name for colorObject in light.interface.rgb.values" 
+										ng-options="colorObject.id as colorObject.name for colorObject in light.interface.rgb.values"
 										ng-change="sendLightCommand(light.name , { color : light.actualStatus.color })">
 									</select>
 
@@ -105,7 +105,7 @@
 							<div class="row">
 								<div class="col-md-3 col-xs-9" >
 									<span class="h3" class="panel-title">Light Programs</span>
-								</div>                        
+								</div>
 							</div>
 						</div>
 
@@ -134,7 +134,7 @@
 
 							{{ availablePrograms }}
 
-							<script>/* 
+							<script>/*
 
 							<ng-repeat ng-repeat="program in availablePrograms">
 								<li class="row list-group-item">
@@ -168,7 +168,7 @@
 							<div class="row">
 								<div class="col-md-3 col-xs-9" >
 									<span class="h3" class="panel-title">Notifications</span>
-								</div>                        
+								</div>
 							</div>
 						</div>
 						<ul class="list-group">
@@ -202,7 +202,7 @@
 							<div class="row">
 								<div class="col-md-3 col-xs-9" >
 									<span class="h3" class="panel-title">Heaters</span>
-								</div>                        
+								</div>
 							</div>
 						</div>
 
@@ -229,7 +229,7 @@
 
 									<div class="col-md-1 col-xs-10">
 										<span ng-class="{
-										'text-success': (heaters[name].desiredTemperatureFromInterface == heaters[name].desiredTemperatureFromHeater), 
+										'text-success': (heaters[name].desiredTemperatureFromInterface == heaters[name].desiredTemperatureFromHeater),
 										'text-danger' : (heaters[name].desiredTemperatureFromInterface != heaters[name].desiredTemperatureFromHeater) }"
 										>
 										{{ heater.desiredTemperatureFromHeater }}
@@ -257,7 +257,12 @@
 			</div>
 
 			<div class="panel-footer">
-				Home is {{ home.isAlone ? 'alone' : 'occupied' }} since {{ home.sinceWhen | date: 'medium' }}. Now: {{ localWeather.main}}, {{ localWeather.currentTemperature }}&deg; Min {{ localWeather.minimumTemperature }}&deg; Max {{ localWeather.maximumTemperature}} &deg; 
+				<p>
+					Home is {{ home.isAlone ? 'alone' : 'occupied' }} since {{ home.sinceWhen | date: 'medium' }}. Now: {{ localWeather.main}}, {{ localWeather.currentTemperature }}&deg; Min {{ localWeather.minimumTemperature }}&deg; Max {{ localWeather.maximumTemperature}} &deg;
+				</p>
+				<p>
+					{{ lightManager.programs.activeProgram }}
+				</p>
 			</div>
 
 		</div><!-- Closing panel panel-default -->
