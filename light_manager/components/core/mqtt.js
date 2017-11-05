@@ -57,8 +57,17 @@ function MessageBroker(cfg) {
     this.publish = function(topic, message){
         client.publish(topic, message, {}, function(err){ debug("[PUBLISH] Err: ", err )} );
         debug("Publishing",message, "over", topic);
-        
+
         client.publish(topic, message);
+    }
+
+
+    this.start = function(app){
+  		debug("Starting MQTT instance")
+  		if(this.app != undefined){
+  			return this;
+  		}
+  		this.app = app;
     }
 }
 

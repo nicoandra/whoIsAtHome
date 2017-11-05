@@ -1,6 +1,5 @@
 'use strict'
 const  env = process.env.NODE_ENV || 'development',
-    cfg = require(__dirname + '/../../config/config.'+env+'.js'),
     broker = require(__dirname + '/mqtt.js'),
     debug = require('debug')('core:deviceManagement'),
     EventEmitter = require('events').EventEmitter
@@ -27,6 +26,28 @@ function MqttDeviceManager() {
 		}
 		this.mqttEventEmitter.emit("mqtt:" + message['mac_address'], message);
 	}.bind(this))
+
+
+
+  broker.subscribe("/controllers/", function(topic, message){
+    debug("The broker received the message", message, "in topic", topic)
+
+    try {
+      message = JSON.parse(message);
+    } catch(e){
+      debug(e);
+      return false;
+    }
+
+    if(typeof message['lights'] !== undefined){
+      debug("Message contains LIGHT DATA");
+      let lightManager = broker.app.getComponent('lightManager')
+      lightManager.setLightBrightnessByArray(message['lights'], function(err,res){
+        console.log("DONE BEATCH",err,res)
+      });
+    }
+
+  })
 
 	this.isDeviceSet = function(macAddress){
 		return (knownDevices.hasOwnProperty(macAddress))
@@ -71,8 +92,6 @@ function MqttDeviceManager() {
 		return value;
 	}
 
-  function notifyRemoteControllers(){
-  }
 
 }
 

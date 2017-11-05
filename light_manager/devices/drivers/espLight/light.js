@@ -43,14 +43,14 @@ function Light(name, displayName, macAddress, channelNumber){
 				debug("Something did not match: ", this.macAddress, this.channelNumber, " when parsing", message)
 				return false;
 			}
-				
+
 			let brightness = Math.round(parseInt(100 * lights[arrayPosition] / 1024) / 10) * 10;
 			debug("Setting brightness of ", this.macAddress, this.channelNumber, "to", brightness, "because the received value is", lights[arrayPosition])
 			// If there is any light information that is useful for me, use it
 			// Set brightness and status to the one reported by the device
 			this.actualStatus.brightness = brightness;
 			this.actualStatus.onOff = (this.brightness === 0);
-				
+
 		} catch(excp){
 			debug("Something failed:", message)
 		}
@@ -136,7 +136,7 @@ function Light(name, displayName, macAddress, channelNumber){
 		if(this.abilities.hasRgb){
 			resultOptions.rgb = {
 				name : 'color',
-				displayName : "Color", 
+				displayName : "Color",
 				type : "colorPicker",
 				values : [
 					{ name: "White", htmlColor : "White", id: 'white' },
@@ -187,7 +187,7 @@ function Light(name, displayName, macAddress, channelNumber){
 		}
 
 		return resultOptions;
-	  
+
 	}
 
 	this.sendOnOff = function(value){
@@ -237,6 +237,9 @@ function Light(name, displayName, macAddress, channelNumber){
 
 
 	this.setBrightness = function(value){
+		if(this.brightness == value){
+			return false;
+		}
 
 		if(!Number.isInteger(value) || value < 0 || value > 100){
 			return false;

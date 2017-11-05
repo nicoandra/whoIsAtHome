@@ -97,6 +97,7 @@ let app = require('./includes/express.js')(cfg);
 
 
 
+app.addComponent('mqttBroker', require('./components/core/mqtt.js'));
 app.addComponent('heaterManager', heaterManager.start(app));
 app.addComponent('localWeather', localWeather.start(app));
 app.internalEventEmitter.on("personMovementDetected", actionScheduler.personMovementHasBeenDetected.bind(actionScheduler));

@@ -32,6 +32,24 @@ function LightManager(cfg){
 		}.bind(this));
 	}
 
+	this.setLightBrightnessByArray = function(powerValues, callback){
+		if(typeof callback != "function"){
+			callback = () => {}
+		}
+		let err = false, res = true
+		debug("LIGHTS TO BE SET AS", powerValues);
+
+
+		let lightNames = Object.keys(this.lights);
+
+		powerValues.forEach(function(value, index){
+			this.lights[lightNames[index]].setBrightness(value);
+		}.bind(this))
+
+		callback(err, res);
+
+	}
+
 	this.addEspLight = function(name, displayName, macAddress, channelNumber){
 		this.lights[name] = new EspLight(name, displayName, macAddress, channelNumber);
 	}

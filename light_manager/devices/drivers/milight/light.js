@@ -117,7 +117,7 @@ function Light(name, displayName, socket){
 		if(this.abilities.hasRgb){
 			resultOptions.rgb = {
 				name : 'color',
-				displayName : "Color", 
+				displayName : "Color",
 				type : "colorPicker",
 				values : [
 					{ name: "White", htmlColor : "White", id: 'white' },
@@ -168,7 +168,7 @@ function Light(name, displayName, socket){
 		}
 
 		return resultOptions;
-	  
+
 	}
 
 	// Internal, queue management attributes and methods
@@ -279,9 +279,18 @@ function Light(name, displayName, socket){
 
 
 	this.setBrightness = function(value){
+
+		if(this.actualStatus.brightness == value){
+			return false;
+		}
+
+		this.actualStatus.brightness = value;
+		if(value == 0){
+			return this.off();
+		}
+
 		this.socket.brightness(value);
 		this.actualStatus.onOff = true;
-		this.actualStatus.brightness = value;
 	}
 
 	this.clearQueue = function() {
