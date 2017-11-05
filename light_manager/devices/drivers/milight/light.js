@@ -1,4 +1,6 @@
 
+const debug = require('debug')('devices:drivers:milight:light')
+
 function Light(name, displayName, socket){
 	// Parameters
 	this.name = name;
@@ -57,7 +59,6 @@ function Light(name, displayName, socket){
 		}
 
 		if(status.brightness != undefined){
-			this.actualStatus.brightness = status.brightness;
 			this.setBrightness(status.brightness);
 		}
 
@@ -289,6 +290,7 @@ function Light(name, displayName, socket){
 			return this.off();
 		}
 
+		this.sendOnOff(true);
 		this.socket.brightness(value);
 		this.actualStatus.onOff = true;
 	}

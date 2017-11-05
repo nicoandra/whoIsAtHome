@@ -49,7 +49,7 @@ function Light(name, displayName, macAddress, channelNumber){
 			// If there is any light information that is useful for me, use it
 			// Set brightness and status to the one reported by the device
 			this.actualStatus.brightness = brightness;
-			this.actualStatus.onOff = (this.brightness === 0);
+			this.actualStatus.onOff = (this.actualStatus.brightness != 0);
 
 		} catch(excp){
 			debug("Something failed:", message)

@@ -83,7 +83,7 @@
 										name="{{ light.name }}{{ interfaceOption.name }}Slider"
 										id="{{ light.name }}{{ interfaceOption.name }}Slider"
 										ng-change="sendLightCommand(light.name , {brightness : light.actualStatus.brightness})">
-									></select>
+									></select> ( {{ light.actualStatus.brightness }} )
 
 									<select
 										ng-if="light.interface.rgb"

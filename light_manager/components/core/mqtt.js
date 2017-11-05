@@ -40,7 +40,6 @@ function MessageBroker(cfg) {
             debug("Error in message", exception)
         }
 
-
     }.bind(this))
 
     client.on('offline', function(){
