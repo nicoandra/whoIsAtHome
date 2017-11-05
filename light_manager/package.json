@@ -16,7 +16,6 @@
     "cookie-parser": "^1.4.3",
     "debug": "^2.3.3",
     "ejs": "^2.5.2",
-    "electron": "^1.6.11",
     "eslint": "^4.4.1",
     "express": "^4.13.3",
     "foscam": "^0.2.2",
@@ -27,7 +26,6 @@
     "mqtt": "^2.13.0",
     "nodemailer": "^3.1.1",
     "nodemailer-smtp-transport": "^2.7.2",
-    "ping": "^0.2.1",
     "request": "^2.64.0",
     "smtp-connection": "^4.0.1",
     "stats-lite": "^2.0.0"

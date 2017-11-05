@@ -255,7 +255,6 @@ function LightManager(cfg){
 		debug("Scene ", sceneName, "not found.");
 	}
 
-
 	this.getProgrammaticStatus = function(){
 		let status = this.getStatus();
 		Object.keys(status.lights).forEach(function(lightName){
@@ -265,7 +264,6 @@ function LightManager(cfg){
 	}
 
 	this.getStatus = function(){
-		debug(this.scenes)
 		var result = new Object();
 		result.lights = new Object();
 		var allLightsOff = true;
@@ -283,6 +281,13 @@ function LightManager(cfg){
 		// use allLightsOff to set the program all off
 		result.programs = new Object();
 		result.programs.activeProgram = this.activeProgram;
+		result.programs.availablePrograms = JSON.parse(JSON.stringify(this.programs))
+
+
+		result.scenes = {
+			active: this.activeProgram,
+			available: JSON.parse(JSON.stringify(this.scenes))
+		}
 
 		return result;
 	}
@@ -293,6 +298,7 @@ function LightManager(cfg){
 		}
 		this.app = app;
 		this.loadScenesFromFile();
+		setInterval(this.loadScenesFromFile.bind(this), 60 * 1000)	// Populate programs
 		debug(this.scenes)
 		this.app.internalEventEmitter.emit("componentStarted", "lightManager");
 		return this;
@@ -313,18 +319,17 @@ function LightManager(cfg){
 	}
 
 	this.loadScene = function(sceneAlias){
-
 		if(this.scenes[sceneAlias] == undefined){
 			return false;
 		}
 		Object.keys(this.scenes[sceneAlias].lights).forEach((lightName) => {
-			this.setStatus(lightName, curr[sceneAlias].lights[lightName])
+			this.setStatus(lightName, curr[sceneAlias].status.lights[lightName])
 		})
 		this.activeProgram = sceneAlias
 	}
 
-	this.addScene = function (programAlias) {
-		this.scenes[programAlias] = this.getProgrammaticStatus()
+	this.addScene = function (programAlias, displayName) {
+		this.scenes[programAlias] = { displayName: displayName, status: this.getProgrammaticStatus() }
 		this.persistScenesToFile()
 	}
 

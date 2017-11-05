@@ -1,6 +1,7 @@
-var moment = require('moment');
-const debug = require('debug')("app:component:actionScheduler");
-const debugTime = require('debug')("app:component:actionScheduler:time");
+const moment = require('moment')
+ 			, debug = require('debug')("app:component:actionScheduler")
+			,	debugTime = require('debug')("app:component:actionScheduler:time")
+
 
 function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
@@ -56,7 +57,6 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		})
 	}
 
-
 	this.getTimeWhenLightsGoOff = function(){
 		return moment().hour(0).minute(30).seconds(0);
 	}
@@ -85,6 +85,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 		debug("Changing from",this.homeIsAlone,"to", newStatus, "?")
 		if(this.homeIsAlone != newStatus){
 			debug("Change done. ",this.homeIsAlone," >> ", newStatus)
+			this.homeIsAlone = newStatus;
 
 			if(newStatus === true){
 				// Call action to do when the last person leaves
@@ -96,14 +97,11 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 				debug("Status", newStatus, "is Unknown");
 			}
 
-			this.homeIsAlone = newStatus;
 			return this.homeIsAlone
 		}
 		debug("No change done")
 		return this.homeIsAlone;
 	}
-
-
 
 	this.whenEverybodyLeaves = function(){
 		// Update lights according to the time.
@@ -213,9 +211,11 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	***/
 
 	this.isNightTime = function(){
+
+		debug(moment().locale());
 		var dayTimeStarts = moment().hour(this.dayTimeStarts[0]).minute(this.dayTimeStarts[1]).seconds(this.dayTimeStarts[2] - 5);
 		var dayTimeEnds = moment().hour(this.dayTimeEnds[0]).minute(this.dayTimeEnds[1]).seconds(this.dayTimeEnds[2] + 5);
-		var now = moment();
+		var now = moment()
 
 		if(now.isAfter(dayTimeStarts) && now.isBefore(dayTimeEnds)){
 			debugTime("After Day Starts and before day ends, is HomeAlone", this.isHomeAlone());

@@ -71,6 +71,9 @@ function MqttDeviceManager() {
 		return value;
 	}
 
+  function notifyRemoteControllers(){
+  }
+
 }
 
 const manager = new MqttDeviceManager();

@@ -18,13 +18,13 @@ module.exports = {
 			receiverId: 0,
 			groupId: 2, hasRgb: true, hasDimmer: true
 		},
-		{
+		/*{
 			type: 'milight',
 			id: "officeBoards",
 			alias: "Office Boards",
 			receiverId: 0,
 			groupId: 3, hasRgb: true, hasDimmer: true
-		},
+		},*/
 		{
 			type: 'milight',
 			id: "kitchenCountertop",

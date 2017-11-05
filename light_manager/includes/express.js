@@ -69,7 +69,8 @@ module.exports = function(cfg) {
 
 	app.get("/", root);
 
-	app.get("/lights/persistProgram/:programName", function(req,res, next){
+	app.post("/lights/persistProgram/:programName", function(req,res, next){
+		debug("DisplayName:", req.body.displayName)
 		app.getComponent('lightManager').addScene(req.params.programName);
 		res.send({status: "OK"})
 	})
