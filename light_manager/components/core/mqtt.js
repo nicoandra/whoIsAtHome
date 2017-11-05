@@ -69,6 +69,10 @@ function MessageBroker(cfg) {
   		}
   		this.app = app;
     }
+
+    this.getStatus = function(){
+      return {};
+    }
 }
 
 const broker = new MessageBroker(cfg.mqtt);
