@@ -61,7 +61,6 @@ function LightSocket(name, group, receiver){
         this.receiver.queueStuff(this.commandNightMode);
     }
 
-
     this.disco = function(cb){
         this.receiver.queueStuff(this.commandOn.concat(0x55, this.commandDisco));
         cb;
