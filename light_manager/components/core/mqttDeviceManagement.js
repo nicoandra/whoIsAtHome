@@ -29,6 +29,33 @@ function MqttDeviceManager() {
 
 
 
+  broker.subscribe("/controllers/deltas/", function(topic, message){
+    debug("The broker received the message", message, "in topic", topic)
+
+    try {
+      message = JSON.parse(message);
+      message = message.data
+    } catch(e){
+      debug(e);
+      return false;
+    }
+
+
+
+    if(typeof message['channel'] == "undefined" || typeof message['delta'] == "undefined") {
+      debug("NO CHANNEL OR DELTA", message);
+      return ;
+    }
+
+    let lightNumber = message['channel'],
+        delta = message['delta']
+
+      debug("Going to update", lightNumber, delta)
+      let lightManager = broker.app.getComponent('lightManager')
+    lightManager.updateLightBrigthnessByIdAndDelta(lightNumber, delta);
+  })
+
+
   broker.subscribe("/controllers/", function(topic, message){
     debug("The broker received the message", message, "in topic", topic)
 

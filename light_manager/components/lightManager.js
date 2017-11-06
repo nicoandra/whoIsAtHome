@@ -32,6 +32,33 @@ function LightManager(cfg){
 		}.bind(this));
 	}
 
+	this.updateLightBrigthnessByIdAndDelta = function(lightNumber, delta){
+		debug("Set light")
+		try {
+			let light = this.lights[Object.keys(this.lights)[lightNumber]];
+
+			let currentBrightness = light.getStatus().status.brightness;
+			let desiredBrightness = currentBrightness + delta;
+
+			if(desiredBrightness < 0){
+				desiredBrightness = 0;
+			}
+
+			if(desiredBrightness > 100){
+				desiredBrightness = 100;
+			}
+
+			debug("Light number ", lightNumber, "goes from", currentBrightness, "to", desiredBrightness)
+
+			light.setBrightness(desiredBrightness);
+		} catch(excp){
+			debug(excp);
+			return ;
+		}
+
+
+	}
+
 	this.setLightBrightnessByArray = function(powerValues, callback){
 		if(typeof callback != "function"){
 			callback = () => {}
