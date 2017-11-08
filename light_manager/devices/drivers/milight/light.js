@@ -56,6 +56,10 @@ function Light(name, displayName, socket){
 		if(status.onOff != undefined && this.actualStatus.onOff != status.onOff){
 			this.actualStatus.onOff = status.onOff;
 			this.sendOnOff(status.onOff);
+			if(!status.onOff){
+				// When sending OFF, don't send anything else.
+				return ;
+			}
 		}
 
 		if(status.brightness != undefined){
