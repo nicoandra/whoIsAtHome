@@ -48,7 +48,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 			name = "(Unknown)";
 		}
 
-		message.subject = (this.config.type == 'production' ? "" : "[Dev: " +  this.config.env + '] ') + "Alert: A PERSON has been detected in " + name;
+		message.subject = (this.config.type == 'production' ? "Prod> " : this.config.env + '] ') + "Alert: A PERSON has been detected in " + name;
 		message.text = message.subject;
 		message.html = message.subject;
 
@@ -149,7 +149,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 			}
 
 			debugTime("Lights will be turned OFF.");
-			this.lightManager.useScene("homeIsAloneAtNight");
+			this.lightManager.useScene("homeIsAloneLow");
 
 	}
 

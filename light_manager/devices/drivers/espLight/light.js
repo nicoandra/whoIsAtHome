@@ -90,21 +90,6 @@ function Light(name, displayName, macAddress, channelNumber){
 			this.sendOnOff(status.onOff);
 		}
 
-		if(status.color != undefined){
-			/*this.actualStatus.brightness = status.brightness;
-			this.setBrightness(status.brightness);*/
-			if(status.color == "white"){
-				this.white();
-			} else {
-				this.setColor(status.color);
-			}
-		}
-
-		if(status.onOff != undefined && this.actualStatus.onOff != status.onOff){
-			this.actualStatus.onOff = status.onOff;
-			this.sendOnOff(status.onOff);
-		}
-
 		callback;
 	}
 
@@ -237,9 +222,6 @@ function Light(name, displayName, macAddress, channelNumber){
 
 
 	this.setBrightness = function(value){
-		if(this.brightness == value){
-			return false;
-		}
 
 		if(!Number.isInteger(value) || value < 0 || value > 100){
 			return false;
@@ -247,6 +229,7 @@ function Light(name, displayName, macAddress, channelNumber){
 
 		let intensity = Math.round(value * 1024 / 100)
 		manager.setLightValue(this.macAddress, this.channelNumber, intensity);
+		debug(this.macAddress, this.channelNumber, value, ">" , intensity);
 		this.brightness = value;
 		this.actualStatus.onOff = true;
 		this.actualStatus.brightness = this.brightness;

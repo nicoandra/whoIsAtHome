@@ -269,11 +269,20 @@ function LightManager(cfg){
 		}
 
 		if(sceneName === "homeIsAloneAtNight"){
-			this.allLightsOff();
 			this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 10 })
 			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 80 })
 			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "blue", "brightness": 60 })
 			this.setStatus({ lightName: 'screen1', onOff : true, color: "white", "brightness": 10 })
+			this.setStatus({ lightName: 'screen2', onOff : true, color: "white", "brightness": 10 })
+			this.setStatus({ lightName: 'screen3', onOff : true, color: "white", "brightness": 10 })
+			return ;
+		}
+
+		if(sceneName === "homeIsAloneLow"){
+			this.setStatus({ lightName: 'kitchenLamp', onOff : false, color: "white", "brightness": 10 })
+			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 10 })
+			this.setStatus({ lightName: 'officeLamp', onOff : false, color: "white", "brightness": 60 })
+			this.setStatus({ lightName: 'screen1', onOff : false, color: "white", "brightness": 10 })
 			this.setStatus({ lightName: 'screen2', onOff : true, color: "white", "brightness": 10 })
 			this.setStatus({ lightName: 'screen3', onOff : true, color: "white", "brightness": 10 })
 			return ;
