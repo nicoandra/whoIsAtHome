@@ -135,17 +135,17 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 
 			if(timeWhenLightsGoOff.isAfter(dayTimeEnds)){
 				if(now.isAfter(dayTimeEnds) && now.isBefore(timeWhenLightsGoOff)){
-					debugTime("Night case 1 #1. Lights should be ON now. ");
+					debugTime("Night case #1. Lights should be ON now. ");
 					this.lightManager.useScene("homeIsAloneAtNight");
 				}
 				return
 
-			} else {
-				if(now.isAfter(dayTimeEnds) || now.isBefore(timeWhenLightsGoOff)){
+			}
+
+      if(now.isAfter(dayTimeEnds) || now.isBefore(timeWhenLightsGoOff)){
 					// We're facing the night time now
-					debugTime("Night case 2 #2. Lights should be ON now. ");
+					debugTime("Night case #2. Lights should be ON now. ");
 					this.lightManager.useScene("homeIsAloneAtNight");
-				}
 			}
 
 			debugTime("Lights will be turned OFF.");
