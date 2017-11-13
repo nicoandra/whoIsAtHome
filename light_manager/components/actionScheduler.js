@@ -146,6 +146,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 					// We're facing the night time now
 					debugTime("Night case #2. Lights should be ON now. ");
 					this.lightManager.useScene("homeIsAloneAtNight");
+          return ;
 			}
 
 			debugTime("Lights will be turned OFF.");
