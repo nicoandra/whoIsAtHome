@@ -1,6 +1,8 @@
 .idea/**
+
 node_modules/**
 light_manager/node_modules/**
 light_manager/bower_components/**
+light_manager/settings/**
 light_manager/config/restricted/**
 thermostat_app/node_modules/**
