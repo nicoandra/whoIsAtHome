@@ -5,11 +5,17 @@ let MiLight = require("../devices/drivers/milight/light.js"),
 	LightSocket = require("./../devices/drivers/milight/lightSocket.js"),
 	ReceiverSocket = require("./../devices/drivers/milight/receiverSocket.js"),
 	crypto = require('crypto'),
+	path = require('path'),
 	debug = require('debug')("app:component:lightManager"),
 	HeaterLight = require("./../devices/drivers/nHeatersV1/heaterLight.js"),
 	fs = require('fs');
 
+const settingsPath = path.join(__dirname, '..','settings', 'lightmanager.js');
+
+
+
 function LightManager(cfg){
+	console.log(settingsPath);
 	this.lights = {};
 	this.receiverSockets = [];
 	this.programs = {}
@@ -340,7 +346,7 @@ function LightManager(cfg){
 
 		result.scenes = {
 			active: this.activeProgram,
-			available: JSON.parse(JSON.stringify(this.scenes))
+			available: Object.keys(JSON.parse(JSON.stringify(this.scenes)))
 		}
 
 		return result;
@@ -360,7 +366,7 @@ function LightManager(cfg){
 
 
 	this.loadScenesFromFile = function(programAlias){
-		let filepath = "/tmp/programs.js";
+		let filepath = settingsPath
 		fs.readFile(filepath, (err, content) => {
 			let curr
 			if(err){
@@ -387,9 +393,17 @@ function LightManager(cfg){
 		this.persistScenesToFile()
 	}
 
+	this.deleteScene = function (programAlias) {
+		if(this.scenes[programAlias] != undefined){
+			delete this.scenes[programAlias];
+			this.persistScenesToFile()
+		}
+	}
+
 	this.persistScenesToFile  = function(programAlias){
-		let filepath = "/tmp/programs.js";
-		fs.readFile(filepath, (err, content) => {
+		let filepath = settingsPath
+
+		fs.readFile(settingsPath, (err, content) => {
 			let curr
 			if(err){
 				debug(err);
@@ -398,7 +412,9 @@ function LightManager(cfg){
 				curr = JSON.parse(content)
 			}
 			content = JSON.stringify(this.scenes);
-			fs.writeFile(filepath, content, function(){})
+			fs.writeFile(filepath, content, () => {
+				this.loadScenesFromFile()
+			})
 		})
 	}
 

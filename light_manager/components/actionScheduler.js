@@ -11,7 +11,7 @@ function actionScheduler(cfg, peopleTracker, lightManager, heaterManager){
 	this.heaterManager = heaterManager;
 	this.wasNightOnLastCheck = false;
 	this.dayTimeStarts = [7, 0, 0];
-	this.dayTimeEnds = [17, 0, 0];
+	this.dayTimeEnds = [15, 30, 0];
 	this.config = cfg
 
 	this.homeIsAlone = -1

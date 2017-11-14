@@ -81,11 +81,27 @@ function processHeaterResponse(source, destination){
 }
 
 
+$scope.persistLightStatusAsScene = function(){
+	console.log($scope.interface.programName, $scope.interface.programAlias)
+
+	let data = {
+		programName : $scope.interface.programName,
+		programAlias : $scope.interface.programAlias
+	}
+
+	$http.post("/lights/persistProgram", data).success(function(response,httpStatus){
+		console.log("OK!", response, httpStatus)
+		$scope.interface.programName = $scope.interface.programAlias = ''
+	}).error(function(err,a){
+		console.log("OK!", response, httpStatus)
+	})
+}
+
 $scope.updateInterfaceWithResponse = function(response){
 
 	if(response.lightManager !== undefined){
 		$scope.lights = response.lightManager.lights;
-		$scope.lightManager = response.lightManager;	
+		$scope.lightManager = response.lightManager;
 	}
 
 
