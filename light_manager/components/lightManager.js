@@ -15,13 +15,13 @@ const settingsPath = path.join(__dirname, '..','settings', 'lightmanager.js');
 
 
 function LightManager(cfg){
-	console.log(settingsPath);
 	this.lights = {};
 	this.receiverSockets = [];
 	this.programs = {}
 	this.scenes = {}
 	this.allKnownPrograms = {}
-	this.activeProgram = false;
+	this.activeScene = false;
+	this.sceneNamesByAlias = {};
 
 	this.addLightsFromObject = function(lights){
 		lights.forEach(function(lightDefinition){
@@ -94,37 +94,6 @@ function LightManager(cfg){
 		}.bind(this))
 	}
 
-	this.iterateBetweenChildPrograms = function(parentProgramKey){
-
-		debug("iterateBetweenChildPrograms:", Object.keys(this.programs));
-
-		if(!this.programs[parentProgramKey]){
-			debug("Can not find such program... sorry");
-			return false;
-		}
-
-		var parentProgram = this.programs[parentProgramKey];
-		if(parentProgram.childPrograms.length < 1){
-			debug("The selected program does not have child programs. Fallback to parent");
-			this.runProgram(parentProgramKey);
-		}
-
-		var indexOfProgramToRun = parentProgram.childPrograms.map(function(childProgram, index){
-			debug("iterateBetweenPrograms", childProgram.id , this.activeProgram, index);
-			return childProgram.id == this.activeProgram ? index : 0;
-		}.bind(this)).reduce(function(prev, current){
-			return prev + current;
-		});
-
-		indexOfProgramToRun++;
-		if(indexOfProgramToRun == parentProgram.childPrograms.length){
-			indexOfProgramToRun = 0;
-		}
-
-		this.runProgram(parentProgram.childPrograms[indexOfProgramToRun].id);
-
-	}
-
 	this.addHeaterLight = function(name, displayName, heater){
 		this.lights[name] = new HeaterLight(name, displayName, heater);
 	}
@@ -176,44 +145,6 @@ function LightManager(cfg){
 		return this.programs;
 	}
 
-	this.runProgram = function(hash){
-		// hash = this.hash(command);
-		if(typeof this.allKnownPrograms[hash] != "object"){
-			throw new Error("Program not found");
-			// Discard if the invoked command did not match any known program
-			return false;
-		}
-
-		if(this.allKnownPrograms[hash].statusToApply && this.allKnownPrograms[hash].statusToApply.length > 0){
-			// Here are the statuses to apply
-			debug("runProgram", this.allKnownPrograms[hash].statusToApply);
-			this.allKnownPrograms[hash].statusToApply.forEach(function(status){
-				debug("runProgram", "One Status", status);
-				this.setStatus(status, function(){});
-			}.bind(this));
-			this.activeProgram = hash;
-			return;
-		}
-
-		this.allKnownPrograms[hash].lights.forEach(function(lightName, index) {
-			var status;
-			if (typeof lightName == "object") {
-				status = lightName;
-				lightName = lightName.lightName;
-
-			} else if (typeof lightName == "string") {
-				status = this.programs[hash].status;
-			}
-
-			debug("Setting ", lightName, " with status ", status);
-			this.lights[lightName].setManualStatus(status);
-			return true;
-		}.bind(this))
-
-		this.activeProgram = hash;
-
-	}
-
 	this.hash = function(string){
 		return crypto.createHash("md5").update(string.toLowerCase().trim()).digest("hex");
 	}
@@ -255,7 +186,7 @@ function LightManager(cfg){
 			}
 		}.bind(this))
 
-		this.activeProgram = false;
+		this.activeScene = false;
 		callback = (typeof callback === 'function') ? callback : function() {};
 		callback;
 	}
@@ -277,7 +208,7 @@ function LightManager(cfg){
 		if(sceneName === "homeIsAloneAtNight"){
 			this.setStatus({ lightName: 'kitchenLamp', onOff : true, color: "white", "brightness": 10 })
 			this.setStatus({ lightName: 'kitchenCountertop', onOff : true, color: "white", "brightness": 80 })
-			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "blue", "brightness": 60 })
+			this.setStatus({ lightName: 'officeLamp', onOff : true, color: "white", "brightness": 60 })
 			this.setStatus({ lightName: 'screen1', onOff : true, color: "white", "brightness": 10 })
 			this.setStatus({ lightName: 'screen2', onOff : true, color: "white", "brightness": 10 })
 			this.setStatus({ lightName: 'screen3', onOff : true, color: "white", "brightness": 10 })
@@ -316,9 +247,10 @@ function LightManager(cfg){
 	}
 
 	this.getProgrammaticStatus = function(){
-		let status = this.getStatus();
-		Object.keys(status.lights).forEach(function(lightName){
-			status.lights[lightName] = status.lights[lightName].status
+		let status = { lights : {} }
+		let actual = this.getStatus();
+		Object.keys(actual.lights).forEach(function(lightName){
+			status.lights[lightName] = actual.lights[lightName].status
 		})
 		return status;
 	}
@@ -340,13 +272,13 @@ function LightManager(cfg){
 
 		// use allLightsOff to set the program all off
 		result.programs = new Object();
-		result.programs.activeProgram = this.activeProgram;
+		result.programs.activeScene = this.activeScene;
 		result.programs.availablePrograms = JSON.parse(JSON.stringify(this.programs))
 
 
 		result.scenes = {
-			active: this.activeProgram,
-			available: Object.keys(JSON.parse(JSON.stringify(this.scenes)))
+			active: this.activeScene,
+			available: JSON.parse(JSON.stringify(this.sceneNamesByAlias))
 		}
 
 		return result;
@@ -357,24 +289,49 @@ function LightManager(cfg){
 			return this;
 		}
 		this.app = app;
-		this.loadScenesFromFile();
-		setInterval(this.loadScenesFromFile.bind(this), 60 * 1000)	// Populate programs
+
+		this.loadScenesFromFile((err, res) => { });
+
+		setInterval(this.loadScenesFromFile.bind(this), 300 * 1000)	// Populate programs
 		debug(this.scenes)
 		this.app.internalEventEmitter.emit("componentStarted", "lightManager");
 		return this;
 	}
 
+	this.loadScenesFromFile = function(cb){
+		if(typeof cb !== "function") {
+			cb = () => {}
+		}
 
-	this.loadScenesFromFile = function(programAlias){
 		let filepath = settingsPath
 		fs.readFile(filepath, (err, content) => {
 			let curr
 			if(err){
 				debug(err);
 				curr = {}
-			} else {
-				this.scenes = JSON.parse(content)
+				return cb(err)
 			}
+
+			try {
+				let scenes = this.scenes = JSON.parse(content)
+
+				Object.keys(scenes).forEach((sceneAlias, somethingA) => {
+					if(typeof scenes[sceneAlias].status == "undefined"){
+						delete scenes[sceneAlias]
+					}
+				})
+
+				this.scenes = scenes
+
+			} catch (exception){
+				this.scenes = {}
+			}
+
+			Object.keys(this.scenes).forEach( (alias) => {
+				this.sceneNamesByAlias[alias] = this.scenes[alias].displayName
+			})
+			cb(null)
+
 		})
 	}
 
@@ -382,39 +339,47 @@ function LightManager(cfg){
 		if(this.scenes[sceneAlias] == undefined){
 			return false;
 		}
-		Object.keys(this.scenes[sceneAlias].lights).forEach((lightName) => {
-			this.setStatus(lightName, curr[sceneAlias].status.lights[lightName])
-		})
-		this.activeProgram = sceneAlias
-	}
 
-	this.addScene = function (programAlias, displayName) {
-		this.scenes[programAlias] = { displayName: displayName, status: this.getProgrammaticStatus() }
-		this.persistScenesToFile()
-	}
+		try {
 
-	this.deleteScene = function (programAlias) {
-		if(this.scenes[programAlias] != undefined){
-			delete this.scenes[programAlias];
-			this.persistScenesToFile()
+			Object.keys(this.scenes[sceneAlias].status.lights).forEach((lightName) => {
+				this.setStatus(lightName, this.scenes[sceneAlias].status.lights[lightName])
+			})
+
+			this.activeScene = sceneAlias
+		} catch(exception){
+			debug("Something failed when loading scene ", sceneAlias, exception)
 		}
 	}
 
-	this.persistScenesToFile  = function(programAlias){
+	this.addScene = function (sceneId, displayName, cb) {
+		if (typeof cb != "function"){
+			cb = () => {}
+		}
+		debug("addScene ", sceneId, displayName)
+		this.scenes[sceneId] = { displayName: displayName, status : this.getProgrammaticStatus() }
+		this.sceneNamesByAlias[sceneId] = displayName;
+		this.persistScenesToFile(cb)
+	}
+
+	this.deleteScene = function (programAlias, cb) {
+		if(this.scenes[programAlias] != undefined){
+			debug("Found and removed", programAlias)
+			delete this.scenes[programAlias];
+			delete this.sceneNamesByAlias[programAlias];
+			this.persistScenesToFile(cb)
+		} else {
+			debug("Nothing deleted", programAlias)
+			return cb();
+		}
+	}
+
+	this.persistScenesToFile  = function(cb){
 		let filepath = settingsPath
 
-		fs.readFile(settingsPath, (err, content) => {
-			let curr
-			if(err){
-				debug(err);
-				curr = {}
-			} else {
-				curr = JSON.parse(content)
-			}
-			content = JSON.stringify(this.scenes);
-			fs.writeFile(filepath, content, () => {
-				this.loadScenesFromFile()
-			})
+		let content = JSON.stringify(this.scenes);
+		fs.writeFile(filepath, content, () => {
+			this.loadScenesFromFile(cb)
 		})
 	}
 

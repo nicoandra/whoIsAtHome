@@ -13,7 +13,7 @@
   "max_memory_restart": "250M", // 1 megabytes, e.g.: "2G", "10M", "100K", 1024 the default unit is byte.
   // "cron_restart"     : "1 0 * * *",
   "watch"            : true,
-  "ignore_watch"      : ["[\\/\\\\]\\./", "node_modules", "*.log"],
+  "ignore_watch"      : ["[\\/\\\\]\\./", "node_modules", "*.log", "settings"],
   "merge_logs"       : true,
   "exec_interpreter" : "node",
   "exec_mode"        : "fork",

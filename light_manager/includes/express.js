@@ -69,11 +69,11 @@ module.exports = function(cfg) {
 
 	app.get("/", root);
 
-	app.post("/lights/persistProgram", function(req,res, next){
+	app.post("/lights/persistScene", function(req,res, next){
 		try {
-			debug("DisplayName:", req.body.displayName)
-			debug("ProgramAlias:", req.body.programAlias)
-			app.getComponent('lightManager').addScene(req.body.programAlias, req.params.programName);
+			debug("DisplayName:", req.body.sceneDisplayName)
+			debug("SceneAlias:", req.body.sceneId)
+			app.getComponent('lightManager').addScene(req.body.sceneId, req.body.sceneDisplayName);
 			return res.send({status: "OK"})
 
 		} catch(excep){
@@ -81,8 +81,17 @@ module.exports = function(cfg) {
 		}
 	})
 
-	app.get("/lights/loadProgram/:programName", function(req,res, next){
-		app.getComponent('lightManager').loadScene(req.params.programName);
+	app.post("/lights/deleteScene", function(req,res, next){
+		debug("DisplayName:", req.body.sceneId)
+		app.getComponent('lightManager').deleteScene(req.body.sceneId, function(){
+			res.send({status: "OK"})
+		});
+
+	})
+
+	app.post("/lights/useScene", function(req,res, next){
+		debug("DisplayName:", req.body.sceneId)
+		app.getComponent('lightManager').loadScene(req.body.sceneId);
 		res.send({status: "OK"})
 	})
 

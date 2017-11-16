@@ -81,19 +81,42 @@ function processHeaterResponse(source, destination){
 }
 
 
+$scope.useScene = function(sceneName){
+	$http.post('/lights/useScene', {sceneId: sceneName }).success(function(response,httpStatus){
+		console.log("OK!", response, httpStatus)
+	}).error(function(err,a){
+		console.log("KO!", err)
+	})
+}
+
 $scope.persistLightStatusAsScene = function(){
-	console.log($scope.interface.programName, $scope.interface.programAlias)
+	console.log($scope.interface.sceneDisplayName, $scope.interface.sceneId)
 
 	let data = {
-		programName : $scope.interface.programName,
-		programAlias : $scope.interface.programAlias
+		sceneDisplayName : $scope.interface.sceneDisplayName,
+		sceneId : $scope.interface.sceneId
 	}
 
-	$http.post("/lights/persistProgram", data).success(function(response,httpStatus){
+	$http.post("/lights/persistScene", data).success(function(response,httpStatus){
 		console.log("OK!", response, httpStatus)
-		$scope.interface.programName = $scope.interface.programAlias = ''
+		$scope.interface.sceneName = $scope.interface.sceneAlias = ''
 	}).error(function(err,a){
+		console.log("KO!", err)
+	})
+}
+
+
+$scope.deleteSceneByAlias = function(sceneId){
+	console.log(sceneId)
+
+	let data = {
+		sceneId : sceneId
+	}
+
+	$http.post("/lights/deleteScene", data).success(function(response,httpStatus){
 		console.log("OK!", response, httpStatus)
+	}).error(function(err,a){
+		console.log("KO!", err)
 	})
 }
 

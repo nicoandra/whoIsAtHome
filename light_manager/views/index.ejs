@@ -132,6 +132,23 @@
 								</div>
 							</li>
 
+							<li class="row list-group-item" ng-repeat="(sceneAlias, sceneName) in lightManager.scenes.available">
+								<div class="col-md-2 col-xs-2" >
+									{{ sceneAlias }}
+									{{ sceneName }}
+								</div>
+								<div class="col-md-2 col-xs-2" >
+									{{ sceneAlias == lightManager.scenes.active }}
+								</div>
+								<div class="col-md-2 col-xs-2" >
+									<input type="button" ng-click="useScene(sceneAlias)" value="Use">
+								</div>
+								<div class="col-md-2 col-xs-2" >
+									<input type="button" ng-click="deleteSceneByAlias(sceneAlias)" value="Remove">
+								</div>
+
+							</li>
+
 							<li class="list-group-item">
 
 								<div class="col-md-2 col-xs-2" >
@@ -143,38 +160,23 @@
 								</div>
 							</li>
 
-							{{ lightManager.scenes }}
+							<li class="list-group-item">
+								<div class="col-md-2 col-xs-2" >
+									Name<br>
+									<input type="text" ng-model="interface.sceneDisplayName">
+								</div>
 
-							Name: <input type="text" ng-model="interface.programName">
-							Alias <input type="text" ng-model="interface.programAlias">
-							<input type="button" ng-click="persistLightStatusAsScene()" value="Save!">
+								<div class="col-md-2 col-xs-2" >
+									Alias<br>
+									<input type="text" ng-model="interface.sceneId">
+								</div>
+								<div class="col-md-2 col-xs-2" >
+									<input type="button" ng-click="persistLightStatusAsScene()" value="Save!">
+								</div>
+							</li>
 
-							<script>/*
 
-							<ng-repeat ng-repeat="program in availablePrograms">
-								<li class="row list-group-item">
 
-									<ng-if ng-if="program.statusToApply.length > 0">
-										<div class="col-md-6 col-xs-4" ng-class="{'bg-success': program.key == activeProgram}">
-											<a href="" ng-click="sendLightProgramByKey(program.key)">{{ program.displayName }}</a>
-										</div>
-									</ng-if>
-
-									<ng-if ng-if="program.childPrograms.length > 0">
-										<div class="col-md-2 col-xs-4">
-											{{ program.displayName }}
-										</div>
-
-										<ng-repeat ng-repeat="childProgram in program.childPrograms">
-											<div class="col-md-2 col-xs-2">
-												<a href="#" class="btn btn-default" ng-class="{'btn-primary': childProgram.id == activeProgram}" ng-click="toggleLightProgramByKey(childProgram.id, this)">{{ childProgram.displayName }}</a>
-											</div>
-										</ng-repeat>
-
-									</ng-if>
-								</li>
-							</ng-repeat>
-							<script>/* */</script>
 						</ul>
 					</div>
 
@@ -276,7 +278,7 @@
 					Home is {{ home.isAlone ? 'alone' : 'occupied' }} since {{ home.sinceWhen | date: 'medium' }}. Now: {{ localWeather.main}}, {{ localWeather.currentTemperature }}&deg; Min {{ localWeather.minimumTemperature }}&deg; Max {{ localWeather.maximumTemperature}} &deg;
 				</p>
 				<p>
-					{{ lightManager.programs.activeProgram }}
+					{{ lightManager.programs.activeScene }}
 				</p>
 			</div>
 
