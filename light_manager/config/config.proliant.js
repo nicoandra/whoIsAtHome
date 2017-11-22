@@ -12,7 +12,7 @@ config.milight = [{host : '192.168.1.148' , port : 8899, delayBetweenCommands : 
 
 config.peopleTracker = {
 	locative: { host: "127.0.0.1" , port: 58972 },
-	usernames: ["nico"],
+	usernames: { 'nico' : [ 'moto5' ] },
 	defaultStatus : { nico : "away" }
 }
 

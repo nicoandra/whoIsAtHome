@@ -12,7 +12,7 @@ config.secrets = require("./restricted/secrets.js");
 
 config.peopleTracker = {
 	locative: { host: "127.0.0.1" , port: 58972 },
-	usernames: ["nico"],
+	usernames: { 'nico' : [ 'moto5' ] },
 	defaultStatus : { nico : "away" }
 }
 
