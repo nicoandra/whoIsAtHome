@@ -6,10 +6,26 @@ const debug = require('debug')("app:component:peopleTracker"),
 
 var peopleTracker = function(cfg){
     let pollInterval = 2000;
-    let usernames = cfg.peopleTracker.usernames;
+    let devices = cfg.peopleTracker.usernames;
+    let usernames = Object.keys(cfg.peopleTracker.usernames);
 
     let rawResponse = getDefaultResponse();
     let locativeUrl = "http://" + cfg.peopleTracker.locative.host + ":" + cfg.peopleTracker.locative.port + ""
+    let urls = {}
+
+
+    debug(devices, usernames);
+    usernames.forEach(( username) => {
+      let device = devices[username]
+      debug("Listed" , username, devices[username])
+
+      request.post({ url : locativeUrl, form: { username , devicename: device} } ,  (error, response, body) => {
+        if(error){
+          return ;
+        }
+        urls = JSON.parse(body);
+      })
+    });
 
     function getDefaultResponse(){
       return { status: -1, body: { status: { uptime: 0 }, presence: { anyoneAtHome: false, users: [] } } }
@@ -54,6 +70,18 @@ var peopleTracker = function(cfg){
 
     this.getHomeStatus = function(){
       return this.getStatus();
+    }
+
+    this.getUrls = function(){
+      return JSON.parse(JSON.stringify(urls))
+    }
+
+    this.setAsAtHome = function(username){
+      request.get("http://" +  cfg.peopleTracker.locative.host + urls.in);
+    }
+
+    this.setAsAway = function(username){
+        request.get("http://" +  cfg.peopleTracker.locative.host + urls.out);
     }
 
     this.start = function(app){
