@@ -23,7 +23,7 @@
     "grunt-cli": "^0.1.13",
     "limitless-gem": "^0.3.0",
     "moment": "^2.15.1",
-    "mqtt": "^2.13.0",
+    "mqtt": "^2.15.0",
     "nodemailer": "^3.1.1",
     "nodemailer-smtp-transport": "^2.7.2",
     "request": "^2.64.0",
